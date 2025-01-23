@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تطبيق الدردشة المتكامل</title>
+    <style>
+        /* أنماط عامة */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            direction: rtl;
+        }
+
+        /* أنماط التبويبات */
+        .tab-container {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        .tab-button {
+            padding: 10px 20px;
+            margin: 0 5px;
+            border: none;
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        .tab-button.active {
+            background-color: #45a049;
+        }
+
+        /* أنماط قسم إدارة المستخدمين */
+        .user-section {
+            width: 80%;
+            max-width: 800px;
+            margin: 20px auto;
+            display: block;
+        }
+
+        /* أنماط قسم الدردشة */
+        .chat-section {
+            display: none;
+            width: 90%;
+            max-width: 800px;
+            margin: 20px auto;
+        }
+
+        #chat-box {
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+
+        /* أنماط مشتركة من الكود الأصلي */
+        form {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="password"] {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="tab-container">
+        <button class="tab-button active" onclick="showTab('users')">إدارة المستخدمين</button>
+        <button class="tab-button" onclick="showTab('chat')">الدردشة</button>
+    </div>
+
+    <!-- قسم إدارة المستخدمين -->
+    <div id="users" class="user-section">
+        <h1>صفحه تسجيل دخول 
+          إضافة وعرض المستخدمين</h1>
+
+        <form id="addUserForm">
+            <label for="name">الاسم:</label>
+            <input type="text" id="name" required>
+            
+            <label for="email">البريد الإلكتروني:</label>
+            <input type="email" id="email" required>
+            
+            <button type="submit">إضافة مستخدم</button>
+        </form>
+
+        <hr>
+
+        <button type="button" onclick="showUsersWithPassword()">عرض المستخدمين</button>
+
+        <div id="passwordPrompt" style="display:none;">
+            <label for="password">أدخل كلمة المرور:</label>
+            <input type="password" id="password">
+            <button onclick="checkPassword()">موافق</button>
+        </div>
+
+        <table id="usersTable">
+            <thead>
+                <tr>
+                    <th>الرقم</th>
+                    <th>الاسم</th>
+                    <th>البريد الإلكتروني</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <!-- قسم الدردشة -->
+    <div id="chat" class="chat-section">
+        <h1>مرحبا في الدردشة،
+        تم تطوير هذا تطبيق من قبل ابن الفنديه <span id="userName"></span></h1>
+        <div id="chat-box"></div>
+        <input id="messageInput" placeholder="أدخل رسالتك..." />
+    </div>
+
+    <script>
+        // إدارة التبويبات
+        function showTab(tabName) {
+            document.querySelectorAll('.user-section, .chat-section').forEach(section => {
+                section.style.display = 'none';
+            });
+            document.getElementById(tabName).style.display = 'block';
+            
+            document.querySelectorAll('.tab-button').forEach(button => {
+                button.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
+
+        // قواعد البيانات
+        const usersDBName = "UsersDB";
+        const chatDBName = "ChatDB";
+        const usersStore = "users";
+        const messagesStore = "messages";
+
+        let usersDB, chatDB;
+
+        // تهيئة قاعدة بيانات المستخدمين
+        const usersDBRequest = indexedDB.open(usersDBName, 1);
+        usersDBRequest.onupgradeneeded = (e) => {
+            const db = e.target.result;
+            if (!db.objectStoreNames.contains(usersStore)) {
+                const store = db.createObjectStore(usersStore, { keyPath: "id", autoIncrement: true });
+                store.createIndex("email", "email", { unique: true });
+            }
+        };
+
+        usersDBRequest.onsuccess = (e) => {
+            usersDB = e.target.result;
+        };
+
+        // تهيئة قاعدة بيانات الدردشة
+        const chatDBRequest = indexedDB.open(chatDBName, 1);
+        chatDBRequest.onupgradeneeded = (e) => {
+            const db = e.target.result;
+            if (!db.objectStoreNames.contains(messagesStore)) {
+                const store = db.createObjectStore(messagesStore, { keyPath: "id", autoIncrement: true });
+                store.createIndex("timestamp", "timestamp", { unique: false });
+            }
+        };
+
+        chatDBRequest.onsuccess = (e) => {
+            chatDB = e.target.result;
+            loadMessages();
+        };
+
+        // إدارة المستخدمين
+        document.getElementById("addUserForm").addEventListener("submit", function(e) {
+            e.preventDefault();
+
+            const name = document.getElementById("name").value;
+            const email = document.getElementById("email").value;
+
+            const transaction = usersDB.transaction([usersStore], "readwrite");
+            const store = transaction.objectStore(usersStore);
+
+            const user = { name, email };
+            const request = store.add(user);
+
+            request.onsuccess = () => {
+                alert("تم إضافة المستخدم بنجاح");
+                localStorage.setItem('currentUser', name);
+                document.getElementById('userName').textContent = name;
+                showTab('chat');
+            };
+
+            request.onerror = (e) => {
+                console.error("Error adding user:", e);
+                alert("البريد الإلكتروني مستخدم مسبقًا");
+            };
+        });
+
+        // إدارة الدردشة
+        function loadMessages() {
+            const transaction = chatDB.transaction([messagesStore], "readonly");
+            const store = transaction.objectStore(messagesStore);
+            const request = store.getAll();
+
+            request.onsuccess = (e) => {
+                const messages = e.target.result;
+                const chatBox = document.getElementById("chat-box");
+                chatBox.innerHTML = messages.map(msg => 
+                    `<div><strong>${msg.user}:</strong> ${msg.text}</div>`
+                ).join('');
+                chatBox.scrollTop = chatBox.scrollHeight;
+            };
+        }
+
+        document.getElementById("messageInput").addEventListener("keypress", (e) => {
+            if (e.key === "Enter" && e.target.value.trim()) {
+                const message = {
+                    text: e.target.value,
+                    user: localStorage.getItem('currentUser') || 'مجهول',
+                    timestamp: Date.now()
+                };
+
+                const transaction = chatDB.transaction([messagesStore], "readwrite");
+                const store = transaction.objectStore(messagesStore);
+                store.add(message);
+
+                e.target.value = "";
+                loadMessages();
+            }
+        });
+
+        // وظائف عرض المستخدمين
+        function showUsersWithPassword() {
+            document.getElementById("passwordPrompt").style.display = "block";
+        }
+
+        function checkPassword() {
+            const password = document.getElementById("password").value;
+            if (password === "alinman200916") {
+                fetchUsers();
+                document.getElementById("passwordPrompt").style.display = "none";
+            } else {
+                alert("كلمة المرور غير صحيحة!");
+            }
+        }
+
+        function fetchUsers() {
+            const transaction = usersDB.transaction([usersStore], "readonly");
+            const store = transaction.objectStore(usersStore);
+            const request = store.getAll();
+
+            request.onsuccess = (e) => {
+                const users = e.target.result;
+                const tbody = document.querySelector("#usersTable tbody");
+                tbody.innerHTML = users.map(user => 
+                    `<tr>
+                        <td>${user.id}</td>
+                        <td>${user.name}</td>
+                        <td>${user.email}</td>
+                    </tr>`
+                ).join('');
+            };
+        }
+    </script>
+</body>
+</html>
