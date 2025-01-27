@@ -5,31 +5,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>تطبيق المراسلة</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;500&display=swap" rel="stylesheet">
-    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
     <style>
-        /* أنماط التطبيق */
         body {
             margin: 0;
             padding: 0;
             font-family: 'Roboto', sans-serif;
             background: #f5f5f5;
             color: #333;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        body.dark-mode {
+            background-color: #333;
+            color: #f5f5f5;
         }
 
         .chat-container {
             display: flex;
+            flex-direction: column;
             height: 100vh;
-        }
-
-        .sidebar {
-            width: 300px;
-            background: #2c3e50;
-            color: white;
-            padding: 20px;
+            padding-bottom: 60px;
         }
 
         .chat-area {
@@ -37,20 +36,80 @@
             display: flex;
             flex-direction: column;
             background: white;
+            position: relative;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .settings-btn {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            padding: 15px;
+            font-size: 20px;
+            z-index: 1000;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .settings-btn:hover {
+            background-color: #218838;
+        }
+
+        .settings-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 20px;
+            background: #fff;
+            border: 1px solid #ccc;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            display: none;
+            text-align: center;
+            z-index: 1000;
+            border-radius: 8px;
+        }
+
+        .settings-popup button {
+            padding: 10px 20px;
+            margin: 5px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .settings-popup button:hover {
+            background-color: #0056b3;
+        }
+
+        .close-btn {
+            background-color: #db4437;
         }
 
         .messages {
             flex: 1;
             padding: 20px;
             overflow-y: auto;
+            margin-top: 50px;
+            transition: background-color 0.3s;
         }
 
         .message {
             margin-bottom: 15px;
             max-width: 70%;
             padding: 10px;
-            border-radius: 10px;
+            border-radius: 15px;
             background: #e1e1e1;
+            position: relative;
+            transition: background-color 0.3s, transform 0.3s;
         }
 
         .message.sent {
@@ -65,10 +124,18 @@
         }
 
         .message-input {
-            display: flex;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
             padding: 10px;
             background: #f5f5f5;
             border-top: 1px solid #ddd;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            transition: background-color 0.3s;
         }
 
         .message-input input {
@@ -77,6 +144,11 @@
             border: 1px solid #ddd;
             border-radius: 5px;
             margin-right: 10px;
+            transition: border 0.3s;
+        }
+
+        .message-input input:focus {
+            border: 1px solid #007bff;
         }
 
         .message-input button {
@@ -86,43 +158,181 @@
             border: none;
             border-radius: 5px;
             cursor: pointer;
+            transition: background-color 0.3s;
         }
 
-        .user-list {
-            margin-top: 20px;
+        .message-input button:hover {
+            background-color: #0056b3;
         }
 
-        .user-list div {
+        .sticker-btn {
             padding: 10px;
+            background: #ff9800;
+            color: white;
+            border: none;
+            border-radius: 5px;
             cursor: pointer;
-            border-bottom: 1px solid #34495e;
+            margin-left: 10px;
         }
 
-        .user-list div:hover {
-            background: #34495e;
+        .delete-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: #db4437;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 5px;
+            cursor: pointer;
+            display: none;
+        }
+
+        .message:hover .delete-btn {
+            display: block;
+        }
+
+        .sticker-popup {
+            position: fixed;
+            bottom: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #fff;
+            padding: 10px;
+            border-radius: 5px;
+            display: none;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+        }
+
+        .sticker {
+            width: 50px;
+            height: 50px;
+            margin: 5px;
+            cursor: pointer;
+        }
+
+        .message-time {
+            font-size: 12px;
+            color: #aaa;
+            text-align: left;
+            margin-top: 5px;
+        }
+
+        @media (min-width: 1024px) {
+            .chat-container {
+                flex-direction: row;
+            }
+
+            .chat-area {
+                width: 70%;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .message-input input {
+                font-size: 14px;
+            }
         }
     </style>
 </head>
 <body>
     <div class="chat-container">
-        <!-- القائمة الجانبية -->
-        <div class="sidebar">
-            <h2>المستخدمون</h2>
-            <div class="user-list" id="user-list"></div>
+        <div class="chat-area">
+            <button class="settings-btn" onclick="toggleSettingsPopup()">⚙️</button>
+            
+            <div class="messages" id="messages"></div>
         </div>
 
-        <!-- منطقة المحادثة -->
-        <div class="chat-area">
-            <div class="messages" id="messages"></div>
-            <div class="message-input">
-                <input type="text" id="message-input" placeholder="اكتب رسالة...">
-                <button onclick="sendMessage()">إرسال</button>
-            </div>
+        <div class="message-input">
+            <input type="text" id="message-input" placeholder="اكتب رسالة...">
+            <button onclick="sendMessage()">إرسال</button>
         </div>
     </div>
 
+    <div class="settings-popup" id="settings-popup">
+        <h3>اختيارات الوضع</h3>
+        <button id="toggle-dark-mode">الوضع الداكن</button>
+        <button id="change-name-btn">تغيير الاسم</button>
+        <button id="logout-btn">تسجيل الخروج</button>
+        <button id="close-popup" class="close-btn">إغلاق</button>
+    </div>
+
+    <div class="settings-popup" id="change-name-popup" style="display: none;">
+        <h3>تغيير اسم المستخدم</h3>
+        <input type="text" id="new-name" placeholder="أدخل الاسم الجديد">
+        <button onclick="changeName()">تغيير الاسم</button>
+        <button onclick="closeChangeNamePopup()">إغلاق</button>
+    </div>
+
     <script>
-        // تهيئة Firebase
+        document.addEventListener("DOMContentLoaded", function() {
+            const mode = localStorage.getItem('mode');
+            if (mode === 'dark') {
+                document.body.classList.add('dark-mode');
+                document.getElementById('toggle-dark-mode').textContent = 'الوضع الفاتح';
+            } else {
+                document.body.classList.remove('dark-mode');
+                document.getElementById('toggle-dark-mode').textContent = 'الوضع الداكن';
+            }
+        });
+
+        function toggleSettingsPopup() {
+            const popup = document.getElementById('settings-popup');
+            popup.style.display = (popup.style.display === 'block') ? 'none' : 'block';
+        }
+
+        document.getElementById('close-popup').addEventListener('click', function() {
+            document.getElementById('settings-popup').style.display = 'none';
+        });
+
+        document.getElementById('toggle-dark-mode').addEventListener('click', function() {
+            if (document.body.classList.contains('dark-mode')) {
+                document.body.classList.remove('dark-mode');
+                localStorage.setItem('mode', 'light');
+                this.textContent = 'الوضع الداكن';
+            } else {
+                document.body.classList.add('dark-mode');
+                localStorage.setItem('mode', 'dark');
+                this.textContent = 'الوضع الفاتح';
+            }
+        });
+
+        document.getElementById('change-name-btn').addEventListener('click', function() {
+            document.getElementById('settings-popup').style.display = 'none';
+            document.getElementById('change-name-popup').style.display = 'block';
+        });
+
+        document.getElementById('logout-btn').addEventListener('click', function() {
+            firebase.auth().signOut().then(() => {
+                window.location.href = 'login.html';
+            }).catch((error) => {
+                alert("حدث خطأ أثناء تسجيل الخروج: " + error.message);
+            });
+        });
+
+        function closeChangeNamePopup() {
+            document.getElementById('change-name-popup').style.display = 'none';
+            document.getElementById('settings-popup').style.display = 'block';
+        }
+
+        function changeName() {
+            const newName = document.getElementById('new-name').value.trim();
+            if (newName) {
+                const user = firebase.auth().currentUser;
+                user.updateProfile({
+                    displayName: newName
+                }).then(() => {
+                    alert("تم تغيير الاسم بنجاح!");
+                    closeChangeNamePopup();
+                }).catch((error) => {
+                    alert("حدث خطأ أثناء تغيير الاسم: " + error.message);
+                });
+            } else {
+                alert("الرجاء إدخال اسم جديد");
+            }
+        }
+
         const firebaseConfig = {
             apiKey: "AIzaSyBwwrBtf6AtW7R36FX4j2GQZVEdJldFq7o",
             authDomain: "you-unblock.firebaseapp.com",
@@ -135,12 +345,20 @@
         const app = firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
+        const storage = firebase.storage();
 
-        // حالة التطبيق
         let currentUser = null;
 
-        // دالة إرسال الرسالة
-        async function sendMessage() {
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                currentUser = user;
+                loadMessages();
+            } else {
+                window.location.href = 'login.html';
+            }
+        });
+
+        function sendMessage() {
             const messageInput = document.getElementById('message-input');
             const messageText = messageInput.value.trim();
 
@@ -149,70 +367,65 @@
                 return;
             }
 
-            try {
-                await db.collection("messages").add({
-                    text: messageText,
-                    senderId: currentUser.uid,
-                    senderName: currentUser.displayName || currentUser.email,
-                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
-                });
-
-                messageInput.value = '';
-            } catch (error) {
-                console.error("حدث خطأ أثناء إرسال الرسالة:", error);
-                alert("فشل إرسال الرسالة");
+            if (!currentUser) {
+                alert("يرجى تسجيل الدخول أولاً");
+                return;
             }
-        }
 
-        // دالة تحميل الرسائل
-        function loadMessages() {
-            const messagesContainer = document.getElementById('messages');
-            messagesContainer.innerHTML = '';
-
-            db.collection("messages")
-                .orderBy("timestamp", "asc")
-                .onSnapshot(snapshot => {
-                    messagesContainer.innerHTML = '';
-                    snapshot.forEach(doc => {
-                        const message = doc.data();
-                        const messageElement = document.createElement('div');
-                        messageElement.className = `message ${message.senderId === currentUser.uid ? 'sent' : 'received'}`;
-                        messageElement.textContent = `${message.senderName}: ${message.text}`;
-                        messagesContainer.appendChild(messageElement);
-                    });
-
-                    // التمرير إلى الأسفل
-                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
-                });
-        }
-
-        // دالة تحميل المستخدمين
-        function loadUsers() {
-            const userList = document.getElementById('user-list');
-            userList.innerHTML = '';
-
-            db.collection("users").onSnapshot(snapshot => {
-                snapshot.forEach(doc => {
-                    const user = doc.data();
-                    if (user.uid !== currentUser.uid) {
-                        const userElement = document.createElement('div');
-                        userElement.textContent = user.displayName || user.email;
-                        userList.appendChild(userElement);
-                    }
-                });
+            db.collection("messages").add({
+                text: messageText,
+                senderId: currentUser.uid,
+                senderName: currentUser.displayName || currentUser.email,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            }).then(() => {
+                messageInput.value = ''; 
+            }).catch((error) => {
+                console.error("خطأ في إرسال الرسالة: ", error);
+                alert("حدث خطأ أثناء إرسال الرسالة. يرجى المحاولة مرة أخرى.");
             });
         }
 
-        // بدء التطبيق
-        auth.onAuthStateChanged(user => {
-            if (user) {
-                currentUser = user;
-                loadUsers();
-                loadMessages();
-            } else {
-                window.location.href = 'login.html';
+        function loadMessages() {
+            const messagesContainer = document.getElementById('messages');
+
+            db.collection("messages").orderBy("timestamp").onSnapshot(snapshot => {
+                messagesContainer.innerHTML = '';
+                snapshot.forEach(doc => {
+                    const message = doc.data();
+                    const messageElement = document.createElement('div');
+                    messageElement.className = `message ${message.senderId === currentUser.uid ? 'sent' : 'received'}`;
+
+                    if (message.text) {
+                        messageElement.textContent = `${message.senderName}: ${message.text}`;
+                    }
+
+                    const time = new Date(message.timestamp.seconds * 1000);
+                    const messageTime = document.createElement('div');
+                    messageTime.className = 'message-time';
+                    messageTime.textContent = time.toLocaleString();
+
+                    messageElement.appendChild(messageTime);
+
+                    if (message.senderId === currentUser.uid) {
+                        const deleteButton = document.createElement('button');
+                        deleteButton.className = 'delete-btn';
+                        deleteButton.textContent = 'حذف';
+                        deleteButton.onclick = () => deleteMessage(doc.id);
+                        messageElement.appendChild(deleteButton);
+                    }
+
+                    messagesContainer.appendChild(messageElement);
+                });
+
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            });
+        }
+
+        function deleteMessage(messageId) {
+            if (confirm("هل تريد حذف الرسالة؟")) {
+                db.collection("messages").doc(messageId).delete();
             }
-        });
+        }
     </script>
 </body>
 </html>
