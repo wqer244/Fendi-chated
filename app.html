@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تطبيق المراسلة</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;500&display=swap" rel="stylesheet">
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
+    <style>
+        /* أنماط التطبيق */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', sans-serif;
+            background: #f5f5f5;
+            color: #333;
+        }
+
+        .chat-container {
+            display: flex;
+            height: 100vh;
+        }
+
+        .sidebar {
+            width: 300px;
+            background: #2c3e50;
+            color: white;
+            padding: 20px;
+        }
+
+        .chat-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: white;
+        }
+
+        .messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .message {
+            margin-bottom: 15px;
+            max-width: 70%;
+            padding: 10px;
+            border-radius: 10px;
+            background: #e1e1e1;
+        }
+
+        .message.sent {
+            background: #007bff;
+            color: white;
+            margin-left: auto;
+        }
+
+        .message.received {
+            background: #f1f1f1;
+            margin-right: auto;
+        }
+
+        .message-input {
+            display: flex;
+            padding: 10px;
+            background: #f5f5f5;
+            border-top: 1px solid #ddd;
+        }
+
+        .message-input input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-right: 10px;
+        }
+
+        .message-input button {
+            padding: 10px 20px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .user-list {
+            margin-top: 20px;
+        }
+
+        .user-list div {
+            padding: 10px;
+            cursor: pointer;
+            border-bottom: 1px solid #34495e;
+        }
+
+        .user-list div:hover {
+            background: #34495e;
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <!-- القائمة الجانبية -->
+        <div class="sidebar">
+            <h2>المستخدمون</h2>
+            <div class="user-list" id="user-list"></div>
+        </div>
+
+        <!-- منطقة المحادثة -->
+        <div class="chat-area">
+            <div class="messages" id="messages"></div>
+            <div class="message-input">
+                <input type="text" id="message-input" placeholder="اكتب رسالة...">
+                <button onclick="sendMessage()">إرسال</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // تهيئة Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyBwwrBtf6AtW7R36FX4j2GQZVEdJldFq7o",
+            authDomain: "you-unblock.firebaseapp.com",
+            projectId: "you-unblock",
+            storageBucket: "you-unblock.appspot.com",
+            messagingSenderId: "306278978440",
+            appId: "1:306278978440:web:4ca87c3856e107a30be03d"
+        };
+
+        const app = firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        // حالة التطبيق
+        let currentUser = null;
+
+        // دالة إرسال الرسالة
+        async function sendMessage() {
+            const messageInput = document.getElementById('message-input');
+            const messageText = messageInput.value.trim();
+
+            if (!messageText) {
+                alert("الرجاء إدخال رسالة");
+                return;
+            }
+
+            try {
+                await db.collection("messages").add({
+                    text: messageText,
+                    senderId: currentUser.uid,
+                    senderName: currentUser.displayName || currentUser.email,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                });
+
+                messageInput.value = '';
+            } catch (error) {
+                console.error("حدث خطأ أثناء إرسال الرسالة:", error);
+                alert("فشل إرسال الرسالة");
+            }
+        }
+
+        // دالة تحميل الرسائل
+        function loadMessages() {
+            const messagesContainer = document.getElementById('messages');
+            messagesContainer.innerHTML = '';
+
+            db.collection("messages")
+                .orderBy("timestamp", "asc")
+                .onSnapshot(snapshot => {
+                    messagesContainer.innerHTML = '';
+                    snapshot.forEach(doc => {
+                        const message = doc.data();
+                        const messageElement = document.createElement('div');
+                        messageElement.className = `message ${message.senderId === currentUser.uid ? 'sent' : 'received'}`;
+                        messageElement.textContent = `${message.senderName}: ${message.text}`;
+                        messagesContainer.appendChild(messageElement);
+                    });
+
+                    // التمرير إلى الأسفل
+                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                });
+        }
+
+        // دالة تحميل المستخدمين
+        function loadUsers() {
+            const userList = document.getElementById('user-list');
+            userList.innerHTML = '';
+
+            db.collection("users").onSnapshot(snapshot => {
+                snapshot.forEach(doc => {
+                    const user = doc.data();
+                    if (user.uid !== currentUser.uid) {
+                        const userElement = document.createElement('div');
+                        userElement.textContent = user.displayName || user.email;
+                        userList.appendChild(userElement);
+                    }
+                });
+            });
+        }
+
+        // بدء التطبيق
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                currentUser = user;
+                loadUsers();
+                loadMessages();
+            } else {
+                window.location.href = 'login.html';
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,332 +1,164 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام الدردشة المتكامل</title>
+    <title>تسجيل الدخول</title>
+    <!-- Firebase SDK (الإصدار الأحدث) -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
     <style>
-        :root {
-            --primary-color: #4CAF50;
-            --secondary-color: #ff4444;
-        }
-
         body {
-            font-family: 'Arial', sans-serif;
-            direction: rtl;
+            background: #f0f2f5;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
             margin: 0;
-            padding: 20px;
-            background: #f0f8ff;
         }
-
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-        }
-
-        .section {
+        .login-box {
             background: white;
-            padding: 25px;
-            border-radius: 15px;
-            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
         }
-
-        #registerSection {
-            display: block;
-        }
-
-        #chatSection {
-            display: none;
-        }
-
-        .form-group {
-            margin-bottom: 15px;
-        }
-
         input {
             width: 100%;
             padding: 12px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            font-size: 16px;
-            transition: border-color 0.3s;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
         }
-
-        input:focus {
-            border-color: var(--primary-color);
-            outline: none;
-        }
-
         button {
             width: 100%;
             padding: 12px;
+            background: #1877f2;
+            color: white;
             border: none;
-            border-radius: 8px;
-            font-size: 16px;
+            border-radius: 5px;
             cursor: pointer;
-            transition: opacity 0.3s;
+            margin: 5px 0;
         }
-
-        .btn-primary {
-            background: var(--primary-color);
-            color: white;
+        .google-btn {
+            background: #db4437;
         }
-
-        .btn-danger {
-            background: var(--secondary-color);
-            color: white;
+        .links {
+            margin-top: 15px;
         }
-
-        #chat-box {
-            height: 500px;
-            border: 2px solid #eee;
-            border-radius: 10px;
-            padding: 15px;
-            overflow-y: auto;
-            margin: 20px 0;
-            background: #f9f9f9;
-        }
-
-        .message {
-            background: #e3f2fd;
-            padding: 12px;
-            margin: 10px 0;
-            border-radius: 8px;
-            animation: fadeIn 0.3s ease-in;
-        }
-
-        .message-header {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 5px;
-        }
-
-        .message-user {
-            font-weight: bold;
-            color: #1a73e8;
-        }
-
-        .message-time {
-            font-size: 0.85em;
-            color: #666;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+        a {
+            color: #1877f2;
+            text-decoration: none;
+            font-size: 14px;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <!-- قسم التسجيل -->
-        <div id="registerSection" class="section">
-            <h2 style="text-align: center; color: var(--primary-color); margin-bottom: 25px;">تسجيل مستخدم جديد</h2>
-            <form id="registerForm">
-                <div class="form-group">
-                    <input type="text" id="userName" placeholder="اسم المستخدم" required>
-                </div>
-                <div class="form-group">
-                    <input type="email" id="userEmail" placeholder="البريد الإلكتروني" required>
-                </div>
-                <button type="submit" class="btn-primary">بدء الدردشة</button>
-            </form>
+    <div class="login-box">
+        <h1>مرحبًا بك</h1>
+        <input type="email" id="email" placeholder="البريد الإلكتروني">
+        <input type="password" id="password" placeholder="كلمة المرور">
+        <button onclick="signIn()">تسجيل الدخول</button>
+        
+        <div class="links">
+            <a href="#" onclick="signUp()">إنشاء حساب جديد</a>
         </div>
-
-        <!-- قسم الدردشة -->
-        <div id="chatSection" class="section">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                <h2 style="color: var(--primary-color); margin: 0;">مرحبا <span id="currentUser"></span></h2>
-                <button onclick="logout()" class="btn-danger">تسجيل الخروج</button>
-            </div>
-            
-            <div id="chat-box"></div>
-            
-            <div class="form-group">
-                <input type="text" id="messageInput" placeholder="اكتب رسالتك هنا...">
-            </div>
-        </div>
+        
+        <div style="margin: 15px 0; color: #666;">أو</div>
+        
+        <button class="google-btn" onclick="signInWithGoogle()">
+            تسجيل الدخول بجوجل
+        </button>
     </div>
 
-<script>
-// إعداد قاعدة البيانات
-let db;
-const DB_NAME = 'ChatAppDB';
-const DB_VERSION = 10;
+    <script>
+        // التهيئة الكاملة لـ Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyBwwrBtf6AtW7R36FX4j2GQZVEdJldFq7o",
+            authDomain: "you-unblock.firebaseapp.com",
+            projectId: "you-unblock",
+            storageBucket: "you-unblock.appspot.com",
+            messagingSenderId: "306278978440",
+            appId: "1:306278978440:web:4ca87c3856e107a30be03d",
+            measurementId: "G-XXXXXXX" // أضف إذا موجود
+        };
 
-// فتح قاعدة البيانات
-const request = indexedDB.open(DB_NAME, DB_VERSION);
+        // Initialize Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
 
-request.onupgradeneeded = (e) => {
-    const db = e.target.result;
-    
-    if (!db.objectStoreNames.contains('users')) {
-        const usersStore = db.createObjectStore('users', {
-            keyPath: 'id',
-            autoIncrement: true
-        });
-        usersStore.createIndex('email', 'email', { unique: true });
-    }
+        // معالجة الأخطاء المتقدمة
+        const errorMessages = {
+            'auth/invalid-email': 'البريد الإلكتروني غير صالح',
+            'auth/user-not-found': 'الحساب غير موجود',
+            'auth/wrong-password': 'كلمة المرور خاطئة',
+            'auth/email-already-in-use': 'الحساب مسجل مسبقًا',
+            'auth/network-request-failed': 'خطأ في الاتصال بالشبكة',
+            'auth/popup-closed-by-user': 'تم إلغاء العملية',
+            'auth/operation-not-allowed': 'طريقة التسجيل غير مفعّلة'
+        };
 
-    if (!db.objectStoreNames.contains('messages')) {
-        const messagesStore = db.createObjectStore('messages', {
-            keyPath: 'id',
-            autoIncrement: true
-        });
-        messagesStore.createIndex('timestamp', 'timestamp');
-        messagesStore.createIndex('user', 'user');
-    }
-};
-
-request.onsuccess = (e) => {
-    db = e.target.result;
-    checkAuth();
-    loadMessages();
-    setInterval(loadMessages, 2000); // تحديث الرسائل كل 2 ثانية
-};
-
-request.onerror = (e) => {
-    console.error('خطأ في قاعدة البيانات:', e.target.error);
-    alert('حدث خطأ في النظام! يرجى إعادة تحميل الصفحة.');
-};
-
-// التحقق من حالة المصادقة
-function checkAuth() {
-    const user = localStorage.getItem('currentUser');
-    if (user) {
-        document.getElementById('registerSection').style.display = 'none';
-        document.getElementById('chatSection').style.display = 'block';
-        document.getElementById('currentUser').textContent = user;
-    }
-}
-
-// تسجيل مستخدم جديد
-document.getElementById('registerForm').addEventListener('submit', async function(e) {
-    e.preventDefault();
-    
-    const name = document.getElementById('userName').value.trim();
-    const email = document.getElementById('userEmail').value.trim();
-
-    if (!name || !email) {
-        showError('يرجى ملء جميع الحقول');
-        return;
-    }
-
-    try {
-        const transaction = db.transaction(['users'], 'readwrite');
-        const store = transaction.objectStore('users');
-
-        // التحقق من البريد الإلكتروني
-        const emailExists = await new Promise((resolve, reject) => {
-            const request = store.index('email').get(email);
-            request.onsuccess = () => resolve(!!request.result);
-            request.onerror = () => reject(request.error);
-        });
-
-        if (emailExists) {
-            showError('البريد الإلكتروني مسجل مسبقاً');
-            return;
-        }
-
-        // إضافة المستخدم
-        await new Promise((resolve, reject) => {
-            const request = store.add({ name, email });
-            request.onsuccess = resolve;
-            request.onerror = () => reject(request.error);
-        });
-
-        localStorage.setItem('currentUser', name);
-        checkAuth();
-        document.getElementById('userName').value = '';
-        document.getElementById('userEmail').value = '';
-
-    } catch (error) {
-        showError('حدث خطأ أثناء التسجيل: ' + error.message);
-    }
-});
-
-// تحميل الرسائل
-async function loadMessages() {
-    try {
-        const transaction = db.transaction(['messages'], 'readonly');
-        const store = transaction.objectStore('messages');
-        const index = store.index('timestamp');
-        
-        const messages = await new Promise((resolve, reject) => {
-            const request = index.getAll();
-            request.onsuccess = () => resolve(request.result);
-            request.onerror = () => reject(request.error);
-        });
-
-        displayMessages(messages.sort((a, b) => a.timestamp - b.timestamp));
-    } catch (error) {
-        console.error('خطأ في تحميل الرسائل:', error);
-    }
-}
-
-// عرض الرسائل
-function displayMessages(messages) {
-    const chatBox = document.getElementById('chat-box');
-    chatBox.innerHTML = messages.map(msg => `
-        <div class="message">
-            <div class="message-header">
-                <span class="message-user">${msg.user}</span>
-                <span class="message-time">${formatTime(msg.timestamp)}</span>
-            </div>
-            <div>${msg.text}</div>
-        </div>
-    `).join('');
-    
-    chatBox.scrollTop = chatBox.scrollHeight;
-}
-
-// إرسال الرسائل
-document.getElementById('messageInput').addEventListener('keypress', async function(e) {
-    if (e.key === 'Enter' && this.value.trim()) {
-        try {
-            const transaction = db.transaction(['messages'], 'readwrite');
-            const store = transaction.objectStore('messages');
+        // الدوال الأساسية
+        async function signIn() {
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value.trim();
             
-            const message = {
-                text: this.value.trim(),
-                user: localStorage.getItem('currentUser') || 'مجهول',
-                timestamp: Date.now()
-            };
+            if (!email || !password) {
+                return alert("يرجى ملء جميع الحقول");
+            }
 
-            await new Promise((resolve, reject) => {
-                const request = store.add(message);
-                request.onsuccess = resolve;
-                request.onerror = () => reject(request.error);
-            });
-
-            this.value = '';
-            loadMessages();
-
-        } catch (error) {
-            showError('حدث خطأ أثناء إرسال الرسالة: ' + error.message);
+            try {
+                await auth.signInWithEmailAndPassword(email, password);
+                window.location.href = "app.html";
+            } catch (error) {
+                alert(errorMessages[error.code] || "حدث خطأ غير معروف");
+                console.error("تفاصيل الخطأ:", error);
+            }
         }
-    }
-});
 
-// تسجيل الخروج
-function logout() {
-    localStorage.removeItem('currentUser');
-    location.reload();
-}
+        async function signUp() {
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value.trim();
+            
+            if (!email || !password) {
+                return alert("يرجى ملء جميع الحقول");
+            }
 
-// وظائف مساعدة
-function formatTime(timestamp) {
-    const date = new Date(timestamp);
-    return date.toLocaleTimeString('ar-EG', {
-        hour: '2-digit',
-        minute: '2-digit'
-    });
-}
+            try {
+                await auth.createUserWithEmailAndPassword(email, password);
+                alert("تم إنشاء الحساب بنجاح!");
+                window.location.reload();
+            } catch (error) {
+                alert(errorMessages[error.code] || "حدث خطأ غير معروف");
+                console.error("تفاصيل الخطأ:", error);
+            }
+        }
 
-function showError(message) {
-    alert(`⚠️ خطأ: ${message}`);
-}
-</script>
+        // تسجيل الدخول بجوجل مع التحكم الكامل
+        function signInWithGoogle() {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            provider.addScope('email');
+            
+            auth.signInWithPopup(provider)
+                .then((result) => {
+                    window.location.href = "app.html";
+                }).catch((error) => {
+                    if (error.code !== 'auth/popup-closed-by-user') {
+                        alert(errorMessages[error.code] || "فشل تسجيل الدخول بجوجل");
+                    }
+                });
+        }
 
+        // التحقق التلقائي من حالة المستخدم
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                window.location.href = "app.html";
+            }
+        });
+    </script>
 </body>
 </html>
