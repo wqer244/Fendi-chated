@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> قسم ألعاب </title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #42a5f5, #64b5f6);
+            color: #fff;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            text-align: center;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        h1 {
+            font-size: 48px;
+            margin-bottom: 50px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: bold;
+            text-shadow: 3px 3px 10px rgba(0, 0, 0, 0.4);
+            animation: fadeIn 2s ease-out;
+            color: #ffffff;
+        }
+
+        /* تأثير النص */
+        @keyframes fadeIn {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+
+        .game-button {
+            margin: 20px;
+            padding: 18px 35px;
+            background-color: #f50057; /* لون الزر الأحمر المائل للوردى */
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 22px;
+            font-weight: bold;
+            text-transform: uppercase;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            transition: all 0.4s ease-in-out;
+            border: 2px solid transparent;
+        }
+
+        .game-button:hover {
+            background-color: #c51162; /* اللون الأحمر الأكثر شدة */
+            transform: translateY(-8px) scale(1.05);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            border-color: #f50057;
+        }
+
+        .game-button:active {
+            background-color: #880e4f; 
+            transform: translateY(0) scale(1);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        /* تأثيرات للأزرار عند التمرير */
+        .game-button:focus {
+            outline: none;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.7);
+        }
+
+        .game-button-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 30px;
+            border-radius: 15px;
+            background-color: rgba(0, 0, 0, 0.4); /* خلفية داكنة للأزرار */
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+            animation: slideIn 1s ease forwards;
+        }
+
+        /* تأثير انزلاق للأزرار عند ظهورها */
+        @keyframes slideIn {
+            0% {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* خلفية متحركة متعددة الألوان */
+        .background-animation {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: -1;
+            background: linear-gradient(45deg, #f50057, #880e4f, #c51162);
+            background-size: 400% 400%;
+            animation: gradientAnimation 8s ease infinite;
+        }
+
+        @keyframes gradientAnimation {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        /* تأثيرات عند التمرير على الأزرار */
+        .game-button {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .game-button::before {
+            content: '';
+            position: absolute;
+            top: -100%;
+            left: -100%;
+            width: 300%;
+            height: 300%;
+            background-color: rgba(255, 255, 255, 0.2);
+            transition: all 0.5s ease;
+        }
+
+        .game-button:hover::before {
+            top: 0;
+            left: 0;
+        }
+
+        /* تأثير لتكبير الأزرار عند التمرير */
+        .game-button:hover {
+            transform: scale(1.1);
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="background-animation"></div>
+    <h1>اختر لعبتك</h1>
+    
+    <div class="game-button-container">
+        <!-- زر "لعبة كرة القدم" -->
+        <button class="game-button" onclick="window.location.href='https://play.famobi.com/3d-free-kick'">لعبة كرة القدم</button>
+
+        <!-- زر "لعبة الغاز" -->
+        <button class="game-button" onclick="window.location.href='https://play.famobi.com/totemia-cursed-marbles'">لعبة الغاز</button>
+
+        <!-- زر "لعبة كرة طاولة" -->
+        <button class="game-button" onclick="window.location.href='https://play.famobi.com/table-tennis-world-tour'">لعبة كرة طاولة</button>
+        
+        <!-- زر "لعبة مكعبات" -->
+        <button class="game-button" onclick="window.location.href='https://play.famobi.com/tower-crash-3d'">لعبة مكعبات</button>
+    </div>
+
+</body>
+</html>
