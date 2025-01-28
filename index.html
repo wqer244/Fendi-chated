@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تسجيل الدخول</title>
-    <!-- Firebase SDK (الإصدار الأحدث) -->
+    <title>تسجيل الدخول وإنشاء حساب</title>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
     <style>
@@ -17,7 +16,7 @@
             height: 100vh;
             margin: 0;
         }
-        .login-box {
+        .box {
             background: white;
             padding: 2rem;
             border-radius: 10px;
@@ -47,36 +46,35 @@
         .google-btn {
             background: #db4437;
         }
-        .links {
-            margin-top: 15px;
-        }
-        a {
-            color: #1877f2;
-            text-decoration: none;
-            font-size: 14px;
+        .hidden {
+            display: none;
         }
     </style>
 </head>
 <body>
-    <div class="login-box">
-        <h1>مرحبًا بك</h1>
-        <input type="email" id="email" placeholder="البريد الإلكتروني">
-        <input type="password" id="password" placeholder="كلمة المرور">
-        <button onclick="signIn()">تسجيل الدخول</button>
-        
-        <div class="links">
-            <a href="#" onclick="signUp()">إنشاء حساب جديد</a>
-        </div>
-        
-        <div style="margin: 15px 0; color: #666;">أو</div>
-        
-        <button class="google-btn" onclick="signInWithGoogle()">
-            تسجيل الدخول بجوجل
-        </button>
+    <!-- صندوق تسجيل الدخول -->
+    <div id="login-box" class="box">
+        <h1>تسجيل الدخول</h1>
+        <input type="email" id="login-email" placeholder="البريد الإلكتروني">
+        <input type="password" id="login-password" placeholder="كلمة المرور">
+        <button onclick="login()">تسجيل الدخول</button>
+        <button class="google-btn" onclick="loginWithGoogle()">تسجيل الدخول بواسطة Google</button>
+        <p>لا تملك حسابًا؟ <a href="#" onclick="showSignUp()">إنشاء حساب</a></p>
+    </div>
+
+    <!-- صندوق إنشاء الحساب -->
+    <div id="signup-box" class="box hidden">
+        <h1>إنشاء حساب</h1>
+        <input type="text" id="signup-name" placeholder="اسمك الكامل">
+        <input type="email" id="signup-email" placeholder="البريد الإلكتروني">
+        <input type="password" id="signup-password" placeholder="كلمة المرور">
+        <button onclick="signUp()">إنشاء حساب</button>
+        <button class="google-btn" onclick="loginWithGoogle()">تسجيل الدخول بواسطة Google</button>
+        <p>لديك حساب؟ <a href="#" onclick="showLogin()">تسجيل الدخول</a></p>
     </div>
 
     <script>
-        // التهيئة الكاملة لـ Firebase
+        // إعداد Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyBwwrBtf6AtW7R36FX4j2GQZVEdJldFq7o",
             authDomain: "you-unblock.firebaseapp.com",
@@ -84,81 +82,80 @@
             storageBucket: "you-unblock.appspot.com",
             messagingSenderId: "306278978440",
             appId: "1:306278978440:web:4ca87c3856e107a30be03d",
-            measurementId: "G-XXXXXXX" // أضف إذا موجود
         };
 
-        // Initialize Firebase
         const app = firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
 
-        // معالجة الأخطاء المتقدمة
-        const errorMessages = {
-            'auth/invalid-email': 'البريد الإلكتروني غير صالح',
-            'auth/user-not-found': 'الحساب غير موجود',
-            'auth/wrong-password': 'كلمة المرور خاطئة',
-            'auth/email-already-in-use': 'الحساب مسجل مسبقًا',
-            'auth/network-request-failed': 'خطأ في الاتصال بالشبكة',
-            'auth/popup-closed-by-user': 'تم إلغاء العملية',
-            'auth/operation-not-allowed': 'طريقة التسجيل غير مفعّلة'
-        };
+        // عرض صفحة تسجيل الدخول
+        function showLogin() {
+            document.getElementById('signup-box').classList.add('hidden');
+            document.getElementById('login-box').classList.remove('hidden');
+        }
 
-        // الدوال الأساسية
-        async function signIn() {
-            const email = document.getElementById('email').value.trim();
-            const password = document.getElementById('password').value.trim();
-            
+        // عرض صفحة إنشاء الحساب
+        function showSignUp() {
+            document.getElementById('login-box').classList.add('hidden');
+            document.getElementById('signup-box').classList.remove('hidden');
+        }
+
+        // تسجيل الدخول
+        async function login() {
+            const email = document.getElementById('login-email').value.trim();
+            const password = document.getElementById('login-password').value.trim();
+
             if (!email || !password) {
                 return alert("يرجى ملء جميع الحقول");
             }
 
             try {
                 await auth.signInWithEmailAndPassword(email, password);
+                alert("تم تسجيل الدخول بنجاح!");
                 window.location.href = "app.html";
             } catch (error) {
-                alert(errorMessages[error.code] || "حدث خطأ غير معروف");
-                console.error("تفاصيل الخطأ:", error);
+                alert("خطأ: " + error.message);
             }
         }
 
+        // إنشاء حساب
         async function signUp() {
-            const email = document.getElementById('email').value.trim();
-            const password = document.getElementById('password').value.trim();
-            
-            if (!email || !password) {
+            const name = document.getElementById('signup-name').value.trim();
+            const email = document.getElementById('signup-email').value.trim();
+            const password = document.getElementById('signup-password').value.trim();
+
+            if (!name || !email || !password) {
                 return alert("يرجى ملء جميع الحقول");
             }
 
             try {
-                await auth.createUserWithEmailAndPassword(email, password);
-                alert("تم إنشاء الحساب بنجاح!");
-                window.location.reload();
+                const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+                const user = userCredential.user;
+
+                // تحديث الاسم
+                await user.updateProfile({
+                    displayName: name
+                });
+
+                alert(`مرحبًا ${name}, تم إنشاء الحساب بنجاح!`);
+                window.location.href = "app.html";
             } catch (error) {
-                alert(errorMessages[error.code] || "حدث خطأ غير معروف");
-                console.error("تفاصيل الخطأ:", error);
+                alert("خطأ: " + error.message);
             }
         }
 
-        // تسجيل الدخول بجوجل مع التحكم الكامل
-        function signInWithGoogle() {
+        // تسجيل الدخول بواسطة Google
+        function loginWithGoogle() {
             const provider = new firebase.auth.GoogleAuthProvider();
-            provider.addScope('email');
-            
+
             auth.signInWithPopup(provider)
                 .then((result) => {
+                    alert("تم تسجيل الدخول بنجاح بواسطة Google!");
                     window.location.href = "app.html";
-                }).catch((error) => {
-                    if (error.code !== 'auth/popup-closed-by-user') {
-                        alert(errorMessages[error.code] || "فشل تسجيل الدخول بجوجل");
-                    }
+                })
+                .catch((error) => {
+                    alert("خطأ: " + error.message);
                 });
         }
-
-        // التحقق التلقائي من حالة المستخدم
-        auth.onAuthStateChanged((user) => {
-            if (user) {
-                window.location.href = "app.html";
-            }
-        });
     </script>
 </body>
 </html>
