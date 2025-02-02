@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>المنتدى</title>
+  <!-- استيراد خط تاجوال -->
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <!-- استيراد Font Awesome للأيقونات -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- مكتبات Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+  <style>
+    /* التنسيقات العامة */
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Tajawal', sans-serif;
+      background: #f8f9fa;
+      color: #333;
+      transition: background-color 0.3s, color 0.3s;
+    }
+    body.dark-mode {
+      background-color: #1a1a1a;
+      color: #f5f5f5;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    /* قسم المنتدى */
+    .forum-section {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+      padding: 25px;
+      min-height: 80vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .input-area {
+      display: none; /* مخفي بشكل افتراضي */
+      flex-direction: column;
+      gap: 15px;
+      margin-top: 20px;
+    }
+    textarea {
+      width: 100%;
+      min-height: 120px;
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      resize: vertical;
+      font-size: 16px;
+      background: #f8f9fa;
+      color: #333;
+    }
+    textarea:focus {
+      outline: none;
+      border-color: #007bff;
+      box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+    }
+    button {
+      padding: 12px 24px;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s, transform 0.2s;
+      font-size: 16px;
+      font-weight: 500;
+    }
+    button:hover {
+      background: #0056b3;
+      transform: translateY(-1px);
+    }
+    .publish-btn {
+      margin-bottom: 20px;
+      background: #17a2b8;
+    }
+    .publish-btn:hover {
+      background: #138496;
+    }
+    .posts-container {
+      margin-top: 20px;
+    }
+    .post {
+      margin-bottom: 20px;
+      padding: 20px;
+      border-radius: 10px;
+      background: #ffffff;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+    }
+    .user-info {
+      font-size: 0.9em;
+      color: #666;
+      margin-top: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .post-timestamp {
+      font-size: 0.8em;
+      color: #999;
+    }
+    /* مجموعة أزرار المنشور */
+    .btn-group {
+      margin-top: 10px;
+      display: flex;
+      gap: 5px;
+      flex-wrap: wrap;
+    }
+    .btn-small {
+      padding: 6px 12px;
+      font-size: 14px;
+    }
+    /* زر التعليقات الاحترافي */
+    .comment-btn {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      color: #007bff;
+    }
+    .comment-btn i {
+      font-size: 24px;
+    }
+    .comment-btn span {
+      font-size: 14px;
+      margin-top: 3px;
+    }
+    /* مودال التعليقات */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.6);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+    .modal-content {
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      max-width: 600px;
+      width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .close-modal {
+      font-size: 24px;
+      cursor: pointer;
+    }
+    .comment {
+      margin: 10px 0;
+      padding: 10px;
+      background: #f8f9fa;
+      border-radius: 8px;
+    }
+    .comment-input {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .comment-input textarea {
+      flex: 1;
+      padding: 8px;
+      min-height: 60px;
+      font-size: 14px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    .comment-input button {
+      padding: 8px 16px;
+      font-size: 14px;
+      background: #28a745;
+      border: none;
+      border-radius: 4px;
+      color: #fff;
+      cursor: pointer;
+    }
+    .comment-input button:hover {
+      background: #218838;
+    }
+    /* تأثيرات التمرير */
+    .posts-container::-webkit-scrollbar {
+      width: 8px;
+    }
+    .posts-container::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 4px;
+    }
+    .posts-container::-webkit-scrollbar-thumb {
+      background: #888;
+      border-radius: 4px;
+    }
+    .posts-container::-webkit-scrollbar-thumb:hover {
+      background: #555;
+    }
+    /* استجابة */
+    @media (max-width: 768px) {
+      .container {
+        padding: 10px;
+      }
+      .forum-section {
+        padding: 15px;
+      }
+      .post {
+        padding: 15px;
+      }
+      textarea {
+        min-height: 100px;
+        font-size: 14px;
+      }
+      button {
+        padding: 10px 20px;
+        font-size: 14px;
+      }
+      h2 {
+        font-size: 20px;
+      }
+      .user-info {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
+      }
+      .btn-group button {
+        width: 100%;
+        margin: 5px 0;
+      }
+    }
+    @media (min-width: 769px) and (max-width: 1024px) {
+      .container {
+        max-width: 90%;
+      }
+      .forum-section {
+        padding: 20px;
+      }
+      .post {
+        padding: 18px;
+      }
+      textarea {
+        min-height: 110px;
+      }
+      button {
+        padding: 11px 22px;
+      }
+      h2 {
+        font-size: 22px;
+      }
+    }
+    @media (min-width: 1025px) {
+      .container {
+        max-width: 1200px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- قسم المنتدى -->
+    <div class="forum-section">
+      <h2>المنتدى</h2>
+      <!-- زر نشر منشور -->
+      <button class="publish-btn" onclick="showPublishForm()">نشر منشور</button>
+      <!-- واجهة نشر منشور (مخفية بشكل افتراضي) -->
+      <div class="input-area" id="publish-form">
+        <textarea id="post-input" placeholder="اكتب منشورك هنا..."></textarea>
+        <button onclick="createPost()">نشر</button>
+      </div>
+      <!-- عرض المنشورات -->
+      <div class="posts-container" id="posts"></div>
+    </div>
+  </div>
+
+  <!-- مودال التعليقات (نافذة التعليقات الخاصة بكل منشور) -->
+  <div class="modal-overlay" id="commentModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>التعليقات</h3>
+        <span class="close-modal" onclick="closeCommentModal()">&times;</span>
+      </div>
+      <div id="modalCommentsList">
+        <p>جارٍ تحميل التعليقات...</p>
+      </div>
+      <div class="comment-input">
+        <textarea id="modalCommentInput" placeholder="اكتب تعليقك هنا..."></textarea>
+        <button onclick="submitModalComment()">نشر</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // تهيئة Firebase – استبدل هذه القيم بمعطيات مشروعك
+    const firebaseConfig = {
+      apiKey: "AIzaSyBwwrBtf6AtW7R36FX4j2GQZVEdJldFq7o",
+      authDomain: "you-unblock.firebaseapp.com",
+      projectId: "you-unblock",
+      storageBucket: "you-unblock.appspot.com",
+      messagingSenderId: "306278978440",
+      appId: "1:306278978440:web:4ca87c3856e107a30be03d"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+    let currentUser = null;
+    // لتحديد المنشور الحالي الذي سيتم عرض تعليقاته في المودال
+    let currentModalPostId = null;
+
+    // مصادقة المستخدم
+    auth.onAuthStateChanged(user => {
+      if (user) {
+        currentUser = user;
+        loadPosts();
+      } else {
+        window.location.href = 'login.html';
+      }
+    });
+
+    // عرض واجهة نشر المنشور
+    function showPublishForm() {
+      document.getElementById('publish-form').style.display = 'flex';
+    }
+
+    // إنشاء منشور جديد
+    function createPost() {
+      const postInput = document.getElementById('post-input');
+      const content = postInput.value.trim();
+      if (content && currentUser) {
+        db.collection("posts").add({
+          content: content,
+          userId: currentUser.uid,
+          userName: currentUser.displayName || "مجهول",
+          likes: 0,
+          likedBy: [],
+          timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        }).then(() => {
+          postInput.value = '';
+          document.getElementById('publish-form').style.display = 'none';
+        }).catch(error => console.error("خطأ في نشر المنشور:", error));
+      }
+    }
+
+    // تحميل المنشورات
+    function loadPosts() {
+      db.collection("posts")
+        .orderBy("timestamp", "desc")
+        .onSnapshot(snapshot => {
+          const postsContainer = document.getElementById('posts');
+          postsContainer.innerHTML = "";
+          snapshot.forEach(doc => {
+            const post = doc.data();
+            const postId = doc.id;
+            const postElement = document.createElement('div');
+            postElement.className = 'post';
+            postElement.innerHTML = `
+              <div class="post-content">${post.content}</div>
+              <div class="user-info">
+                <span>نشر بواسطة: ${post.userName}</span>
+                <span class="post-timestamp">${post.timestamp ? new Date(post.timestamp.toDate()).toLocaleString() : ''}</span>
+                <button class="like-btn" onclick="likePost('${postId}', ${post.likes}, ${JSON.stringify(post.likedBy)})">
+                  👍 (${post.likes})
+                </button>
+                ${post.userId === currentUser.uid ? `
+                  <button class="edit-btn" onclick="editPost('${postId}')">✏️ تعديل</button>
+                  <button class="delete-btn" onclick="deletePost('${postId}')">🗑️ حذف</button>
+                ` : ''}
+              </div>
+              <div class="btn-group">
+                <!-- زر التعليقات الاحترافي -->
+                <button class="comment-btn" onclick="openCommentModal('${postId}')">
+                  <i class="fa fa-comments"></i>
+                  <span>تعليقات</span>
+                </button>
+              </div>
+              <div class="comments-section" id="comments-${postId}">
+                <div class="comment-input">
+                  <textarea id="comment-input-${postId}" placeholder="أضف تعليقًا..."></textarea>
+                  <button onclick="addComment('${postId}')">تعليق</button>
+                </div>
+                <div id="comments-list-${postId}"></div>
+              </div>
+            `;
+            postsContainer.appendChild(postElement);
+            loadComments(postId);
+          });
+        });
+    }
+
+    // وظيفة الإعجاب
+    function likePost(postId, currentLikes, likedBy) {
+      if (!likedBy.includes(currentUser.uid)) {
+        db.collection("posts").doc(postId).update({
+          likes: currentLikes + 1,
+          likedBy: firebase.firestore.FieldValue.arrayUnion(currentUser.uid)
+        });
+      } else {
+        alert("لقد أعجبت بهذا المنشور بالفعل!");
+      }
+    }
+
+    // تعديل المنشور
+    function editPost(postId) {
+      const newContent = prompt("قم بتعديل المنشور:");
+      if (newContent && newContent.trim() !== "") {
+        db.collection("posts").doc(postId).update({
+          content: newContent.trim()
+        }).then(() => console.log("تم تعديل المنشور بنجاح"))
+          .catch(error => console.error("خطأ في تعديل المنشور:", error));
+      }
+    }
+
+    // حذف المنشور
+    function deletePost(postId) {
+      if (confirm("هل أنت متأكد من حذف هذا المنشور؟")) {
+        db.collection("posts").doc(postId).delete()
+          .then(() => console.log("تم حذف المنشور بنجاح"))
+          .catch(error => console.error("خطأ في حذف المنشور:", error));
+      }
+    }
+
+    // إضافة تعليق (تعليق رئيسي بدون parentCommentId) داخل المنشور
+    function addComment(postId) {
+      const commentInput = document.getElementById(`comment-input-${postId}`);
+      const content = commentInput.value.trim();
+      if (content && currentUser) {
+        db.collection("comments").add({
+          postId: postId,
+          content: content,
+          userId: currentUser.uid,
+          userName: currentUser.displayName || "مجهول",
+          timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        }).then(() => {
+          commentInput.value = '';
+        });
+      }
+    }
+
+    // تحميل التعليقات وإظهارها بشكل هرمي (مع الردود) داخل المنشور
+    function loadComments(postId) {
+      db.collection("comments")
+        .where("postId", "==", postId)
+        .orderBy("timestamp", "asc")
+        .onSnapshot(snapshot => {
+          const comments = [];
+          snapshot.forEach(doc => {
+            const comment = doc.data();
+            comment.id = doc.id;
+            comments.push(comment);
+          });
+          // بناء شجرة التعليقات
+          const commentMap = {};
+          comments.forEach(c => {
+            c.children = [];
+            commentMap[c.id] = c;
+          });
+          const topLevelComments = [];
+          comments.forEach(c => {
+            if (c.parentCommentId) {
+              if (commentMap[c.parentCommentId]) {
+                commentMap[c.parentCommentId].children.push(c);
+              } else {
+                topLevelComments.push(c);
+              }
+            } else {
+              topLevelComments.push(c);
+            }
+          });
+          const commentsList = document.getElementById(`comments-list-${postId}`);
+          commentsList.innerHTML = '';
+          renderComments(topLevelComments, commentsList, 0);
+        });
+    }
+
+    // دالة مساعدة لعرض التعليقات بشكل متداخل
+    function renderComments(comments, container, level) {
+      comments.forEach(c => {
+        const commentElement = document.createElement('div');
+        commentElement.className = 'comment';
+        commentElement.style.marginLeft = (level * 20) + 'px';
+        commentElement.innerHTML = `
+          <div>${c.content}</div>
+          <div class="user-info">
+            <span>نشر بواسطة: ${c.userName}</span>
+            <span class="post-timestamp">${c.timestamp ? new Date(c.timestamp.toDate()).toLocaleString() : 'الآن'}</span>
+            <button class="reply-btn" onclick="showReplyForm('${c.postId}', '${c.id}')">رد</button>
+          </div>
+          <div id="replies-${c.id}"></div>
+        `;
+        container.appendChild(commentElement);
+        if (c.children && c.children.length > 0) {
+          renderComments(c.children, container, level + 1);
+        }
+      });
+    }
+
+    // إظهار نموذج الرد على تعليق معين
+    function showReplyForm(postId, commentId) {
+      const existingForm = document.getElementById(`reply-form-${commentId}`);
+      if (existingForm) {
+        existingForm.style.display = existingForm.style.display === 'none' ? 'block' : 'none';
+        return;
+      }
+      const replyDiv = document.createElement('div');
+      replyDiv.id = `reply-form-${commentId}`;
+      replyDiv.style.marginTop = "5px";
+      replyDiv.innerHTML = `
+        <textarea id="reply-input-${commentId}" placeholder="أضف ردًا..."></textarea>
+        <button onclick="addReply('${postId}', '${commentId}')">رد</button>
+      `;
+      const parentDiv = document.getElementById(`replies-${commentId}`);
+      parentDiv.appendChild(replyDiv);
+    }
+
+    // إضافة رد على تعليق (يتضمن parentCommentId)
+    function addReply(postId, parentCommentId) {
+      const replyInput = document.getElementById(`reply-input-${parentCommentId}`);
+      const content = replyInput.value.trim();
+      if (content && currentUser) {
+        db.collection("comments").add({
+          postId: postId,
+          parentCommentId: parentCommentId,
+          content: content,
+          userId: currentUser.uid,
+          userName: currentUser.displayName || "مجهول",
+          timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        }).then(() => {
+          replyInput.value = '';
+          document.getElementById(`reply-form-${parentCommentId}`).style.display = 'none';
+        });
+      }
+    }
+
+    // فتح مودال التعليقات (نافذة منبثقة تعرض التعليقات الخاصة بالمنشور)
+    function openCommentModal(postId) {
+      currentModalPostId = postId;
+      document.getElementById("commentModal").style.display = "flex";
+      loadCommentsModal(postId);
+    }
+
+    // إغلاق مودال التعليقات
+    function closeCommentModal() {
+      document.getElementById("commentModal").style.display = "none";
+      document.getElementById("modalCommentsList").innerHTML = "<p>جارٍ تحميل التعليقات...</p>";
+      document.getElementById("modalCommentInput").value = "";
+      currentModalPostId = null;
+    }
+
+    // إرسال تعليق من داخل المودال
+    function submitModalComment() {
+      const input = document.getElementById("modalCommentInput");
+      const content = input.value.trim();
+      if (content && currentUser && currentModalPostId) {
+        db.collection("comments").add({
+          postId: currentModalPostId,
+          content: content,
+          userId: currentUser.uid,
+          userName: currentUser.displayName || "مجهول",
+          timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        }).then(() => {
+          input.value = "";
+        }).catch(error => console.error("خطأ في نشر التعليق:", error));
+      }
+    }
+
+    // تحميل التعليقات داخل المودال لمنشور محدد
+    function loadCommentsModal(postId) {
+      db.collection("comments")
+        .where("postId", "==", postId)
+        .orderBy("timestamp", "asc")
+        .onSnapshot(snapshot => {
+          const modalList = document.getElementById("modalCommentsList");
+          let html = "";
+          snapshot.forEach(doc => {
+            const comment = doc.data();
+            const timeStr = comment.timestamp ? new Date(comment.timestamp.toDate()).toLocaleString() : "الآن";
+            html += `<div class="comment">
+                        <p>${comment.content}</p>
+                        <small>بواسطة: ${comment.userName} - ${timeStr}</small>
+                     </div>`;
+          });
+          if (!html) {
+            html = "<p>لا توجد تعليقات حتى الآن.</p>";
+          }
+          modalList.innerHTML = html;
+        });
+    }
+  </script>
+</body>
+</html>

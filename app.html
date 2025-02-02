@@ -60,6 +60,37 @@
   background-color: #45a049; /* تغيير لون الخلفية عند التمرير فوق الزر */
 }
 
+        .fixed-button {
+          position: fixed;
+          top: 0;
+          left: 50%;
+          transform: translateX(-50%);
+          background-color: #007BFF;
+          color: white;
+          padding: 10px 20px;
+          border-radius: 25px;
+          display: flex;
+          align-items: center;
+          text-decoration: none;
+          font-size: 18px;
+          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+          z-index: 1000;
+        }
+
+        /* تنسيق الأيقونة */
+        .icon {
+          margin-left: 8px;
+          font-size: 20px;
+        }
+
+        /* تأثير عند تمرير المؤشر */
+        .fixed-button:hover {
+          background-color: #0056b3;
+        }
+
+        body {
+          padding-top: 60px;
+
         .settings-btn {
             position: fixed;
             top: 10px;
@@ -253,6 +284,11 @@
             <div class="messages" id="messages"></div>
         </div>
 
+ <a href="posts.html" class="fixed-button">
+   <span class="icon">📝</span> <!-- أيقونة المنشورات -->
+   منشورات
+ </a>
+
  <div class="chat-container">
    <div class="chat-area">
      <button class="game-btn" onclick="location.href='gems.html'">🎮</button>
@@ -260,8 +296,8 @@
 
      <div class="messages" id="messages"></div>
    </div>
- 
    
+  
         <div class="message-input">
             <input type="text" id="message-input" placeholder="اكتب رسالة...">
             <button onclick="sendMessage()">إرسال</button>
@@ -447,3 +483,4 @@
     </script>
 </body>
 </html>
+
