@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الفنديه شات - مرحبًا بك</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            color: #fff;
+            overflow: hidden;
+            background: linear-gradient(135deg, #4a90e2, #9013fe);
+            animation: backgroundAnimation 10s infinite alternate;
+            flex-direction: column;
+        }
+        
+        @keyframes backgroundAnimation {
+            0% { background: linear-gradient(135deg, #4a90e2, #9013fe); }
+            50% { background: linear-gradient(135deg, #ff416c, #ff4b2b); }
+            100% { background: linear-gradient(135deg, #1e3c72, #2a5298); }
+        }
+        
+        .logo-container {
+            background: rgba(0, 0, 0, 0.7);
+            padding: 1rem;
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            margin-bottom: 1rem;
+        }
+        
+        .logo-container img {
+            max-width: 100px;
+        }
+        
+        .welcome-container {
+            background: rgba(0, 0, 0, 0.7);
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            max-width: 400px;
+            width: 90%;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeIn 1.5s ease-out forwards;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .welcome-container h1 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+        
+        .welcome-container p {
+            font-size: 1.2rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 12px 20px;
+            font-size: 1.2rem;
+            color: #fff;
+            background: #ff9800;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease-in-out;
+            animation: pulse 2s infinite;
+        }
+        
+        .btn:hover {
+            background: #e68900;
+            transform: scale(1.1);
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        /* زر التحميل للجوال */
+        .mobile-download-btn {
+            display: none; /* مخفي بشكل افتراضي */
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: #28a745;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 1.1em;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .mobile-download-btn i {
+            margin-left: 8px;
+        }
+
+        .mobile-download-btn:hover {
+            background: #218838;
+            transform: translateY(-2px);
+        }
+
+        /* عرض الزر فقط على الأجهزة المحمولة */
+        @media only screen and (max-width: 768px) {
+            .mobile-download-btn {
+                display: inline-block;
+            }
+        }
+    </style>
+    <!-- رابط أيقونات Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- زر التحميل للجوال -->
+    <a href="apk.html" class="mobile-download-btn">
+        تحميل للجوال <i class="fas fa-download"></i>
+    </a>
+
+    <div class="logo-container">
+        <img src="/fndchat.png" alt="شعار الموقع">
+    </div>
+    <div class="welcome-container">
+        <h1>أهلاً بك في الفنديه شات</h1>
+        <p>منصة تواصل اجتماعي تم تأسيسها في العراق، تواصل واستمتع بتجربة فريدة.</p>
+        <a href="index.html" class="btn">دخول</a>
+    </div>
+    <footer>
+        <p>كل شيء تحتاج تعرفه عن موقع فندشات : <a href="what.html">اقرأ المزيد</a></p>
+    </footer>
+</body>
+</html>
