@@ -54,8 +54,7 @@
 <body>
     <!-- صندوق تسجيل الدخول -->
     <div id="login-box" class="box">
-        <h1> اهلا بك موقع فندشات لنبدء
-          تسجيل الدخول</h1>
+        <h1>اهلا بك في موقع فندشات، لنبدأ تسجيل الدخول</h1>
         <input type="email" id="login-email" placeholder="البريد الإلكتروني">
         <input type="password" id="login-password" placeholder="كلمة المرور">
         <button onclick="login()">تسجيل الدخول</button>
@@ -82,11 +81,24 @@
             projectId: "you-unblock",
             storageBucket: "you-unblock.appspot.com",
             messagingSenderId: "306278978440",
-            appId: "1:306278978440:web:4ca87c3856e107a30be03d",
+            appId: "1:306278978440:web:4ca87c3856e107a30be03d"
         };
 
-        const app = firebase.initializeApp(firebaseConfig);
+        firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
+
+        // ضبط الاستمرارية بحيث تبقى الجلسة محفوظة عند إعادة فتح المتصفح
+        auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+            .catch((error) => {
+                console.error("Error setting persistence:", error);
+            });
+
+        // التحقق تلقائيًا من حالة تسجيل الدخول، وإذا كان المستخدم مسجلاً يتم إعادة توجيهه إلى chat.html
+        auth.onAuthStateChanged(user => {
+            if(user) {
+                window.location.href = "chat.html";
+            }
+        });
 
         // عرض صفحة تسجيل الدخول
         function showLogin() {

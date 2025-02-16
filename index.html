@@ -81,12 +81,12 @@
 
     /* === زر التحميل للجوال فقط === */
     .mobile-download-btn {
-      display: none; /* مخفي بشكل افتراضي */
+      display: none;
     }
 
     @media (max-width: 768px) {
       .mobile-download-btn {
-        display: inline-flex; /* يظهر فقط على الجوال */
+        display: inline-flex;
       }
     }
 
@@ -165,6 +165,13 @@
       }
     }
   </style>
+  <script>
+    // إذا كان المستخدم قد زار الموقع من قبل (تم تعيين "visited" في localStorage)
+    // يتم إعادة توجيهه مباشرةً إلى صفحة "start.html"
+    if(localStorage.getItem('visited')) {
+      window.location.href = "start.html";
+    }
+  </script>
 </head>
 <body>
   <header>
@@ -182,7 +189,8 @@
     <h1>مرحبًا بك في فندشات</h1>
     <p>منصة التواصل الاجتماعي الأولى في العراق، تواصل مع الأصدقاء وشارك اللحظات المميزة</p>
     <div class="cta-buttons" style="margin-top: 2rem;">
-      <a href="start.html" class="download-btn" style="background: #fff; color: var(--primary-color);">
+      <!-- عند النقر على هذا الزر يتم تعيين علامة "visited" ثم الانتقال -->
+      <a href="start.html" class="download-btn" style="background: #fff; color: var(--primary-color);" onclick="localStorage.setItem('visited', 'true')">
         <i class="fas fa-sign-in-alt"></i>
         بدء الاستخدام
       </a>
@@ -192,19 +200,14 @@
   <section class="faq-section">
     <h2 style="font-size: 2rem; margin-bottom: 3rem;">الأسئلة الشائعة</h2>
     <div class="faq-container">
-      <!-- السؤال الأول -->
       <div class="faq-card">
         <h3><i class="fas fa-globe"></i> ما هو موقع فندشات؟</h3>
         <p>موقع فندشات هو منصة تواصل اجتماعي عراقية تم تأسيسها بواسطة ابن الفنديه، نعمل على توفير أفضل تجربة للمستخدمين</p>
       </div>
-
-      <!-- السؤال الثاني -->
       <div class="faq-card">
         <h3><i class="fas fa-shield-alt"></i> هل المنصة آمنة؟</h3>
         <p>نعم، المنصة آمنة تمامًا. نحرص على توفير أعلى معايير الأمان مع الحفاظ على حرية الاستخدام، حيث نستخدم تقنيات متقدمة في تشفير البيانات وحماية المعلومات.</p>
       </div>
-
-      <!-- السؤال الثالث -->
       <div class="faq-card">
         <h3><i class="fas fa-star"></i> مميزات الموقع</h3>
         <ul style="text-align: right; padding-right: 20px;">
@@ -213,27 +216,24 @@
           <li>واجهة مستخدم بديهية وسلسة تجمع بين البساطة والإحترافية</li>
         </ul>
       </div>
-
-      <!-- السؤال الرابع -->
       <div class="faq-card">
         <h3><i class="fas fa-bullseye"></i> هدفنا</h3>
         <p>نسعى لتوفير أفضل تجربة للمستخدمين والوصول إلى أعلى مستويات الرضا، كما نطمح لأن نكون المنصة الاجتماعية الرائدة في العراق والوطن العربي من خلال التطوير المستمر وتحسين الخدمات.</p>
       </div>
-
-      <!-- السؤال الخامس -->
       <div class="faq-card">
         <h3><i class="fas fa-comments"></i> قسم الدردشة</h3>
         <p>قسم المراسلة الفورية المصمم باحترافية لتسهيل التواصل بين المستخدمين مع الحفاظ على السرعة والأداء العالي (قيد التطوير المستمر).</p>
       </div>
-
-      <!-- السؤال السادس -->
       <div class="faq-card">
         <h3><i class="fas fa-newspaper"></i> قسم المنتدى والمنشورات</h3>
         <p>مساحة تفاعلية لنشر المحتوى بسرعة وسهولة مع دعم كامل لمشاركة الأفكار والمواضيع المتنوعة (خاضع للتطوير الدائم).</p>
       </div>
     </div>
   </section>
-
+  
+  <footer>
+    <p>كل شيء تحتاج تعرفه عن موقع فندشات : <a href="what.html">اقرأ المزيد</a></p>
+  </footer>
   <footer>
     <p>© 2025 . جميع الحقوق محفوظة</p>
     <div style="margin-top: 1rem;">

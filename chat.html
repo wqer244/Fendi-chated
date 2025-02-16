@@ -16,7 +16,6 @@
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
   <style>
     :root {
-      /* الثيم الافتراضي (داكن) */
       --primary-bg: #36393f;
       --secondary-bg: #2f3136;
       --tertiary-bg: #202225;
@@ -36,12 +35,10 @@
       font-family: 'Tajawal', sans-serif;
       direction: rtl;
     }
-    /* الحاوية الرئيسية */
     .container {
       display: flex;
       height: 100vh;
     }
-    /* الشريط الجانبي */
     .sidebar {
       position: relative;
       width: 80px;
@@ -49,7 +46,6 @@
       padding-top: 10px;
       overflow: hidden;
     }
-    /* قائمة المجموعات */
     .group-list {
       padding: 0 5px;
       overflow-y: auto;
@@ -65,7 +61,6 @@
       border: 2px solid transparent;
       position: relative;
     }
-    /* تمييز المجموعة الحالية */
     .group-card.active {
       transform: scale(1.1);
     }
@@ -98,7 +93,6 @@
       justify-content: center;
       font-weight: bold;
     }
-    /* الأزرار الثابتة */
     .fixed-buttons {
       position: absolute;
       bottom: 0;
@@ -124,7 +118,6 @@
     .fixed-buttons button:hover {
       transform: scale(1.1);
     }
-    /* زر المنشورات */
     .fixed-posts-btn {
       position: fixed;
       top: 10px;
@@ -146,7 +139,6 @@
     .fixed-posts-btn:hover {
       background: #0056b3;
     }
-    /* قسم الدردشة */
     .chat-container {
       flex: 1;
       background: var(--primary-bg);
@@ -179,7 +171,6 @@
       color: #aaa;
       margin-top: 5px;
     }
-    /* أزرار تعديل الرسالة للمستخدم */
     .delete-btn, .edit-btn {
       position: absolute;
       top: 5px;
@@ -207,7 +198,6 @@
     .message:hover .edit-btn {
       display: block;
     }
-    /* صندوق إدخال الرسائل */
     .message-input {
       display: flex;
       padding: 10px;
@@ -235,7 +225,6 @@
     .message-input button:hover {
       background: #5d6dcc;
     }
-    /* النوافذ المنبثقة العامة */
     .settings-popup,
     .create-group-popup,
     .group-options-popup,
@@ -367,7 +356,6 @@
     #close-settings-btn:hover {
       background: #5a6268;
     }
-    /* تنسيق نافذة الرومات */
     .rooms-grid {
       display: flex;
       flex-wrap: wrap;
@@ -436,7 +424,6 @@
         padding: 10px;
       }
     }
-    /* نافذة الخلفيات */
     #background-popup {
       max-height: 80vh;
       overflow-y: auto;
@@ -474,7 +461,6 @@
     #emoji-popup .emoji-option:hover {
       transform: scale(1.2);
     }
-    /* تنسيق عرض الريأكشن على الرسالة */
     .reaction {
       display: inline-block;
       margin-left: 10px;
@@ -494,11 +480,9 @@
   <div class="container">
     <!-- الشريط الجانبي -->
     <div class="sidebar" id="sidebar">
-      <!-- قائمة المجموعات -->
       <div class="group-list" id="group-list">
         <!-- سيتم تحميل المجموعات من Firestore هنا -->
       </div>
-      <!-- الأزرار الثابتة -->
       <div class="fixed-buttons">
         <button class="settings-btn-sidebar" onclick="showSettingsPopup()">
           <i class="fa-solid fa-cog"></i>
@@ -628,16 +612,24 @@
     const auth = firebase.auth();
     const db = firebase.firestore();
     
-    auth.onAuthStateChanged(user => {
-      if(user) {
-        currentUser = user;
-        loadGroups();
-        currentGroup = 'general';
-        loadMessages();
-      } else {
-        window.location.href = 'login.html';
-      }
-    });
+    // تعيين حفظ الحالة على مستوى المتصفح (LOCAL)
+    auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+      .then(() => {
+        // متابعة التحقق من الحالة
+        auth.onAuthStateChanged(user => {
+          if(user) {
+            currentUser = user;
+            // عند الدخول، نتحقق إذا كان هناك آخر مجموعة مخزنة
+            let savedGroup = localStorage.getItem('lastGroup');
+            currentGroup = savedGroup ? savedGroup : 'general';
+            loadGroups();
+            loadMessages();
+          } else {
+            window.location.href = 'login.html';
+          }
+        });
+      })
+      .catch(err => console.error("Error setting persistence:", err));
     
     // تحميل المجموعات وتحديث القائمة الجانبية
     function loadGroups() {
@@ -782,9 +774,10 @@
       }).catch(err => console.error("Error sending message:", err));
     }
     
-    // دخول مجموعة معينة
+    // عند اختيار مجموعة، نحفظها في localStorage لاسترجاعها لاحقًا
     function enterGroup(groupId) {
       currentGroup = groupId;
+      localStorage.setItem('lastGroup', groupId);
       loadMessages();
       loadGroups();
     }
@@ -1049,7 +1042,7 @@
       }
     });
     
-    // دالة إنشاء المجموعة مع تقييد عدد المجموعات لكل مستخدم إلى 10
+    // دالة إنشاء المجموعة مع تقييد عدد المجموعات الخاصة بالمستخدم إلى 10
     function createGroup() {
       const groupName = document.getElementById('group-name').value.trim();
       const groupImage = document.getElementById('group-image').value.trim();
@@ -1057,7 +1050,7 @@
         alert("يرجى إدخال اسم المجموعة");
         return;
       }
-      // التحقق من عدد المجموعات التي أنشأها المستخدم
+      // التحقق من عدد المجموعات التي أنشأها المستخدم باستخدام حقل creatorId
       db.collection('groups').where("creatorId", "==", currentUser.uid).get()
         .then(snapshot => {
           if(snapshot.size >= 10) {
@@ -1078,7 +1071,7 @@
         .catch(err => console.error("Error checking group count:", err));
     }
     
-    // التهيئة الأولية وتوليد الخلفيات
+    // التهيئة الأولية وتوليد الخلفيات مع تمييز الخلفية المختارة
     document.addEventListener("DOMContentLoaded", function() {
       const mode = localStorage.getItem('mode');
       if(mode === 'dark') {
@@ -1095,7 +1088,7 @@
         });
       }
       
-      // توليد 100 خلفية عشوائية مع تمييز الخلفية المختارة
+      // توليد 100 خلفية عشوائية مع آلية تحديد الخلفية (إضافة كلاس "selected")
       const containerBg = document.getElementById('background-options-container');
       for(let i = 1; i <= 100; i++) {
         const img = document.createElement('img');
