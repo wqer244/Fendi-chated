@@ -1,0 +1,1146 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>تطبيق الدردشة – واجهة مجموعات مثل Discord/Telegram</title>
+  <!-- خطوط تاجوال وروبوت -->
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;500&display=swap" rel="stylesheet">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- سكربتات Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
+  <style>
+    :root {
+      /* الثيم الافتراضي (داكن) */
+      --primary-bg: #36393f;
+      --secondary-bg: #2f3136;
+      --tertiary-bg: #202225;
+      --accent-color: #7289da;
+    }
+    body.dark-mode {
+      --primary-bg: #18191a;
+      --secondary-bg: #242526;
+      --tertiary-bg: #3a3b3c;
+      --accent-color: #7289da;
+    }
+    body {
+      margin: 0;
+      padding: 0;
+      background: var(--primary-bg);
+      color: #dcddde;
+      font-family: 'Tajawal', sans-serif;
+      direction: rtl;
+    }
+    /* الحاوية الرئيسية */
+    .container {
+      display: flex;
+      height: 100vh;
+    }
+    /* الشريط الجانبي */
+    .sidebar {
+      position: relative;
+      width: 80px;
+      background: var(--secondary-bg);
+      padding-top: 10px;
+      overflow: hidden;
+    }
+    /* قائمة المجموعات */
+    .group-list {
+      padding: 0 5px;
+      overflow-y: auto;
+      height: calc(100% - 120px);
+    }
+    .group-card {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      margin: 10px auto;
+      cursor: pointer;
+      transition: transform 0.3s;
+      border: 2px solid transparent;
+      position: relative;
+    }
+    /* تمييز المجموعة الحالية */
+    .group-card.active {
+      transform: scale(1.1);
+    }
+    .group-card.active::before {
+      content: "";
+      position: absolute;
+      left: -5px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 5px;
+      height: 60%;
+      background: green;
+      border-radius: 5px;
+    }
+    .group-image {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+    .group-initial {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background: var(--accent-color);
+      color: #fff;
+      font-size: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+    }
+    /* الأزرار الثابتة */
+    .fixed-buttons {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      padding-bottom: 10px;
+    }
+    .fixed-buttons button {
+      background: var(--accent-color);
+      color: #fff;
+      border: none;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      transition: transform 0.3s, background 0.3s;
+    }
+    .fixed-buttons button:hover {
+      transform: scale(1.1);
+    }
+    /* زر المنشورات */
+    .fixed-posts-btn {
+      position: fixed;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #007BFF;
+      color: #fff;
+      padding: 10px 20px;
+      border-radius: 25px;
+      text-decoration: none;
+      font-size: 18px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      z-index: 1200;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: background 0.3s;
+    }
+    .fixed-posts-btn:hover {
+      background: #0056b3;
+    }
+    /* قسم الدردشة */
+    .chat-container {
+      flex: 1;
+      background: var(--primary-bg);
+      display: flex;
+      flex-direction: column;
+    }
+    .chat-area {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+      background-size: cover;
+      background-position: center;
+    }
+    .message {
+      margin-bottom: 15px;
+      padding: 10px 15px;
+      border-radius: 15px;
+      background: var(--secondary-bg);
+      max-width: 70%;
+      word-wrap: break-word;
+      position: relative;
+    }
+    .message.sent {
+      background: var(--accent-color);
+      color: #fff;
+      margin-left: auto;
+    }
+    .message-time {
+      font-size: 12px;
+      color: #aaa;
+      margin-top: 5px;
+    }
+    /* أزرار تعديل الرسالة للمستخدم */
+    .delete-btn, .edit-btn {
+      position: absolute;
+      top: 5px;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      padding: 8px;
+      cursor: pointer;
+      display: none;
+      z-index: 10;
+      font-size: 12px;
+    }
+    .delete-btn { 
+      right: 5px; 
+      background: #dc3545;
+    }
+    .edit-btn { 
+      right: 80px; 
+      background: #17a2b8;
+    }
+    .delete-btn:hover, .edit-btn:hover {
+      opacity: 0.8;
+    }
+    .message:hover .delete-btn,
+    .message:hover .edit-btn {
+      display: block;
+    }
+    /* صندوق إدخال الرسائل */
+    .message-input {
+      display: flex;
+      padding: 10px;
+      background: var(--tertiary-bg);
+      border-top: 1px solid var(--secondary-bg);
+    }
+    .message-input input {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+      background: var(--secondary-bg);
+      color: #dcddde;
+    }
+    .message-input button {
+      padding: 10px 20px;
+      margin-left: 10px;
+      background: var(--accent-color);
+      border: none;
+      border-radius: 5px;
+      color: #fff;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .message-input button:hover {
+      background: #5d6dcc;
+    }
+    /* النوافذ المنبثقة العامة */
+    .settings-popup,
+    .create-group-popup,
+    .group-options-popup,
+    .edit-group-popup,
+    .rooms-popup,
+    .background-popup,
+    .change-name-popup,
+    .edit-message-popup {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: #fff;
+      border: 1px solid #ccc;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      display: none;
+      text-align: center;
+      z-index: 2300;
+      border-radius: 8px;
+      width: 400px;
+      padding: 20px;
+    }
+    .settings-popup h3,
+    .create-group-popup h3,
+    .edit-group-popup h3,
+    .rooms-popup h3,
+    .background-popup h3,
+    .change-name-popup h3,
+    .edit-message-popup h3 {
+      margin-top: 0;
+    }
+    .create-group-popup input,
+    .edit-group-popup input,
+    .settings-popup input,
+    .settings-popup textarea,
+    .change-name-popup input {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 10px;
+      border: none;
+      border-radius: 5px;
+      background: var(--primary-bg);
+      color: #dcddde;
+    }
+    .create-group-popup button,
+    .edit-group-popup button,
+    .settings-popup button,
+    .change-name-popup button,
+    .edit-message-popup button {
+      width: 100%;
+      padding: 10px;
+      background: var(--accent-color);
+      border: none;
+      border-radius: 5px;
+      color: #fff;
+      cursor: pointer;
+      margin-bottom: 10px;
+      transition: background 0.3s;
+    }
+    .create-group-popup button:hover,
+    .edit-group-popup button:hover,
+    .settings-popup button:hover,
+    .change-name-popup button:hover,
+    .edit-message-popup button:hover {
+      background: #5d6dcc;
+    }
+    .group-options-popup button {
+      width: 100%;
+      padding: 10px;
+      margin: 5px 0;
+      background: var(--accent-color);
+      border: none;
+      border-radius: 5px;
+      color: #fff;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .group-options-popup button:hover {
+      background: #5d6dcc;
+    }
+    .group-options-popup .cancel-btn {
+      background: #dc3545;
+    }
+    .group-options-popup .cancel-btn:hover {
+      background: #c33a2f;
+    }
+    .settings-popup button {
+      width: 100%;
+      padding: 12px;
+      margin: 8px 0;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    #toggle-dark-mode {
+      background: #6c757d;
+      color: #fff;
+    }
+    #toggle-dark-mode:hover {
+      background: #5a6268;
+    }
+    #change-bg-btn {
+      background: var(--accent-color);
+      color: #fff;
+    }
+    #change-bg-btn:hover {
+      background: #5d6dcc;
+    }
+    #change-name-btn {
+      background: #17a2b8;
+      color: #fff;
+    }
+    #change-name-btn:hover {
+      background: #138496;
+    }
+    #logout-btn {
+      background: #dc3545;
+      color: #fff;
+    }
+    #logout-btn:hover {
+      background: #c82333;
+    }
+    #close-settings-btn {
+      background: #6c757d;
+      color: #fff;
+    }
+    #close-settings-btn:hover {
+      background: #5a6268;
+    }
+    /* تنسيق نافذة الرومات */
+    .rooms-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      max-height: 300px;
+      overflow-y: auto;
+      margin: 20px 0;
+    }
+    .room-card {
+      width: 80px;
+      height: 80px;
+      background: var(--secondary-bg);
+      border: 1px solid #4a4e57;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: transform 0.3s, box-shadow 0.3s;
+      padding: 5px;
+    }
+    .room-card:hover {
+      transform: scale(1.1);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    }
+    .room-card img {
+      width: 100%;
+      height: 50px;
+      object-fit: cover;
+      border-radius: 4px;
+      margin-bottom: 5px;
+    }
+    .room-card span {
+      font-size: 12px;
+      text-align: center;
+      color: #fff;
+    }
+    @media (max-width: 768px) {
+      .sidebar {
+        width: 60px;
+      }
+      .fixed-buttons button {
+        width: 40px;
+        height: 40px;
+        font-size: 18px;
+      }
+      .group-card {
+        width: 50px;
+        height: 50px;
+      }
+      .group-initial {
+        font-size: 20px;
+      }
+      .settings-popup,
+      .create-group-popup,
+      .group-options-popup,
+      .edit-group-popup,
+      .rooms-popup {
+        width: 90%;
+      }
+      .settings-popup button {
+        font-size: 14px;
+        padding: 10px;
+      }
+    }
+    /* نافذة الخلفيات */
+    #background-popup {
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+    #background-options-container {
+      max-height: 300px;
+      overflow-y: auto;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    /* عند اختيار الخلفية يظهر إطار مميز */
+    .bg-option.selected {
+      border: 2px solid red;
+    }
+    /* نافذة إيموجيات الرسالة */
+    #emoji-popup {
+      position: fixed;
+      display: none;
+      background: #fff;
+      border: 1px solid #ccc;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      border-radius: 20px;
+      padding: 5px 10px;
+      z-index: 2500;
+    }
+    #emoji-popup .emoji-option {
+      font-size: 24px;
+      cursor: pointer;
+      margin: 0 5px;
+      transition: transform 0.2s;
+    }
+    #emoji-popup .emoji-option:hover {
+      transform: scale(1.2);
+    }
+    /* تنسيق عرض الريأكشن على الرسالة */
+    .reaction {
+      display: inline-block;
+      margin-left: 10px;
+      font-size: 18px;
+      vertical-align: middle;
+    }
+  </style>
+</head>
+<body>
+  <!-- زر المنشورات -->
+  <a href="posts.html" class="fixed-posts-btn">
+    <i class="fa-solid fa-pen-to-square"></i>
+    <span>منشورات</span>
+  </a>
+  
+  <!-- الحاوية الرئيسية -->
+  <div class="container">
+    <!-- الشريط الجانبي -->
+    <div class="sidebar" id="sidebar">
+      <!-- قائمة المجموعات -->
+      <div class="group-list" id="group-list">
+        <!-- سيتم تحميل المجموعات من Firestore هنا -->
+      </div>
+      <!-- الأزرار الثابتة -->
+      <div class="fixed-buttons">
+        <button class="settings-btn-sidebar" onclick="showSettingsPopup()">
+          <i class="fa-solid fa-cog"></i>
+        </button>
+        <button class="rooms-btn-sidebar" onclick="toggleRoomsPopup()">
+          <i class="fa-solid fa-users"></i>
+        </button>
+        <button class="create-group-btn" onclick="openCreateGroupPopup()">+</button>
+      </div>
+    </div>
+    
+    <!-- قسم الدردشة -->
+    <div class="chat-container">
+      <div class="chat-area" id="messages">
+        <!-- عرض الرسائل هنا -->
+      </div>
+      <div class="message-input">
+        <input type="text" id="message-input" placeholder="اكتب رسالة...">
+        <button onclick="sendMessage()">إرسال</button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- نافذة الرومات -->
+  <div class="rooms-popup" id="rooms-popup">
+    <h3>الرومات المتاحة</h3>
+    <div class="rooms-grid" id="rooms-grid">
+      <!-- تعبئة الرومات من قاعدة البيانات -->
+    </div>
+    <button onclick="toggleRoomsPopup()">إغلاق</button>
+  </div>
+  
+  <!-- نافذة إنشاء المجموعة -->
+  <div class="create-group-popup" id="create-group-popup">
+    <h3>إنشاء مجموعة جديدة</h3>
+    <input type="text" id="group-name" placeholder="اسم المجموعة">
+    <input type="text" id="group-image" placeholder="رابط صورة المجموعة (اختياري)">
+    <button onclick="createGroup()">إنشاء</button>
+    <button onclick="closeCreateGroupPopup()">إغلاق</button>
+  </div>
+  
+  <!-- نافذة خيارات المجموعة (عند الضغط المُطوّل على بطاقة المجموعة) -->
+  <div class="group-options-popup" id="group-options-popup">
+    <button id="edit-group-btn">تعديل المجموعة</button>
+    <button id="delete-group-btn">حذف المجموعة</button>
+    <button class="cancel-btn" onclick="closeGroupOptionsPopup()">إلغاء</button>
+  </div>
+  
+  <!-- نافذة تعديل المجموعة -->
+  <div class="edit-group-popup" id="edit-group-popup">
+    <h3>تعديل المجموعة</h3>
+    <input type="text" id="edit-group-name" placeholder="اسم المجموعة">
+    <input type="text" id="edit-group-image" placeholder="رابط صورة المجموعة (اختياري)">
+    <button onclick="saveGroupEdits()">حفظ التعديلات</button>
+    <button onclick="closeEditGroupPopup()">إلغاء</button>
+  </div>
+  
+  <!-- نافذة الإعدادات -->
+  <div class="settings-popup" id="settings-popup">
+    <h3>الإعدادات</h3>
+    <button id="toggle-dark-mode">الوضع الداكن</button>
+    <button id="change-bg-btn">تغيير الخلفية</button>
+    <button id="change-name-btn">تغيير الاسم</button>
+    <button id="logout-btn">تسجيل الخروج</button>
+    <button id="faq-btn" onclick="window.location.href='what.html'">أسئلة شائعة</button>
+    <button id="close-settings-btn" onclick="closeSettingsPopup()">إغلاق</button>
+  </div>
+  
+  <!-- نافذة اختيار الخلفية -->
+  <div class="settings-popup" id="background-popup">
+    <h3>اختر الخلفية</h3>
+    <div class="background-options" id="background-options-container">
+      <!-- سيتم توليد الخلفيات ديناميكيًا -->
+    </div>
+    <button id="apply-bg-btn">تعيين</button>
+    <button onclick="closeBackgroundPopup()">إغلاق</button>
+  </div>
+  
+  <!-- نافذة تغيير الاسم -->
+  <div class="settings-popup" id="change-name-popup">
+    <h3>تغيير اسم المستخدم</h3>
+    <input type="text" id="new-name" placeholder="أدخل الاسم الجديد">
+    <button onclick="changeName()">تغيير الاسم</button>
+    <button onclick="closeChangeNamePopup()">إغلاق</button>
+  </div>
+  
+  <!-- نافذة تعديل الرسالة -->
+  <div class="settings-popup" id="edit-message-popup">
+    <h3>تعديل الرسالة</h3>
+    <textarea id="edit-message-input" rows="3"></textarea>
+    <div style="margin-top:10px;">
+      <button onclick="updateMessage()">تعديل</button>
+      <button onclick="deleteEditedMessage()" style="background: #dc3545;">حذف رسالة</button>
+      <button onclick="closeEditPopup()" style="background: #dc3545;">إغلاق</button>
+    </div>
+  </div>
+  
+  <!-- نافذة إيموجيات الرسالة (تظهر عند الضغط المُطوّل على الرسالة) -->
+  <div id="emoji-popup">
+    <span class="emoji-option">👍</span>
+    <span class="emoji-option">❤️</span>
+    <span class="emoji-option">😂</span>
+    <span class="emoji-option">😮</span>
+    <span class="emoji-option">😢</span>
+    <span class="emoji-option">😡</span>
+  </div>
+  
+  <script>
+    let currentUser = null;
+    let currentGroup = 'general';
+    let selectedGroupId = null;
+    let selectedGroupData = {};
+    let editingMessageId = null;
+    let selectedBg = '';
+    let selectedMessageForReaction = null;
+    
+    // تهيئة Firebase
+    const firebaseConfig = {
+      apiKey: "AIzaSyBwwrBtf6AtW7R36FX4j2GQZVEdJldFq7o",
+      authDomain: "you-unblock.firebaseapp.com",
+      projectId: "you-unblock",
+      storageBucket: "you-unblock",
+      messagingSenderId: "306278978440",
+      appId: "1:306278978440:web:4ca87c3856e107a30be03d"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+    
+    auth.onAuthStateChanged(user => {
+      if(user) {
+        currentUser = user;
+        loadGroups();
+        currentGroup = 'general';
+        loadMessages();
+      } else {
+        window.location.href = 'login.html';
+      }
+    });
+    
+    // تحميل المجموعات وتحديث القائمة الجانبية
+    function loadGroups() {
+      db.collection('groups').orderBy('createdAt').onSnapshot(snapshot => {
+        const groupList = document.getElementById('group-list');
+        groupList.innerHTML = "";
+        snapshot.forEach(doc => {
+          const data = doc.data();
+          const groupCard = document.createElement('div');
+          groupCard.className = 'group-card';
+          groupCard.dataset.groupId = doc.id;
+          if(doc.id === currentGroup) {
+            groupCard.classList.add('active');
+          }
+          if(data.image && data.image.trim() !== "") {
+            groupCard.innerHTML = `<img src="${data.image}" class="group-image" alt="${data.name}">`;
+          } else {
+            groupCard.innerHTML = `<div class="group-initial">${data.name.charAt(0).toUpperCase()}</div>`;
+          }
+          // آلية الضغط المُطوّل على بطاقة المجموعة (800 مللي ثانية)
+          let pressTimer;
+          let longPress = false;
+          groupCard.addEventListener('mousedown', (e) => {
+            longPress = false;
+            pressTimer = setTimeout(() => {
+              longPress = true;
+              showGroupOptionsPopup(doc.id, data);
+            }, 800);
+          });
+          groupCard.addEventListener('touchstart', (e) => {
+            longPress = false;
+            pressTimer = setTimeout(() => {
+              longPress = true;
+              showGroupOptionsPopup(doc.id, data);
+            }, 800);
+          });
+          groupCard.addEventListener('mouseup', (e) => {
+            clearTimeout(pressTimer);
+            if(!longPress) {
+              enterGroup(doc.id);
+            }
+          });
+          groupCard.addEventListener('touchend', (e) => {
+            clearTimeout(pressTimer);
+            if(!longPress) {
+              enterGroup(doc.id);
+            }
+          });
+          groupCard.addEventListener('mouseleave', (e) => {
+            clearTimeout(pressTimer);
+          });
+          groupList.appendChild(groupCard);
+        });
+        populateRoomsPopup();
+      });
+    }
+    
+    // تحميل الرسائل من المجموعة الحالية مع عرض الريأكشن إن وجد
+    function loadMessages() {
+      const messagesContainer = document.getElementById('messages');
+      db.collection('groups').doc(currentGroup).collection('messages')
+        .orderBy('timestamp')
+        .onSnapshot(snapshot => {
+          messagesContainer.innerHTML = "";
+          snapshot.forEach(doc => {
+            const msg = doc.data();
+            let timeString = "";
+            if(msg.timestamp) {
+              timeString = new Date(msg.timestamp.toDate()).toLocaleTimeString();
+            }
+            if(msg.edited) {
+              timeString += " (تم تعديل)";
+            }
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message ' + (msg.senderId === currentUser.uid ? 'sent' : 'received');
+            messageDiv.innerHTML = `<span>${msg.senderName}: ${msg.text}</span>
+                                    <div class="message-time">${timeString}</div>`;
+            // إذا كانت الرسالة لها ريأكشن مسبقاً، عرضها
+            if(msg.reaction) {
+              let reactionSpan = document.createElement('span');
+              reactionSpan.className = 'reaction';
+              reactionSpan.textContent = msg.reaction;
+              messageDiv.appendChild(reactionSpan);
+            }
+            if(msg.senderId === currentUser.uid) {
+              const deleteBtn = document.createElement('button');
+              deleteBtn.className = 'delete-btn';
+              deleteBtn.textContent = 'حذف رسالة';
+              deleteBtn.onclick = (e) => {
+                e.stopPropagation();
+                deleteMessage(doc.id);
+              };
+              messageDiv.appendChild(deleteBtn);
+              
+              const editBtn = document.createElement('button');
+              editBtn.className = 'edit-btn';
+              editBtn.textContent = 'تعديل رسالة';
+              editBtn.onclick = (e) => {
+                e.stopPropagation();
+                openEditPopup(doc.id, msg.text);
+              };
+              messageDiv.appendChild(editBtn);
+            }
+            /* آلية الضغط المُطوّل على الرسالة لإظهار نافذة الإيموجي فوق الرسالة */
+            let reactionTimer;
+            messageDiv.addEventListener('mousedown', function(e) {
+              reactionTimer = setTimeout(() => {
+                selectedMessageForReaction = { id: doc.id, element: messageDiv };
+                showEmojiPopupForMessage(selectedMessageForReaction.element);
+              }, 800);
+            });
+            messageDiv.addEventListener('touchstart', function(e) {
+              reactionTimer = setTimeout(() => {
+                selectedMessageForReaction = { id: doc.id, element: messageDiv };
+                showEmojiPopupForMessage(selectedMessageForReaction.element);
+              }, 800);
+            });
+            messageDiv.addEventListener('mouseup', function(e) {
+              clearTimeout(reactionTimer);
+            });
+            messageDiv.addEventListener('mouseleave', function(e) {
+              clearTimeout(reactionTimer);
+            });
+            messagesContainer.appendChild(messageDiv);
+          });
+          messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        });
+    }
+    
+    // دالة إرسال رسالة
+    function sendMessage() {
+      const input = document.getElementById('message-input');
+      const text = input.value.trim();
+      if(!text) return;
+      db.collection('groups').doc(currentGroup).collection('messages').add({
+        text: text,
+        senderId: currentUser.uid,
+        senderName: currentUser.displayName || 'مجهول',
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+      }).then(() => {
+        input.value = "";
+      }).catch(err => console.error("Error sending message:", err));
+    }
+    
+    // دخول مجموعة معينة
+    function enterGroup(groupId) {
+      currentGroup = groupId;
+      loadMessages();
+      loadGroups();
+    }
+    
+    // تعبئة نافذة الرومات
+    function populateRoomsPopup() {
+      const container = document.getElementById('rooms-grid');
+      container.innerHTML = "";
+      db.collection('groups').orderBy('createdAt').get().then(snapshot => {
+        snapshot.forEach(doc => {
+          const data = doc.data();
+          const roomCard = document.createElement('div');
+          roomCard.className = 'room-card';
+          if(data.image && data.image.trim() !== "") {
+            const img = document.createElement('img');
+            img.src = data.image;
+            img.alt = data.name;
+            roomCard.appendChild(img);
+          } else {
+            const div = document.createElement('div');
+            div.style.fontSize = '24px';
+            div.style.color = '#fff';
+            div.textContent = data.name.charAt(0).toUpperCase();
+            roomCard.appendChild(div);
+          }
+          const span = document.createElement('span');
+          span.textContent = data.name;
+          roomCard.appendChild(span);
+          roomCard.addEventListener('click', function() {
+            enterGroup(doc.id);
+            toggleRoomsPopup();
+          });
+          container.appendChild(roomCard);
+        });
+      });
+    }
+    
+    // حذف رسالة
+    function deleteMessage(messageId) {
+      if(confirm("هل تريد حذف الرسالة؟")) {
+        db.collection('groups').doc(currentGroup).collection('messages').doc(messageId).delete();
+      }
+    }
+    
+    // فتح نافذة تعديل الرسالة
+    function openEditPopup(messageId, currentText) {
+      editingMessageId = messageId;
+      document.getElementById('edit-message-input').value = currentText;
+      document.getElementById('edit-message-popup').style.display = 'block';
+    }
+    function closeEditPopup() {
+      editingMessageId = null;
+      document.getElementById('edit-message-popup').style.display = 'none';
+    }
+    
+    // تحديث الرسالة
+    function updateMessage() {
+      const newText = document.getElementById('edit-message-input').value.trim();
+      if(!newText) {
+        alert("الرجاء إدخال نص الرسالة");
+        return;
+      }
+      if(editingMessageId) {
+        db.collection('groups').doc(currentGroup).collection('messages').doc(editingMessageId).update({
+          text: newText,
+          edited: true,
+          editTimestamp: firebase.firestore.FieldValue.serverTimestamp()
+        }).then(() => {
+          alert("تم تعديل الرسالة بنجاح");
+          closeEditPopup();
+        }).catch(err => console.error("Error updating message:", err));
+      }
+    }
+    
+    function deleteEditedMessage() {
+      if(confirm("هل تريد حذف الرسالة؟")) {
+        db.collection('groups').doc(currentGroup).collection('messages').doc(editingMessageId).delete()
+          .then(() => {
+            alert("تم حذف الرسالة");
+            closeEditPopup();
+          })
+          .catch(err => console.error("Error deleting message:", err));
+      }
+    }
+    
+    // دوال النوافذ المنبثقة
+    function showSettingsPopup() {
+      document.getElementById('settings-popup').style.display = 'block';
+    }
+    function closeSettingsPopup() {
+      document.getElementById('settings-popup').style.display = 'none';
+    }
+    function openCreateGroupPopup() {
+      document.getElementById('create-group-popup').style.display = 'block';
+    }
+    function closeCreateGroupPopup() {
+      document.getElementById('create-group-popup').style.display = 'none';
+    }
+    function closeGroupOptionsPopup() {
+      document.getElementById('group-options-popup').style.display = 'none';
+    }
+    
+    document.getElementById('delete-group-btn').addEventListener('click', function() {
+      if(confirm("هل أنت متأكد من حذف المجموعة؟")) {
+        db.collection('groups').doc(selectedGroupId).delete()
+          .then(() => {
+            closeGroupOptionsPopup();
+            if(currentGroup === selectedGroupId) {
+              currentGroup = 'general';
+              loadMessages();
+            }
+          })
+          .catch(err => console.error("Error deleting group:", err));
+      }
+    });
+    
+    document.getElementById('edit-group-btn').addEventListener('click', function() {
+      closeGroupOptionsPopup();
+      document.getElementById('edit-group-name').value = selectedGroupData.name;
+      document.getElementById('edit-group-image').value = selectedGroupData.image || "";
+      document.getElementById('edit-group-popup').style.display = 'block';
+    });
+    
+    function closeEditGroupPopup() {
+      document.getElementById('edit-group-popup').style.display = 'none';
+    }
+    
+    function saveGroupEdits() {
+      const newName = document.getElementById('edit-group-name').value.trim();
+      const newImage = document.getElementById('edit-group-image').value.trim();
+      if(!newName) {
+        alert("الرجاء إدخال اسم المجموعة");
+        return;
+      }
+      db.collection('groups').doc(selectedGroupId).update({
+        name: newName,
+        image: newImage || ''
+      }).then(() => {
+        closeEditGroupPopup();
+      }).catch(err => console.error("Error updating group:", err));
+    }
+    
+    function changeName() {
+      const newName = document.getElementById('new-name').value.trim();
+      if(newName) {
+        currentUser.updateProfile({ displayName: newName })
+          .then(() => {
+            alert("تم تغيير الاسم بنجاح!");
+            document.getElementById('change-name-popup').style.display = 'none';
+            document.getElementById('settings-popup').style.display = 'block';
+          })
+          .catch(err => alert("حدث خطأ أثناء تغيير الاسم: " + err.message));
+      } else {
+        alert("الرجاء إدخال اسم جديد");
+      }
+    }
+    
+    document.getElementById('toggle-dark-mode').addEventListener('click', function() {
+      if(document.body.classList.contains('dark-mode')) {
+        document.body.classList.remove('dark-mode');
+        localStorage.setItem('mode', 'light');
+        this.textContent = 'الوضع الداكن';
+      } else {
+        document.body.classList.add('dark-mode');
+        localStorage.setItem('mode', 'dark');
+        this.textContent = 'الوضع الفاتح';
+      }
+    });
+    
+    document.getElementById('change-bg-btn').addEventListener('click', function() {
+      document.getElementById('settings-popup').style.display = 'none';
+      document.getElementById('background-popup').style.display = 'block';
+    });
+    
+    document.getElementById('apply-bg-btn').addEventListener('click', function() {
+      if(!selectedBg) {
+        alert("الرجاء اختيار خلفية");
+        return;
+      }
+      document.querySelectorAll('.chat-area').forEach(elem => {
+        elem.style.backgroundImage = `url(${selectedBg})`;
+      });
+      localStorage.setItem('chatBackground', selectedBg);
+      alert("تم تغيير خلفية الدردشة بنجاح");
+      document.getElementById('background-popup').style.display = 'none';
+      document.getElementById('settings-popup').style.display = 'block';
+    });
+    
+    document.getElementById('logout-btn').addEventListener('click', function() {
+      firebase.auth().signOut().then(() => {
+        window.location.href = 'login.html';
+      }).catch(err => alert("حدث خطأ أثناء تسجيل الخروج: " + err.message));
+    });
+    
+    function closeChangeNamePopup() {
+      document.getElementById('change-name-popup').style.display = 'none';
+      document.getElementById('settings-popup').style.display = 'block';
+    }
+    
+    document.getElementById('change-name-btn').addEventListener('click', function() {
+      document.getElementById('change-name-popup').style.display = 'block';
+      document.getElementById('settings-popup').style.display = 'none';
+    });
+    
+    function closeBackgroundPopup() {
+      document.getElementById('background-popup').style.display = 'none';
+      document.getElementById('settings-popup').style.display = 'block';
+    }
+    
+    // دالة عرض خيارات المجموعة عند الضغط المُطوّل على بطاقة المجموعة
+    function showGroupOptionsPopup(groupId, data) {
+      selectedGroupId = groupId;
+      selectedGroupData = data;
+      document.getElementById('group-options-popup').style.display = 'block';
+    }
+    
+    // دالة إظهار نافذة الإيموجي بالنسبة للرسالة (تظهر فوق الرسالة)
+    function showEmojiPopupForMessage(messageElement) {
+      const popup = document.getElementById('emoji-popup');
+      popup.style.display = 'block';
+      const rect = messageElement.getBoundingClientRect();
+      const popupWidth = popup.offsetWidth;
+      const popupHeight = popup.offsetHeight;
+      const left = rect.left + rect.width/2 - popupWidth/2;
+      const top = rect.top - popupHeight - 10;
+      popup.style.left = left + 'px';
+      popup.style.top = top + 'px';
+    }
+    
+    // إخفاء نافذة الإيموجي
+    function hideEmojiPopup() {
+      document.getElementById('emoji-popup').style.display = 'none';
+    }
+    
+    // عند النقر على أي إيموجي يتم إضافته إلى الرسالة المحددة وتحديث Firestore ثم إخفاء النافذة
+    document.querySelectorAll('#emoji-popup .emoji-option').forEach(emoji => {
+      emoji.addEventListener('click', function(e) {
+        const selectedEmoji = this.textContent;
+        if(selectedMessageForReaction && selectedMessageForReaction.element) {
+          let reactionSpan = selectedMessageForReaction.element.querySelector('.reaction');
+          if(!reactionSpan) {
+            reactionSpan = document.createElement('span');
+            reactionSpan.className = 'reaction';
+            selectedMessageForReaction.element.appendChild(reactionSpan);
+          }
+          reactionSpan.textContent = selectedEmoji;
+          // تحديث وثيقة الرسالة في Firestore لتخزين الريأكشن
+          db.collection('groups').doc(currentGroup).collection('messages').doc(selectedMessageForReaction.id).update({
+            reaction: selectedEmoji
+          });
+        }
+        hideEmojiPopup();
+        e.stopPropagation();
+      });
+    });
+    
+    // إضافة مستمع عام لإخفاء نافذة الإيموجي عند النقر خارجها
+    document.addEventListener('click', function(e) {
+      const popup = document.getElementById('emoji-popup');
+      if(popup.style.display === 'block' && !popup.contains(e.target)) {
+        hideEmojiPopup();
+      }
+    });
+    
+    // دالة إنشاء المجموعة مع تقييد عدد المجموعات لكل مستخدم إلى 10
+    function createGroup() {
+      const groupName = document.getElementById('group-name').value.trim();
+      const groupImage = document.getElementById('group-image').value.trim();
+      if(!groupName) {
+        alert("يرجى إدخال اسم المجموعة");
+        return;
+      }
+      // التحقق من عدد المجموعات التي أنشأها المستخدم
+      db.collection('groups').where("creatorId", "==", currentUser.uid).get()
+        .then(snapshot => {
+          if(snapshot.size >= 10) {
+            alert("لقد أنشأت 10 مجموعات بالفعل ولا يمكنك إنشاء المزيد.");
+            return;
+          }
+          // إنشاء المجموعة الجديدة مع إضافة حقل creatorId
+          db.collection('groups').add({
+            name: groupName,
+            image: groupImage || '',
+            creatorId: currentUser.uid,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+          }).then(() => {
+            alert("تم إنشاء المجموعة بنجاح");
+            closeCreateGroupPopup();
+          }).catch(err => console.error("Error creating group:", err));
+        })
+        .catch(err => console.error("Error checking group count:", err));
+    }
+    
+    // التهيئة الأولية وتوليد الخلفيات
+    document.addEventListener("DOMContentLoaded", function() {
+      const mode = localStorage.getItem('mode');
+      if(mode === 'dark') {
+        document.body.classList.add('dark-mode');
+        document.getElementById('toggle-dark-mode').textContent = 'الوضع الفاتح';
+      } else {
+        document.body.classList.remove('dark-mode');
+        document.getElementById('toggle-dark-mode').textContent = 'الوضع الداكن';
+      }
+      const chatBg = localStorage.getItem('chatBackground');
+      if(chatBg) {
+        document.querySelectorAll('.chat-area').forEach(elem => {
+          elem.style.backgroundImage = `url(${chatBg})`;
+        });
+      }
+      
+      // توليد 100 خلفية عشوائية مع تمييز الخلفية المختارة
+      const containerBg = document.getElementById('background-options-container');
+      for(let i = 1; i <= 100; i++) {
+        const img = document.createElement('img');
+        img.src = `https://picsum.photos/seed/${i}/1000/600`;
+        img.alt = `خلفية ${i}`;
+        img.className = 'bg-option';
+        img.setAttribute('data-bg', `https://picsum.photos/seed/${i}/1000/600`);
+        img.style.width = '100px';
+        img.style.height = '100px';
+        img.style.objectFit = 'cover';
+        img.style.cursor = 'pointer';
+        img.style.border = '2px solid transparent';
+        img.style.borderRadius = '8px';
+        img.addEventListener('click', function() {
+          document.querySelectorAll('.bg-option').forEach(i => i.classList.remove('selected'));
+          this.classList.add('selected');
+          selectedBg = this.getAttribute('data-bg');
+        });
+        containerBg.appendChild(img);
+      }
+    });
+    
+    // عرض نافذة الرومات
+    function toggleRoomsPopup() {
+      const popup = document.getElementById('rooms-popup');
+      popup.style.display = (popup.style.display === 'block') ? 'none' : 'block';
+      if(popup.style.display === 'block'){
+        populateRoomsPopup();
+      }
+    }
+    
+    // التأكد من وجود المجموعة الافتراضية "general"
+    function initialize() {
+      const defaultGroup = 'general';
+      db.collection('groups').doc(defaultGroup).get().then(doc => {
+        if(!doc.exists) {
+          db.collection('groups').doc(defaultGroup).set({
+            name: 'روم عام',
+            image: 'https://source.unsplash.com/featured/200x200?nature',
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+          });
+        }
+      });
+    }
+    initialize();
+  </script>
+</body>
+</html>

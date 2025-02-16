@@ -54,7 +54,7 @@
 <body>
     <!-- صندوق تسجيل الدخول -->
     <div id="login-box" class="box">
-        <h1> اهلا بك موقع فنديه شات لنبدء
+        <h1> اهلا بك موقع فندشات لنبدء
           تسجيل الدخول</h1>
         <input type="email" id="login-email" placeholder="البريد الإلكتروني">
         <input type="password" id="login-password" placeholder="كلمة المرور">
@@ -112,7 +112,7 @@
             try {
                 await auth.signInWithEmailAndPassword(email, password);
                 alert("تم تسجيل الدخول بنجاح!");
-                window.location.href = "app.html";
+                window.location.href = "chat.html";
             } catch (error) {
                 alert("خطأ: " + error.message);
             }
@@ -138,7 +138,7 @@
                 });
 
                 alert(`مرحبًا ${name}, تم إنشاء الحساب بنجاح!`);
-                window.location.href = "app.html";
+                window.location.href = "chat.html";
             } catch (error) {
                 alert("خطأ: " + error.message);
             }
@@ -151,7 +151,7 @@
             auth.signInWithPopup(provider)
                 .then((result) => {
                     alert("تم تسجيل الدخول بنجاح بواسطة Google!");
-                    window.location.href = "app.html";
+                    window.location.href = "chat.html";
                 })
                 .catch((error) => {
                     alert("خطأ: " + error.message);

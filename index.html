@@ -1,153 +1,245 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>الفنديه شات - مرحبًا بك</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            color: #fff;
-            overflow: hidden;
-            background: linear-gradient(135deg, #4a90e2, #9013fe);
-            animation: backgroundAnimation 10s infinite alternate;
-            flex-direction: column;
-        }
-        
-        @keyframes backgroundAnimation {
-            0% { background: linear-gradient(135deg, #4a90e2, #9013fe); }
-            50% { background: linear-gradient(135deg, #ff416c, #ff4b2b); }
-            100% { background: linear-gradient(135deg, #1e3c72, #2a5298); }
-        }
-        
-        .logo-container {
-            background: rgba(0, 0, 0, 0.7);
-            padding: 1rem;
-            border-radius: 15px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-            margin-bottom: 1rem;
-        }
-        
-        .logo-container img {
-            max-width: 100px;
-        }
-        
-        .welcome-container {
-            background: rgba(0, 0, 0, 0.7);
-            padding: 2rem;
-            border-radius: 15px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-            max-width: 400px;
-            width: 90%;
-            opacity: 0;
-            transform: translateY(50px);
-            animation: fadeIn 1.5s ease-out forwards;
-        }
-        
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(50px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
-        .welcome-container h1 {
-            font-size: 2rem;
-            margin-bottom: 1rem;
-        }
-        
-        .welcome-container p {
-            font-size: 1.2rem;
-            margin-bottom: 1.5rem;
-        }
-        
-        .btn {
-            display: inline-block;
-            padding: 12px 20px;
-            font-size: 1.2rem;
-            color: #fff;
-            background: #ff9800;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            text-decoration: none;
-            transition: all 0.3s ease-in-out;
-            animation: pulse 2s infinite;
-        }
-        
-        .btn:hover {
-            background: #e68900;
-            transform: scale(1.1);
-        }
-        
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>فنديه شات - منصة التواصل الاجتماعي العراقي</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    /* === أنماط عامة === */
+    :root {
+      --primary-color: #4a90e2;
+      --secondary-color: #9013fe;
+      --accent-color: #28a745;
+    }
 
-        /* زر التحميل للجوال */
-        .mobile-download-btn {
-            display: none; /* مخفي بشكل افتراضي */
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            background: #28a745;
-            color: white;
-            padding: 12px 20px;
-            border-radius: 5px;
-            text-decoration: none;
-            font-size: 1.1em;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-            z-index: 1000;
-            transition: all 0.3s ease;
-        }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-        .mobile-download-btn i {
-            margin-left: 8px;
-        }
+    body {
+      font-family: 'Tajawal', 'Segoe UI', sans-serif;
+      min-height: 100vh;
+      background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+      animation: backgroundAnimation 15s ease infinite;
+      color: #fff;
+      line-height: 1.6;
+    }
 
-        .mobile-download-btn:hover {
-            background: #218838;
-            transform: translateY(-2px);
-        }
+    /* === أنيميشن الخلفية === */
+    @keyframes backgroundAnimation {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
 
-        /* عرض الزر فقط على الأجهزة المحمولة */
-        @media only screen and (max-width: 768px) {
-            .mobile-download-btn {
-                display: inline-block;
-            }
-        }
-    </style>
-    <!-- رابط أيقونات Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    /* === الهيدر === */
+    header {
+      padding: 0rem 5%;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(10px);
+      position: fixed;
+      top: 0;
+      width: 100%;
+      z-index: 1000;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    }
+
+    .logo img {
+      width: 180px;
+      transition: transform 0.3s;
+    }
+
+    .logo:hover img {
+      transform: scale(1.005);
+    }
+
+    /* === أزرار التحميل === */
+    .download-btn {
+      background: var(--accent-color);
+      color: #fff;
+      padding: 12px 30px;
+      border-radius: 30px;
+      text-decoration: none;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      transition: all 0.3s;
+      box-shadow: 0 4px 15px rgba(40,167,69,0.3);
+    }
+
+    .download-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 20px rgba(40,167,69,0.5);
+    }
+
+    /* === زر التحميل للجوال فقط === */
+    .mobile-download-btn {
+      display: none; /* مخفي بشكل افتراضي */
+    }
+
+    @media (max-width: 768px) {
+      .mobile-download-btn {
+        display: inline-flex; /* يظهر فقط على الجوال */
+      }
+    }
+
+    /* === قسم الترحيب === */
+    .welcome-container {
+      background: rgba(0, 0, 0, 0.8);
+      padding: 3rem;
+      border-radius: 25px;
+      max-width: 600px;
+      margin: 120px auto 40px;
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .welcome-container h1 {
+      font-size: 2.5rem;
+      margin-bottom: 1.5rem;
+      background: linear-gradient(45deg, #fff, #4a90e2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    /* === قسم الأسئلة الشائعة === */
+    .faq-section {
+      padding: 4rem 5%;
+    }
+
+    .faq-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 30px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .faq-card {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 2rem;
+      border-radius: 20px;
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,0.1);
+      transition: all 0.3s;
+      cursor: pointer;
+    }
+
+    .faq-card:hover {
+      background: rgba(255, 255, 255, 0.15);
+      transform: translateY(-10px);
+    }
+
+    /* === الفوتر === */
+    footer {
+      background: rgba(0, 0, 0, 0.7);
+      padding: 2rem;
+      margin-top: 4rem;
+      backdrop-filter: blur(8px);
+    }
+
+    /* === التصميم المتجاوب === */
+    @media (max-width: 768px) {
+      header {
+        padding: 0rem 5%;
+      }
+
+      .logo img {
+        width: 60px;
+      }
+
+      .welcome-container {
+        padding: 2rem;
+        margin-top: 100px;
+      }
+
+      .welcome-container h1 {
+        font-size: 2rem;
+      }
+    }
+  </style>
 </head>
 <body>
-    <!-- زر التحميل للجوال -->
-    <a href="apk.html" class="mobile-download-btn">
-        تحميل للجوال <i class="fas fa-download"></i>
+  <header>
+    <div class="logo">
+      <img src="fndchat.png" alt="شعار فنديه شات">
+    </div>
+    <!-- زر التحميل للجوال فقط -->
+    <a href="apk.html" class="download-btn mobile-download-btn">
+      <i class="fas fa-download"></i> 
+      <span>تحميل التطبيق</span>
     </a>
+  </header>
 
-    <div class="logo-container">
-        <img src="fndchat.png" alt="شعار الموقع">
+  <div class="welcome-container">
+    <h1>مرحبًا بك في فندشات</h1>
+    <p>منصة التواصل الاجتماعي الأولى في العراق، تواصل مع الأصدقاء وشارك اللحظات المميزة</p>
+    <div class="cta-buttons" style="margin-top: 2rem;">
+      <a href="start.html" class="download-btn" style="background: #fff; color: var(--primary-color);">
+        <i class="fas fa-sign-in-alt"></i>
+        بدء الاستخدام
+      </a>
     </div>
-    <div class="welcome-container">
-        <h1>أهلاً بك في الفنديه شات</h1>
-        <p>منصة تواصل اجتماعي تم تأسيسها في العراق، تواصل واستمتع بتجربة فريدة.</p>
-        <a href="start.html" class="btn">دخول</a>
+  </div>
+
+  <section class="faq-section">
+    <h2 style="font-size: 2rem; margin-bottom: 3rem;">الأسئلة الشائعة</h2>
+    <div class="faq-container">
+      <!-- السؤال الأول -->
+      <div class="faq-card">
+        <h3><i class="fas fa-globe"></i> ما هو موقع فندشات؟</h3>
+        <p>موقع فندشات هو منصة تواصل اجتماعي عراقية تم تأسيسها بواسطة ابن الفنديه، نعمل على توفير أفضل تجربة للمستخدمين</p>
+      </div>
+
+      <!-- السؤال الثاني -->
+      <div class="faq-card">
+        <h3><i class="fas fa-shield-alt"></i> هل المنصة آمنة؟</h3>
+        <p>نعم، المنصة آمنة تمامًا. نحرص على توفير أعلى معايير الأمان مع الحفاظ على حرية الاستخدام، حيث نستخدم تقنيات متقدمة في تشفير البيانات وحماية المعلومات.</p>
+      </div>
+
+      <!-- السؤال الثالث -->
+      <div class="faq-card">
+        <h3><i class="fas fa-star"></i> مميزات الموقع</h3>
+        <ul style="text-align: right; padding-right: 20px;">
+          <li>سرعة فائقة في إرسال الرسائل ونشر المنشورات مع قدرة على تحمّل الأحمال الكبيرة</li>
+          <li>نظام حماية متكامل مع تشفير قوي للبيانات</li>
+          <li>واجهة مستخدم بديهية وسلسة تجمع بين البساطة والإحترافية</li>
+        </ul>
+      </div>
+
+      <!-- السؤال الرابع -->
+      <div class="faq-card">
+        <h3><i class="fas fa-bullseye"></i> هدفنا</h3>
+        <p>نسعى لتوفير أفضل تجربة للمستخدمين والوصول إلى أعلى مستويات الرضا، كما نطمح لأن نكون المنصة الاجتماعية الرائدة في العراق والوطن العربي من خلال التطوير المستمر وتحسين الخدمات.</p>
+      </div>
+
+      <!-- السؤال الخامس -->
+      <div class="faq-card">
+        <h3><i class="fas fa-comments"></i> قسم الدردشة</h3>
+        <p>قسم المراسلة الفورية المصمم باحترافية لتسهيل التواصل بين المستخدمين مع الحفاظ على السرعة والأداء العالي (قيد التطوير المستمر).</p>
+      </div>
+
+      <!-- السؤال السادس -->
+      <div class="faq-card">
+        <h3><i class="fas fa-newspaper"></i> قسم المنتدى والمنشورات</h3>
+        <p>مساحة تفاعلية لنشر المحتوى بسرعة وسهولة مع دعم كامل لمشاركة الأفكار والمواضيع المتنوعة (خاضع للتطوير الدائم).</p>
+      </div>
     </div>
-    <footer>
-        <p>كل شيء تحتاج تعرفه عن موقع فندشات : <a href="what.html">اقرأ المزيد</a></p>
-    </footer>
+  </section>
+
+  <footer>
+    <p>© 2025 . جميع الحقوق محفوظة</p>
+    <div style="margin-top: 1rem;">
+      <a href="#" style="color: #fff; margin: 0 10px;">الشروط والأحكام</a>
+      <a href="#" style="color: #fff; margin: 0 10px;">سياسة الخصوصية</a>
+    </div>
+  </footer>
 </body>
 </html>
