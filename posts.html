@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>المنتدى</title>
+  <title>المنتدى - مع زر الوضع الداكن</title>
   <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
@@ -36,16 +36,32 @@
       min-height: 80vh;
       display: flex;
       flex-direction: column;
+      position: relative;
     }
+    body.dark-mode .forum-section {
+      background: #333;
+    }
+    /* زر تبديل الوضع الداكن/الفاتح */
+    #darkModeToggle {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background: transparent;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      color: inherit;
+    }
+    /* نماذج الإدخال */
     .input-area {
       display: none;
       flex-direction: column;
       gap: 15px;
       margin-top: 20px;
     }
-    textarea {
+    textarea, input[type="text"] {
       width: 100%;
-      min-height: 120px;
+      min-height: 40px;
       padding: 12px;
       border: 1px solid #ddd;
       border-radius: 8px;
@@ -54,7 +70,13 @@
       background: #f8f9fa;
       color: #333;
     }
-    textarea:focus {
+    body.dark-mode textarea,
+    body.dark-mode input[type="text"] {
+      background: #555;
+      color: #f5f5f5;
+      border: 1px solid #777;
+    }
+    textarea:focus, input[type="text"]:focus {
       outline: none;
       border-color: #007bff;
       box-shadow: 0 0 0 3px rgba(0,123,255,0.1);
@@ -91,6 +113,9 @@
       background: #ffffff;
       box-shadow: 0 4px 8px rgba(0,0,0,0.05);
     }
+    body.dark-mode .post {
+      background: #444;
+    }
     .post-header {
       display: flex;
       justify-content: space-between;
@@ -102,9 +127,15 @@
       font-size: 0.9em;
       color: #666;
     }
+    body.dark-mode .user-info {
+      color: #ccc;
+    }
     .post-timestamp {
       font-size: 0.8em;
       color: #999;
+    }
+    body.dark-mode .post-timestamp {
+      color: #bbb;
     }
     .action-buttons {
       display: flex;
@@ -130,15 +161,16 @@
     .delete-btn .fas {
       color: #e74c3c;
     }
-    /* مجموعة الأزرار السفلية تحتوي على زر اللايك والتعليقات */
     .btn-group {
       display: flex;
       gap: 15px;
       margin-top: 10px;
     }
     .like-btn .fas {
-      color: #e74c3c;
       transition: all 0.3s ease;
+    }
+    .like-btn.liked .fas {
+      color: #e74c3c;
     }
     .like-btn:not(.liked) .fas {
       color: #666;
@@ -167,6 +199,9 @@
       background: #f8f9fa;
       border-radius: 8px;
     }
+    body.dark-mode .comment {
+      background: #555;
+    }
     .comment-info {
       display: flex;
       justify-content: space-between;
@@ -174,6 +209,9 @@
       margin-top: 8px;
       font-size: 0.8em;
       color: #666;
+    }
+    body.dark-mode .comment-info {
+      color: #ccc;
     }
     .comment-input {
       display: flex;
@@ -214,7 +252,6 @@
     .posts-container::-webkit-scrollbar-thumb:hover {
       background: #555;
     }
-    /* تنسيقات النافذة المنبثقة للتعليقات */
     .modal-overlay {
       position: fixed;
       top: 0;
@@ -245,17 +282,47 @@
       font-size: 24px;
       cursor: pointer;
     }
+    /* تنسيق خاص لأزرار التصويت داخل الاستفتاءات */
+    .poll-option-btn {
+      padding: 8px 16px;
+      margin: 5px;
+      background: #f0f0f0;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .poll-option-btn:hover {
+      background: #e0e0e0;
+    }
   </style>
 </head>
 <body>
   <div class="container">
     <div class="forum-section">
+      <!-- زر تبديل الوضع الداكن/الفاتح -->
+      <button id="darkModeToggle" onclick="toggleDarkMode()"><i class="fas fa-moon"></i></button>
       <h2>المنتدى</h2>
-      <button class="publish-btn" onclick="showPublishForm()">نشر منشور</button>
-      <h2>أحدث منشورات </h2>
+      <!-- أزرار نشر المنشور والتصويت -->
+      <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+        <button class="publish-btn" onclick="showPublishForm()">نشر منشور</button>
+        <button class="publish-btn" onclick="showPollForm()">نشر تصويت</button>
+      </div>
+      <h2>أحدث المنشورات</h2>
+      <!-- نموذج نشر المنشور -->
       <div class="input-area" id="publish-form">
         <textarea id="post-input" placeholder="اكتب منشورك هنا..."></textarea>
         <button onclick="createPost()">نشر</button>
+      </div>
+      <!-- نموذج نشر التصويت -->
+      <div class="input-area" id="poll-form">
+        <input type="text" id="poll-question" placeholder="اكتب سؤال التصويت هنا...">
+        <div id="poll-options">
+          <input type="text" class="poll-option" placeholder="خيار 1">
+          <input type="text" class="poll-option" placeholder="خيار 2">
+        </div>
+        <button onclick="addPollOption()" style="background: #28a745;">إضافة خيار</button>
+        <button onclick="createPoll()">نشر تصويت</button>
       </div>
       <div class="posts-container" id="posts"></div>
     </div>
@@ -301,21 +368,52 @@
       }
     });
 
+    // دالة تبديل الوضع الداكن/الفاتح كما في النسخة السابقة
+    function toggleDarkMode() {
+      document.body.classList.toggle("dark-mode");
+      const icon = document.querySelector("#darkModeToggle i");
+      if (document.body.classList.contains("dark-mode")) {
+        icon.classList.remove("fa-moon");
+        icon.classList.add("fa-sun");
+      } else {
+        icon.classList.remove("fa-sun");
+        icon.classList.add("fa-moon");
+      }
+      localStorage.setItem("darkMode", document.body.classList.contains("dark-mode") ? "true" : "false");
+    }
+    window.addEventListener("load", () => {
+      if (localStorage.getItem("darkMode") === "true") {
+        document.body.classList.add("dark-mode");
+        const icon = document.querySelector("#darkModeToggle i");
+        icon.classList.remove("fa-moon");
+        icon.classList.add("fa-sun");
+      }
+    });
+
+    // عرض نماذج النشر
     function showPublishForm() {
       document.getElementById('publish-form').style.display = 'flex';
+      document.getElementById('poll-form').style.display = 'none';
+    }
+    function showPollForm() {
+      document.getElementById('poll-form').style.display = 'flex';
+      document.getElementById('publish-form').style.display = 'none';
     }
 
+    // إنشاء منشور نصي
     function createPost() {
       const postInput = document.getElementById('post-input');
       const content = postInput.value.trim();
       if (content && currentUser) {
         db.collection("posts").add({
+          type: "post",
           content: content,
           userId: currentUser.uid,
           userName: currentUser.displayName || "مجهول",
           likes: 0,
           likedBy: [],
-          timestamp: firebase.firestore.FieldValue.serverTimestamp()
+          timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+          edited: false
         }).then(() => {
           postInput.value = '';
           document.getElementById('publish-form').style.display = 'none';
@@ -323,87 +421,229 @@
       }
     }
 
+    // إنشاء تصويت (استفتاء)
+    function createPoll() {
+      const pollQuestion = document.getElementById('poll-question').value.trim();
+      const optionInputs = document.querySelectorAll('.poll-option');
+      let options = [];
+      optionInputs.forEach(input => {
+        const text = input.value.trim();
+        if (text) options.push({ optionText: text, votes: 0 });
+      });
+      if (!pollQuestion) {
+        alert("الرجاء كتابة سؤال التصويت.");
+        return;
+      }
+      if (options.length < 2) {
+        alert("يجب إدخال خيارين على الأقل.");
+        return;
+      }
+      db.collection("posts").add({
+        type: "poll",
+        question: pollQuestion,
+        options: options,
+        voters: {},
+        userId: currentUser.uid,
+        userName: currentUser.displayName || "مجهول",
+        likes: 0,
+        likedBy: [],
+        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+        edited: false
+      }).then(() => {
+        document.getElementById('poll-question').value = '';
+        optionInputs.forEach(input => input.value = '');
+        document.getElementById('poll-form').style.display = 'none';
+      }).catch(error => console.error("Error creating poll:", error));
+    }
+
+    // إضافة خيار جديد في نموذج التصويت
+    function addPollOption() {
+      const pollOptionsContainer = document.getElementById('poll-options');
+      const newOptionInput = document.createElement('input');
+      newOptionInput.type = 'text';
+      newOptionInput.className = 'poll-option';
+      const optionCount = pollOptionsContainer.querySelectorAll('.poll-option').length + 1;
+      newOptionInput.placeholder = `خيار ${optionCount}`;
+      pollOptionsContainer.appendChild(newOptionInput);
+    }
+
+    // تحميل المنشورات بدون استخدام orderBy ثم فرزها يدويًا لضمان ظهور المنشورات القديمة
     function loadPosts() {
       db.collection("posts")
-        .orderBy("timestamp", "desc")
         .onSnapshot(snapshot => {
+          let postsArray = [];
+          snapshot.forEach(doc => {
+            let postData = doc.data();
+            postData.id = doc.id;
+            // إذا لم يوجد timestamp نستخدم قيمة صفر كبديل
+            postData._time = postData.timestamp ? postData.timestamp.toMillis() : 0;
+            postsArray.push(postData);
+          });
+          // فرز المنشورات تنازليًا (الأحدث أولاً)
+          postsArray.sort((a, b) => b._time - a._time);
           const postsContainer = document.getElementById('posts');
           postsContainer.innerHTML = "";
-          snapshot.forEach(doc => {
-            const post = doc.data();
-            const postId = doc.id;
+          postsArray.forEach(post => {
+            const timeText = post._time ? new Date(post._time).toLocaleString() : '';
+            const editedText = post.edited ? ' (تم التعديل)' : '';
+            let postHTML = "";
+            if (post.type && post.type === "poll") {
+              let pollOptionsHTML = "";
+              const voted = post.voters && post.voters[currentUser.uid] !== undefined;
+              const userVotedIndex = voted ? post.voters[currentUser.uid] : -1;
+              post.options.forEach((option, index) => {
+                pollOptionsHTML += `<button class="poll-option-btn" onclick="votePoll('${post.id}', ${index})" ${voted ? 'disabled' : ''} style="${voted && userVotedIndex === index ? 'background:#28a745;color:#fff;' : ''}">
+                  ${option.optionText} (${option.votes})
+                </button>`;
+              });
+              postHTML = `
+                <div class="post-header">
+                  <div class="user-info">
+                    <span>نشر بواسطة: ${post.userName}</span>
+                    <span class="post-timestamp">${timeText}${editedText}</span>
+                  </div>
+                  <div class="action-buttons">
+                    ${post.userId === currentUser.uid ? `
+                      <button class="icon-btn edit-btn" onclick="editPoll('${post.id}')">
+                        <i class="fas fa-edit"></i>
+                      </button>
+                      <button class="icon-btn delete-btn" onclick="deletePost('${post.id}')">
+                        <i class="fas fa-trash-alt"></i>
+                      </button>
+                    ` : ''}
+                  </div>
+                </div>
+                <div class="post-content">
+                  <h3>${post.question}</h3>
+                  <div class="poll-options">
+                    ${pollOptionsHTML}
+                  </div>
+                </div>
+                <div class="btn-group">
+                  <button class="icon-btn like-btn ${post.likedBy && post.likedBy.includes(currentUser.uid) ? 'liked' : ''}" onclick="likePost('${post.id}')">
+                    <i class="fas fa-heart"></i>
+                    <span>${post.likes || 0}</span>
+                  </button>
+                  <button class="comment-btn" onclick="openCommentModal('${post.id}')">
+                    <i class="fa fa-comments"></i>
+                    <span>تعليقات</span>
+                  </button>
+                </div>
+              `;
+            } else {
+              postHTML = `
+                <div class="post-header">
+                  <div class="user-info">
+                    <span>نشر بواسطة: ${post.userName}</span>
+                    <span class="post-timestamp">${timeText}${editedText}</span>
+                  </div>
+                  <div class="action-buttons">
+                    ${post.userId === currentUser.uid ? `
+                      <button class="icon-btn edit-btn" onclick="editPost('${post.id}')">
+                        <i class="fas fa-edit"></i>
+                      </button>
+                      <button class="icon-btn delete-btn" onclick="deletePost('${post.id}')">
+                        <i class="fas fa-trash-alt"></i>
+                      </button>
+                    ` : ''}
+                  </div>
+                </div>
+                <div class="post-content">${post.content}</div>
+                <div class="btn-group">
+                  <button class="icon-btn like-btn ${post.likedBy && post.likedBy.includes(currentUser.uid) ? 'liked' : ''}" onclick="likePost('${post.id}')">
+                    <i class="fas fa-heart"></i>
+                    <span>${post.likes || 0}</span>
+                  </button>
+                  <button class="comment-btn" onclick="openCommentModal('${post.id}')">
+                    <i class="fa fa-comments"></i>
+                    <span>تعليقات</span>
+                  </button>
+                </div>
+                <div class="comments-section" id="comments-${post.id}">
+                  <div class="comment-input">
+                    <textarea id="comment-input-${post.id}" placeholder="أضف تعليقًا..."></textarea>
+                    <button onclick="addComment('${post.id}')">تعليق</button>
+                  </div>
+                  <div id="comments-list-${post.id}"></div>
+                </div>
+              `;
+            }
             const postElement = document.createElement('div');
             postElement.className = 'post';
-            postElement.innerHTML = `
-              <div class="post-header">
-                <div class="user-info">
-                  <span>نشر بواسطة: ${post.userName}</span>
-                  <span class="post-timestamp">${post.timestamp ? new Date(post.timestamp.toDate()).toLocaleString() : ''}</span>
-                </div>
-                <div class="action-buttons">
-                  ${post.userId === currentUser.uid ? `
-                  <button class="icon-btn edit-btn" onclick="editPost('${postId}')">
-                    <i class="fas fa-edit"></i>
-                  </button>
-                  <button class="icon-btn delete-btn" onclick="deletePost('${postId}')">
-                    <i class="fas fa-trash-alt"></i>
-                  </button>
-                  ` : ''}
-                </div>
-              </div>
-              <div class="post-content">${post.content}</div>
-              <div class="btn-group">
-                <button class="icon-btn like-btn ${post.likedBy.includes(currentUser.uid) ? 'liked' : ''}" 
-                  onclick="likePost('${postId}', ${post.likes}, '${JSON.stringify(post.likedBy)}')">
-                  <i class="fas fa-heart"></i>
-                  <span>${post.likes}</span>
-                </button>
-                <button class="comment-btn" onclick="openCommentModal('${postId}')">
-                  <i class="fa fa-comments"></i>
-                  <span>تعليقات</span>
-                </button>
-              </div>
-              <div class="comments-section" id="comments-${postId}">
-                <div class="comment-input">
-                  <textarea id="comment-input-${postId}" placeholder="أضف تعليقًا..."></textarea>
-                  <button onclick="addComment('${postId}')">تعليق</button>
-                </div>
-                <div id="comments-list-${postId}"></div>
-              </div>
-            `;
+            postElement.innerHTML = postHTML;
             postsContainer.appendChild(postElement);
-            loadComments(postId);
+            if (!post.type || post.type !== "poll") {
+              loadComments(post.id);
+            }
           });
         });
     }
 
-    // دالة اللايك: يُضيف لايك واحد لكل مستخدم (إذا لم يقم بالإعجاب سابقاً)
-    function likePost(postId, currentLikes, likedByStr) {
+    // دالة اللايك باستخدام معاملة لضمان تحديث العدد بدقة
+    function likePost(postId) {
       const postRef = db.collection("posts").doc(postId);
-      const likeButton = document.querySelector(`.like-btn[onclick*="${postId}"]`);
-      let likedBy = [];
-      try {
-        likedBy = JSON.parse(likedByStr);
-      } catch(e) {
-        console.error("Error parsing likedBy:", e);
-      }
-      if (!likedBy.includes(currentUser.uid)) {
-        postRef.update({
-          likes: currentLikes + 1,
-          likedBy: firebase.firestore.FieldValue.arrayUnion(currentUser.uid)
-        }).then(() => {
-          // يمكن تحديث الواجهة يدوياً أو بالاعتماد على onSnapshot للتحديث
-          likeButton.classList.add('liked');
+      db.runTransaction(transaction => {
+        return transaction.get(postRef).then(doc => {
+          if (!doc.exists) throw "المستند غير موجود!";
+          const data = doc.data();
+          let currentLikes = data.likes || 0;
+          let likedBy = data.likedBy || [];
+          if (likedBy.includes(currentUser.uid)) {
+            transaction.update(postRef, {
+              likes: currentLikes - 1,
+              likedBy: firebase.firestore.FieldValue.arrayRemove(currentUser.uid)
+            });
+            return { liked: false, newLikes: currentLikes - 1 };
+          } else {
+            transaction.update(postRef, {
+              likes: currentLikes + 1,
+              likedBy: firebase.firestore.FieldValue.arrayUnion(currentUser.uid)
+            });
+            return { liked: true, newLikes: currentLikes + 1 };
+          }
         });
-      }
+      }).then(result => {
+        const likeButton = document.querySelector(`.like-btn[onclick*="${postId}"]`);
+        if (result.liked) {
+          likeButton.classList.add('liked');
+        } else {
+          likeButton.classList.remove('liked');
+        }
+        const likeSpan = likeButton.querySelector('span');
+        if(likeSpan) likeSpan.textContent = result.newLikes;
+      }).catch(error => console.error("Transaction failed: ", error));
     }
 
     function editPost(postId) {
       const newContent = prompt("قم بتعديل المنشور:");
       if (newContent?.trim()) {
         db.collection("posts").doc(postId).update({
-          content: newContent.trim()
+          content: newContent.trim(),
+          edited: true,
+          editedTimestamp: firebase.firestore.FieldValue.serverTimestamp()
         }).catch(error => console.error("Error editing post:", error));
+      }
+    }
+
+    function editPoll(pollId) {
+      const newQuestion = prompt("قم بتعديل سؤال التصويت:");
+      if (newQuestion && newQuestion.trim()) {
+        const newOptionsInput = prompt("أدخل الخيارات الجديدة مفصولة بفاصلة (,). سيتم إعادة تعيين الأصوات.");
+        if (newOptionsInput) {
+          const newOptionsTexts = newOptionsInput.split(',').map(o => o.trim()).filter(o => o !== "");
+          if (newOptionsTexts.length < 2) {
+            alert("يجب أن يكون هناك خيارين على الأقل.");
+            return;
+          }
+          const newOptions = newOptionsTexts.map(text => ({ optionText: text, votes: 0 }));
+          db.collection("posts").doc(pollId).update({
+            question: newQuestion.trim(),
+            options: newOptions,
+            voters: {},
+            edited: true,
+            editedTimestamp: firebase.firestore.FieldValue.serverTimestamp()
+          }).catch(error => console.error("Error editing poll:", error));
+        }
       }
     }
 
@@ -448,12 +688,12 @@
             commentElement.innerHTML = `
               <div class="action-buttons">
                 ${comment.userId === currentUser?.uid ? `
-                <button class="icon-btn edit-btn" onclick="handleEditComment('${comment.id}')">
-                  <i class="fas fa-edit"></i>
-                </button>
-                <button class="icon-btn delete-btn" onclick="handleDeleteComment('${comment.id}')">
-                  <i class="fas fa-trash-alt"></i>
-                </button>
+                  <button class="icon-btn edit-btn" onclick="handleEditComment('${comment.id}')">
+                    <i class="fas fa-edit"></i>
+                  </button>
+                  <button class="icon-btn delete-btn" onclick="handleDeleteComment('${comment.id}')">
+                    <i class="fas fa-trash-alt"></i>
+                  </button>
                 ` : ''}
               </div>
               <div class="comment-content">${comment.content}</div>
@@ -534,8 +774,8 @@
             commentElement.innerHTML = `
               <div class="comment-buttons">
                 ${comment.userId === currentUser?.uid ? `
-                <button class="edit-btn" onclick="handleEditComment('${comment.id}')">✏️</button>
-                <button class="delete-btn" onclick="handleDeleteComment('${comment.id}')">🗑️</button>
+                  <button class="edit-btn" onclick="handleEditComment('${comment.id}')">✏️</button>
+                  <button class="delete-btn" onclick="handleDeleteComment('${comment.id}')">🗑️</button>
                 ` : ''}
               </div>
               <div class="comment-content">${comment.content}</div>
@@ -550,6 +790,31 @@
             modalList.appendChild(commentElement);
           });
         });
+    }
+
+    // دالة التصويت في الاستفتاء باستخدام معاملة لتحديث الأصوات
+    function votePoll(pollId, optionIndex) {
+      const pollRef = db.collection("posts").doc(pollId);
+      db.runTransaction(transaction => {
+        return transaction.get(pollRef).then(doc => {
+          if (!doc.exists) throw "التصويت غير موجود";
+          const data = doc.data();
+          if (data.voters && data.voters[currentUser.uid] !== undefined) {
+            throw "لقد صوتت بالفعل.";
+          }
+          let options = data.options;
+          if (optionIndex < 0 || optionIndex >= options.length) throw "خيار غير صحيح.";
+          options[optionIndex].votes = (options[optionIndex].votes || 0) + 1;
+          let voters = data.voters || {};
+          voters[currentUser.uid] = optionIndex;
+          transaction.update(pollRef, { options: options, voters: voters });
+          return options;
+        });
+      }).then(updatedOptions => {
+        // ستقوم المراقبة (onSnapshot) بتحديث واجهة المستخدم تلقائيًا
+      }).catch(error => {
+        alert(error);
+      });
     }
   </script>
 </body>
