@@ -15,7 +15,7 @@
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
   <style>
-    /* الأنماط العامة للتطبيق */
+    /* الإعدادات العامة والألوان */
     :root {
       --primary-bg: #36393f;
       --secondary-bg: #2f3136;
@@ -120,6 +120,7 @@
     .fixed-buttons button:hover {
       transform: scale(1.1);
     }
+    /* زر المنشورات */
     .fixed-posts-btn {
       position: fixed;
       top: 10px;
@@ -141,6 +142,38 @@
     .fixed-posts-btn:hover {
       background: #0056b3;
     }
+    /* زر الرسائل الخاصة (إرجاع مكانه السابق) */
+    .private-messages-btn {
+      position: fixed;
+      top: 10px;
+      right: 250px;
+      background: #7289da;
+      color: #fff;
+      border: none;
+      padding: 0px 15px;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+      z-index: 1300;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: background 0.3s;
+    }
+    .private-messages-btn:hover {
+      background: #5d6dcc;
+    }
+    /* إضافة شارة عدد الرسائل غير المقروءة */
+    .private-messages-btn .badge {
+      display: none;
+      background: red;
+      color: white;
+      border-radius: 50%;
+      padding: 2px 6px;
+      font-size: 12px;
+      margin-left: 5px;
+    }
+    /* منطقة الدردشة العامة */
     .chat-container {
       flex: 1;
       background: var(--primary-bg);
@@ -188,7 +221,7 @@
       color: #aaa;
       margin-top: 5px;
     }
-    /* عرض تفاعلات الرسالة (الإيموجي) */
+    /* تفاعلات الرسالة والإيموجي */
     .reaction {
       display: inline-block;
       margin-top: 5px;
@@ -198,7 +231,6 @@
       font-size: 14px;
       cursor: pointer;
     }
-    /* أيقونة الخيارات داخل الفقاعة */
     .options-icon {
       position: absolute;
       top: 5px;
@@ -206,7 +238,6 @@
       cursor: pointer;
       color: inherit;
     }
-    /* لوحة الخيارات (تعديل/حذف) */
     .options-panel {
       position: absolute;
       top: 30px;
@@ -225,7 +256,6 @@
       margin: 2px;
       font-size: 14px;
     }
-    /* أيقونة الإيموجي داخل الفقاعة (موضع مناسب بالأسفل على اليمين) */
     .emoji-icon {
       position: absolute;
       bottom: 5px;
@@ -282,7 +312,7 @@
     #emoji-popup .emoji-option:hover {
       transform: scale(1.2);
     }
-    /* النوافذ المنبثقة العامة (الإعدادات، إنشاء مجموعة، تعديل رسالة، الملف الشخصي) */
+    /* النوافذ المنبثقة */
     .settings-popup,
     .create-group-popup,
     .group-options-popup,
@@ -290,7 +320,8 @@
     .rooms-popup,
     .background-popup,
     .change-name-popup,
-    .edit-message-popup {
+    .edit-message-popup,
+    .edit-private-message-popup {
       position: fixed;
       top: 50%;
       left: 50%;
@@ -305,13 +336,19 @@
       width: 400px;
       padding: 20px;
     }
+    .edit-private-message-popup {
+      z-index: 3100;
+      width: 90%;
+      max-width: 400px;
+    }
     .settings-popup h3,
     .create-group-popup h3,
     .edit-group-popup h3,
     .rooms-popup h3,
     .background-popup h3,
     .change-name-popup h3,
-    .edit-message-popup h3 {
+    .edit-message-popup h3,
+    .edit-private-message-popup h3 {
       margin-top: 0;
     }
     .create-group-popup input,
@@ -331,7 +368,8 @@
     .edit-group-popup button,
     .settings-popup button,
     .change-name-popup button,
-    .edit-message-popup button {
+    .edit-message-popup button,
+    .edit-private-message-popup button {
       width: 100%;
       padding: 10px;
       background: var(--accent-color);
@@ -346,7 +384,8 @@
     .edit-group-popup button:hover,
     .settings-popup button:hover,
     .change-name-popup button:hover,
-    .edit-message-popup button:hover {
+    .edit-message-popup button:hover,
+    .edit-private-message-popup button:hover {
       background: #5d6dcc;
     }
     .group-options-popup button {
@@ -378,6 +417,17 @@
       font-size: 16px;
       cursor: pointer;
       transition: background 0.3s;
+    }
+    /* تحسين زر الإغلاق */
+    .modal-close {
+      background: #dc3545;
+      border: none;
+      color: #fff;
+      padding: 8px 12px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+      margin-top: 20px;
     }
     #toggle-dark-mode {
       background: #6c757d;
@@ -498,54 +548,133 @@
     .bg-option.selected {
       border: 2px solid red;
     }
-    /* نافذة الملف الشخصي */
+    /* تصميم صفحة الملف الشخصي الاحترافية */
     #profile-modal {
       display: none;
       position: fixed;
-      z-index: 3000;
+      z-index: 3500;
       left: 0;
       top: 0;
       width: 100%;
       height: 100%;
-      overflow: auto;
-      background-color: rgba(0,0,0,0.5);
+      background: rgba(0,0,0,0.7);
+      overflow-y: auto;
     }
     #profile-modal .modal-content {
       background: #fff;
-      margin: 10% auto;
-      padding: 20px;
-      border-radius: 8px;
+      margin: 5% auto;
+      padding: 30px;
+      border-radius: 10px;
       width: 90%;
-      max-width: 400px;
-      position: relative;
+      max-width: 500px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.3);
       text-align: center;
     }
-    #profile-modal .modal-close {
-      position: absolute;
-      top: 10px;
-      left: 10px;
+    #profile-modal .modal-content h2 {
+      margin-top: 0;
+      font-size: 24px;
+      color: #333;
+    }
+    /* نافذة الرسائل الخاصة (قائمة الدردشات الخاصة) */
+    .private-messages-popup {
+      display: none;
+      position: fixed;
+      top: 50px;
+      right: 10px;
+      width: 300px;
+      max-height: 80vh;
+      background: #fff;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      z-index: 1400;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+    .private-messages-popup .popup-header {
+      background: #7289da;
+      color: #fff;
+      padding: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .private-messages-popup .private-messages-list {
+      padding: 10px;
+      overflow-y: auto;
+      max-height: calc(80vh - 50px);
+    }
+    .private-message-item {
+      padding: 8px;
+      border-bottom: 1px solid #ddd;
+      cursor: pointer;
+    }
+    .private-message-item:hover {
+      background: #f0f0f0;
+    }
+    .close-btn {
       background: none;
       border: none;
+      color: #fff;
       font-size: 20px;
       cursor: pointer;
     }
-    #profile-modal input[type="text"],
-    #profile-modal textarea {
+    /* نافذة الدردشة الخاصة (تصميم يستجيب للشاشات بالكامل) */
+    .private-chat-popup {
+      display: none;
+      position: fixed;
+      z-index: 3000;
+      top: 0;
+      left: 0;
       width: 100%;
-      padding: 8px;
-      margin: 5px 0 10px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
     }
-    #profile-modal button {
-      padding: 10px 15px;
-      background: #007BFF;
-      color: #fff;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
+    .private-chat-popup .chat-container {
+      background: #fff;
       width: 100%;
-      margin-top: 10px;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+    .private-chat-popup .chat-header {
+      background: #7289da;
+      color: #fff;
+      padding: 15px;
+      text-align: left;
+      font-size: 20px;
+      display: flex;
+      align-items: center;
+    }
+    .private-chat-popup .chat-header .back-icon {
+      margin-right: 10px;
+      cursor: pointer;
+      font-size: 24px;
+    }
+    .private-chat-popup .chat-area {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+      background: #f9f9f9;
+    }
+    .private-chat-popup .message-input {
+      display: flex;
+      padding: 10px;
+      background: #ddd;
+    }
+    .private-chat-popup .message-input input {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+      margin-right: 10px;
+    }
+    .private-chat-popup .message-input button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      background: #7289da;
+      color: #fff;
+      cursor: pointer;
     }
   </style>
 </head>
@@ -555,6 +684,12 @@
     <i class="fa-solid fa-pen-to-square"></i>
     <span>منشورات</span>
   </a>
+  <!-- زر الرسائل الخاصة (موقعه السابق) مع شارة عدد الرسائل -->
+  <button class="private-messages-btn" onclick="togglePrivateMessagesPopup()">
+    <i class="fa-solid fa-comments"></i>
+    <span>الرسائل الخاصة</span>
+    <span id="private-badge" class="badge"></span>
+  </button>
   <div class="container">
     <!-- الشريط الجانبي -->
     <div class="sidebar" id="sidebar">
@@ -569,7 +704,7 @@
         <button class="create-group-btn" onclick="openCreateGroupPopup()">+</button>
       </div>
     </div>
-    <!-- منطقة الدردشة -->
+    <!-- منطقة الدردشة العامة -->
     <div class="chat-container">
       <div class="chat-area" id="messages"></div>
       <div class="message-input">
@@ -630,7 +765,7 @@
     <button onclick="changeName()">تغيير الاسم</button>
     <button onclick="closeChangeNamePopup()">إغلاق</button>
   </div>
-  <!-- نافذة تعديل الرسالة -->
+  <!-- نافذة تعديل الرسالة العامة -->
   <div class="settings-popup" id="edit-message-popup">
     <h3>تعديل الرسالة</h3>
     <textarea id="edit-message-input" rows="3"></textarea>
@@ -638,6 +773,16 @@
       <button onclick="updateMessage()">تعديل</button>
       <button onclick="deleteEditedMessage()" style="background: #dc3545;">حذف رسالة</button>
       <button onclick="closeEditPopup()" style="background: #dc3545;">إغلاق</button>
+    </div>
+  </div>
+  <!-- نافذة تعديل الرسالة الخاصة -->
+  <div class="edit-private-message-popup" id="edit-private-message-popup">
+    <h3>تعديل الرسالة</h3>
+    <textarea id="edit-private-message-input" rows="3"></textarea>
+    <div style="margin-top:10px;">
+      <button onclick="updatePrivateMessage()">تعديل</button>
+      <button onclick="deletePrivateMessage()" style="background: #dc3545;">حذف رسالة</button>
+      <button onclick="closePrivateEditPopup()" style="background: #dc3545;">إغلاق</button>
     </div>
   </div>
   <!-- نافذة الإيموجي -->
@@ -649,16 +794,40 @@
     <span class="emoji-option">😢</span>
     <span class="emoji-option">😡</span>
   </div>
-  <!-- نافذة الملف الشخصي -->
+  <!-- صفحة الملف الشخصي الاحترافية -->
   <div id="profile-modal">
     <div class="modal-content">
-      <button class="modal-close" onclick="closeProfileModal()">×</button>
       <div id="profile-modal-body"></div>
+      <button class="modal-close" onclick="closeProfileModal()">إغلاق</button>
     </div>
   </div>
-
+  <!-- نافذة الرسائل الخاصة (قائمة الدردشات الخاصة) -->
+  <div class="private-messages-popup" id="private-messages-popup">
+    <div class="popup-header">
+      <h3>الرسائل الخاصة</h3>
+      <button class="close-btn" onclick="togglePrivateMessagesPopup()">×</button>
+    </div>
+    <div class="private-messages-list" id="private-messages-list">
+      <!-- سيتم تحميل محادثات الرسائل الخاصة هنا -->
+    </div>
+  </div>
+  <!-- نافذة الدردشة الخاصة (تصميم يستجيب للشاشات بالكامل) -->
+  <div class="private-chat-popup" id="private-chat-popup">
+    <div class="chat-container">
+      <div class="chat-header" id="private-chat-header">
+        <i class="fa-solid fa-arrow-left back-icon" onclick="closePrivateChatPopup()"></i>
+        <span id="private-chat-title">الدردشة الخاصة</span>
+      </div>
+      <div class="chat-area" id="private-chat-area"></div>
+      <div class="message-input">
+        <input type="text" id="private-message-input" placeholder="اكتب رسالة...">
+        <button onclick="sendPrivateMessage()">إرسال</button>
+      </div>
+    </div>
+  </div>
+  <!-- سكربت Firebase والمكتبات الأخرى -->
   <script>
-    // صورة افتراضية في حالة عدم وجود صورة (مثل صورة المستخدم المجهول في Instagram)
+    // صورة افتراضية
     const defaultProfileImage = "https://www.gravatar.com/avatar/?d=mp";
     let currentUser = null;
     let currentGroup = 'general';
@@ -667,7 +836,12 @@
     let editingMessageId = null;
     let selectedBg = '';
     let selectedMessageForReaction = null;
-
+    
+    // المتغيرات الخاصة بالدردشة الخاصة
+    let currentPrivateChatUser = null;
+    let privateChatId = null;
+    let editingPrivateMessageId = null;
+    
     // تهيئة Firebase
     const firebaseConfig = {
       apiKey: "AIzaSyBwwrBtf6AtW7R36FX4j2GQZVEdJldFq7o",
@@ -680,8 +854,8 @@
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const db = firebase.firestore();
-
-    // عند تغيير حالة المصادقة: جلب بيانات المستخدم من مجموعة "users"
+    
+    // جلب بيانات المستخدم عند تغيير حالة المصادقة
     auth.onAuthStateChanged(user => {
       if(user) {
         db.collection('users').doc(user.uid).get().then(doc => {
@@ -701,13 +875,14 @@
           loadGroups();
           currentGroup = localStorage.getItem('lastGroup') || 'general';
           loadMessages();
+          loadPrivateMessages();
         });
       } else {
         window.location.href = 'login.html';
       }
     });
-
-    // تحميل المجموعات وتحديث القائمة الجانبية
+    
+    // تحميل المجموعات
     function loadGroups() {
       db.collection('groups').orderBy('createdAt').onSnapshot(snapshot => {
         const groupList = document.getElementById('group-list');
@@ -765,8 +940,8 @@
         populateRoomsPopup();
       });
     }
-
-    // تحميل الرسائل مع تضمين صورة الملف الشخصي وتفاعلات الرسالة
+    
+    // تحميل الرسائل العامة
     function loadMessages() {
       const messagesContainer = document.getElementById('messages');
       db.collection('groups').doc(currentGroup).collection('messages')
@@ -784,8 +959,7 @@
             }
             const messageDiv = document.createElement('div');
             messageDiv.className = 'message ' + (msg.senderId === currentUser.id ? 'sent' : 'received');
-
-            // صورة الملف الشخصي
+    
             const profileImgDiv = document.createElement('div');
             profileImgDiv.className = 'message-profile';
             let senderPhoto = msg.senderPhoto || defaultProfileImage;
@@ -795,21 +969,17 @@
               showProfileModal({ id: msg.senderId, name: msg.senderName, photoURL: senderPhoto });
             });
             messageDiv.appendChild(profileImgDiv);
-
-            // فقاعة الرسالة
+    
             const bubbleDiv = document.createElement('div');
             bubbleDiv.className = 'message-bubble';
             bubbleDiv.innerHTML = `<strong>${msg.senderName}:</strong> ${msg.text} <div class="message-time">${timeString}</div>`;
             messageDiv.appendChild(bubbleDiv);
-
-            // إذا كانت الرسالة من المستخدم الحالي، إضافة أيقونة الخيارات لعرض لوحة التعديل والحذف
+    
             if(msg.senderId === currentUser.id) {
               const optionsIcon = document.createElement('div');
               optionsIcon.className = 'options-icon';
               optionsIcon.innerHTML = '<i class="fa-solid fa-ellipsis-h"></i>';
               bubbleDiv.appendChild(optionsIcon);
-
-              // عند النقر على فقاعة الرسالة يتم تبديل عرض لوحة الخيارات
               bubbleDiv.addEventListener('click', function(e) {
                 e.stopPropagation();
                 let panel = bubbleDiv.querySelector('.options-panel');
@@ -817,7 +987,7 @@
                   panel.style.display = (panel.style.display === 'block') ? 'none' : 'block';
                 }
               });
-
+    
               const optionsPanel = document.createElement('div');
               optionsPanel.className = 'options-panel';
               const editBtn = document.createElement('button');
@@ -838,8 +1008,7 @@
               optionsPanel.appendChild(deleteBtn);
               bubbleDiv.appendChild(optionsPanel);
             }
-
-            // أيقونة الإيموجي داخل الفقاعة (في الركن السفلي الأيمن)
+    
             const emojiIcon = document.createElement('div');
             emojiIcon.className = 'emoji-icon';
             emojiIcon.innerHTML = '<i class="fa-regular fa-face-smile"></i>';
@@ -849,8 +1018,7 @@
               selectedMessageForReaction = { id: doc.id, element: messageDiv };
               showEmojiPopupForMessage(messageDiv);
             });
-
-            // عرض تفاعلات الرسالة (إذا وُجدت)
+    
             if(msg.reactions) {
               for(let emoji in msg.reactions) {
                 let users = msg.reactions[emoji];
@@ -858,7 +1026,6 @@
                 const reactionSpan = document.createElement('span');
                 reactionSpan.className = 'reaction';
                 reactionSpan.textContent = emoji + (count > 1 ? " " + count : "");
-                // عند النقر على رمز التفاعل: إذا لم يضف المستخدم هذا التفاعل، يتم إضافته
                 reactionSpan.addEventListener('click', function(e) {
                   e.stopPropagation();
                   if(!users.includes(currentUser.id)) {
@@ -868,7 +1035,6 @@
                     });
                   }
                 });
-                // يمكن إضافة حدث إزالة التفاعل عند الضغط المطول على رمز التفاعل إن رغب المستخدم
                 reactionSpan.addEventListener('mousedown', function(e) {
                   let pressTimer = setTimeout(() => {
                     if(users.includes(currentUser.id)) {
@@ -889,14 +1055,13 @@
                 bubbleDiv.appendChild(reactionSpan);
               }
             }
-
+    
             messagesContainer.appendChild(messageDiv);
           });
           messagesContainer.scrollTop = messagesContainer.scrollHeight;
         });
     }
-
-    // إرسال رسالة مع بيانات المرسل
+    
     function sendMessage() {
       const input = document.getElementById('message-input');
       const text = input.value.trim();
@@ -911,16 +1076,14 @@
         input.value = "";
       }).catch(err => console.error("Error sending message:", err));
     }
-
-    // عند دخول مجموعة يتم تحميل الرسائل وتحديث الواجهة
+    
     function enterGroup(groupId) {
       currentGroup = groupId;
       localStorage.setItem('lastGroup', groupId);
       loadMessages();
       loadGroups();
     }
-
-    // تعبئة نافذة الرومات
+    
     function populateRoomsPopup() {
       const container = document.getElementById('rooms-grid');
       container.innerHTML = "";
@@ -952,15 +1115,13 @@
         });
       });
     }
-
-    // حذف رسالة
+    
     function deleteMessage(messageId) {
       if(confirm("هل تريد حذف الرسالة؟")) {
         db.collection('groups').doc(currentGroup).collection('messages').doc(messageId).delete();
       }
     }
-
-    // فتح نافذة تعديل الرسالة
+    
     function openEditPopup(messageId, currentText) {
       editingMessageId = messageId;
       document.getElementById('edit-message-input').value = currentText;
@@ -970,8 +1131,7 @@
       editingMessageId = null;
       document.getElementById('edit-message-popup').style.display = 'none';
     }
-
-    // تحديث الرسالة
+    
     function updateMessage() {
       const newText = document.getElementById('edit-message-input').value.trim();
       if(!newText) {
@@ -989,7 +1149,7 @@
         }).catch(err => console.error("Error updating message:", err));
       }
     }
-
+    
     function deleteEditedMessage() {
       if(confirm("هل تريد حذف الرسالة؟")) {
         db.collection('groups').doc(currentGroup).collection('messages').doc(editingMessageId).delete()
@@ -1000,8 +1160,7 @@
           .catch(err => console.error("Error deleting message:", err));
       }
     }
-
-    // دوال النوافذ المنبثقة (الإعدادات، إنشاء مجموعة، تغيير الاسم، الخلفية، خيارات المجموعة)
+    
     function showSettingsPopup() {
       document.getElementById('settings-popup').style.display = 'block';
     }
@@ -1017,7 +1176,7 @@
     function closeGroupOptionsPopup() {
       document.getElementById('group-options-popup').style.display = 'none';
     }
-
+    
     document.getElementById('delete-group-btn').addEventListener('click', function() {
       if(confirm("هل أنت متأكد من حذف المجموعة؟")) {
         db.collection('groups').doc(selectedGroupId).delete()
@@ -1031,18 +1190,18 @@
           .catch(err => console.error("Error deleting group:", err));
       }
     });
-
+    
     document.getElementById('edit-group-btn').addEventListener('click', function() {
       closeGroupOptionsPopup();
       document.getElementById('edit-group-name').value = selectedGroupData.name;
       document.getElementById('edit-group-image').value = selectedGroupData.image || "";
       document.getElementById('edit-group-popup').style.display = 'block';
     });
-
+    
     function closeEditGroupPopup() {
       document.getElementById('edit-group-popup').style.display = 'none';
     }
-
+    
     function saveGroupEdits() {
       const newName = document.getElementById('edit-group-name').value.trim();
       const newImage = document.getElementById('edit-group-image').value.trim();
@@ -1057,7 +1216,7 @@
         closeEditGroupPopup();
       }).catch(err => console.error("Error updating group:", err));
     }
-
+    
     function changeName() {
       const newName = document.getElementById('new-name').value.trim();
       if(newName) {
@@ -1070,7 +1229,7 @@
         alert("الرجاء إدخال اسم جديد");
       }
     }
-
+    
     document.getElementById('toggle-dark-mode').addEventListener('click', function() {
       if(document.body.classList.contains('dark-mode')) {
         document.body.classList.remove('dark-mode');
@@ -1082,12 +1241,12 @@
         this.textContent = 'الوضع الفاتح';
       }
     });
-
+    
     document.getElementById('change-bg-btn').addEventListener('click', function() {
       document.getElementById('settings-popup').style.display = 'none';
       document.getElementById('background-popup').style.display = 'block';
     });
-
+    
     document.getElementById('apply-bg-btn').addEventListener('click', function() {
       if(!selectedBg) {
         alert("الرجاء اختيار خلفية");
@@ -1101,57 +1260,55 @@
       document.getElementById('background-popup').style.display = 'none';
       document.getElementById('settings-popup').style.display = 'block';
     });
-
+    
     document.getElementById('logout-btn').addEventListener('click', function() {
       firebase.auth().signOut().then(() => {
         window.location.href = 'login.html';
       }).catch(err => alert("حدث خطأ أثناء تسجيل الخروج: " + err.message));
     });
-
+    
     function closeChangeNamePopup() {
       document.getElementById('change-name-popup').style.display = 'none';
       document.getElementById('settings-popup').style.display = 'block';
     }
-
+    
     document.getElementById('change-name-btn').addEventListener('click', function() {
       document.getElementById('change-name-popup').style.display = 'block';
       document.getElementById('settings-popup').style.display = 'none';
     });
-
+    
     function closeBackgroundPopup() {
       document.getElementById('background-popup').style.display = 'none';
       document.getElementById('settings-popup').style.display = 'block';
     }
-
-    // عرض نافذة خيارات المجموعة عند الضغط المطول
+    
+    // عرض نافذة خيارات المجموعة
     function showGroupOptionsPopup(groupId, data) {
       selectedGroupId = groupId;
       selectedGroupData = data;
       document.getElementById('group-options-popup').style.display = 'block';
     }
-
-    // نافذة الإيموجي: عند اختيار إيموجي، يتم إضافته إلى تفاعلات الرسالة
+    
+    // نافذة الإيموجي
     function showEmojiPopupForMessage(messageElement) {
       const popup = document.getElementById('emoji-popup');
       popup.style.display = 'block';
       const rect = messageElement.getBoundingClientRect();
       const popupWidth = popup.offsetWidth;
-      const popupHeight = popup.offsetHeight;
       const left = rect.left + rect.width / 2 - popupWidth / 2;
-      const top = rect.bottom + 10; // وضع النافذة أسفل الرسالة
+      const top = rect.bottom + 10;
       popup.style.left = left + 'px';
       popup.style.top = top + 'px';
     }
-
+    
     function hideEmojiPopup() {
       document.getElementById('emoji-popup').style.display = 'none';
     }
-
+    
     document.querySelectorAll('#emoji-popup .emoji-option').forEach(emoji => {
       emoji.addEventListener('click', function(e) {
         const selectedEmoji = this.textContent;
         if(selectedMessageForReaction && selectedMessageForReaction.element) {
-          // تحديث تفاعلات الرسالة في قاعدة البيانات
           db.collection('groups').doc(currentGroup).collection('messages').doc(selectedMessageForReaction.id).get().then(docSnapshot => {
             let msgData = docSnapshot.data();
             let reactions = msgData.reactions || {};
@@ -1168,15 +1325,15 @@
         e.stopPropagation();
       });
     });
-
+    
     document.addEventListener('click', function(e) {
       const popup = document.getElementById('emoji-popup');
       if(popup.style.display === 'block' && !popup.contains(e.target)) {
         hideEmojiPopup();
       }
     });
-
-    // إنشاء مجموعة (حد أقصى 10 لكل مستخدم)
+    
+    // إنشاء مجموعة
     function createGroup() {
       const groupName = document.getElementById('group-name').value.trim();
       const groupImage = document.getElementById('group-image').value.trim();
@@ -1202,7 +1359,8 @@
         })
         .catch(err => console.error("Error checking group count:", err));
     }
-
+    
+    // تهيئة بعض الإعدادات عند تحميل الصفحة
     document.addEventListener("DOMContentLoaded", function() {
       const mode = localStorage.getItem('mode');
       if(mode === 'dark') {
@@ -1239,7 +1397,7 @@
         containerBg.appendChild(img);
       }
     });
-
+    
     function toggleRoomsPopup() {
       const popup = document.getElementById('rooms-popup');
       popup.style.display = (popup.style.display === 'block') ? 'none' : 'block';
@@ -1247,106 +1405,336 @@
         populateRoomsPopup();
       }
     }
-
-    function initialize() {
-      const defaultGroup = 'general';
-      db.collection('groups').doc(defaultGroup).get().then(doc => {
-        if(!doc.exists) {
-          db.collection('groups').doc(defaultGroup).set({
-            name: 'روم عام',
-            image: 'https://source.unsplash.com/featured/200x200?nature',
-            createdAt: firebase.firestore.FieldValue.serverTimestamp()
-          });
-        }
+    
+    // --- ميزة تحديث عدد الرسائل غير المقروءة ---
+    // نقوم بإضافة حقل "read" إلى كل رسالة خاصة عند إرسالها ونضيف أيضًا "chatParticipants"
+    // ثم نستخدم استعلام مجموعة "collectionGroup" لتجميع عدد الرسائل غير المقروءة
+    db.collectionGroup('messages')
+      .where('read', '==', false)
+      .where('chatParticipants', 'array-contains', currentUser ? currentUser.id : '') // سيتم تحديثه لاحقاً
+      .where('senderId', '!=', currentUser ? currentUser.id : '')
+      .onSnapshot(snapshot => {
+         const badge = document.getElementById('private-badge');
+         const count = snapshot.size;
+         if(count > 0) {
+           badge.style.display = 'inline-block';
+           badge.textContent = count;
+         } else {
+           badge.style.display = 'none';
+         }
       });
+    // لتحديث الاستعلام عند توافر currentUser، نستخدم مراقب
+    let unsubscribeUnread;
+    function updateUnreadListener() {
+      if(unsubscribeUnread) unsubscribeUnread();
+      if(!currentUser) return;
+      unsubscribeUnread = db.collectionGroup('messages')
+        .where('read', '==', false)
+        .where('chatParticipants', 'array-contains', currentUser.id)
+        .where('senderId', '!=', currentUser.id)
+        .onSnapshot(snapshot => {
+           const badge = document.getElementById('private-badge');
+           const count = snapshot.size;
+           if(count > 0) {
+             badge.style.display = 'inline-block';
+             badge.textContent = count;
+           } else {
+             badge.style.display = 'none';
+           }
+        });
     }
-    initialize();
-
-    // نافذة الملف الشخصي
+    
+    // بعد تحميل currentUser نحدث عداد الرسائل غير المقروءة
+    auth.onAuthStateChanged(user => {
+      if(user) {
+        updateUnreadListener();
+      }
+    });
+    
+    // --- نهاية ميزة تحديث العداد ---
+    
+    // الرسائل الخاصة - القائمة
+    function togglePrivateMessagesPopup() {
+      const popup = document.getElementById('private-messages-popup');
+      if(popup.style.display === 'block') {
+        popup.style.display = 'none';
+      } else {
+        popup.style.display = 'block';
+        loadPrivateMessages();
+      }
+    }
+    
+    function loadPrivateMessages() {
+      const listContainer = document.getElementById('private-messages-list');
+      listContainer.innerHTML = "";
+      db.collection('private_chats').where("participants", "array-contains", currentUser.id)
+        .get()
+        .then(snapshot => {
+          if(snapshot.empty) {
+            listContainer.innerHTML = "<p>لا توجد رسائل خاصة.</p>";
+            return;
+          }
+          snapshot.forEach(doc => {
+            const data = doc.data();
+            let otherUserId = data.participants.filter(id => id !== currentUser.id)[0];
+            db.collection('users').doc(otherUserId).get().then(userDoc => {
+              let userData = userDoc.data();
+              const item = document.createElement('div');
+              item.className = 'private-message-item';
+              item.textContent = userData.name;
+              item.onclick = function() {
+                openPrivateChat(otherUserId);
+                document.getElementById('private-messages-popup').style.display = 'none';
+              };
+              listContainer.appendChild(item);
+            });
+          });
+        })
+        .catch(err => console.error("Error loading private messages:", err));
+    }
+    
+    // الرسائل الخاصة - النافذة المدمجة
+    function openPrivateChat(userId) {
+      // إذا تم استدعاؤها من الملف الشخصي، نغلق نافذة الملف الشخصي
+      closeProfileModal();
+      currentPrivateChatUser = userId;
+      db.collection('users').doc(userId).get().then(doc => {
+        if(doc.exists) {
+          let userData = doc.data();
+          document.getElementById('private-chat-title').textContent = "الدردشة مع " + userData.name;
+          privateChatId = [currentUser.id, userId].sort().join("_");
+          loadPrivateChatMessages();
+          document.getElementById('private-chat-popup').style.display = 'block';
+          // عند فتح الدردشة، نعلم النظام بأن الرسائل أصبحت مقروءة
+          markPrivateChatMessagesAsRead();
+        } else {
+          alert("المستخدم غير موجود");
+        }
+      }).catch(err => console.error("Error fetching private chat user:", err));
+    }
+    
+    function loadPrivateChatMessages() {
+      const chatArea = document.getElementById('private-chat-area');
+      db.collection('private_chats').doc(privateChatId).collection('messages')
+         .orderBy('timestamp')
+         .onSnapshot(snapshot => {
+           chatArea.innerHTML = "";
+           snapshot.forEach(doc => {
+             const msg = doc.data();
+             let timeString = "";
+             if(msg.timestamp) {
+               timeString = new Date(msg.timestamp.toDate()).toLocaleTimeString();
+             }
+             const messageDiv = document.createElement('div');
+             messageDiv.className = 'message ' + (msg.senderId === currentUser.id ? 'sent' : 'received');
+    
+             const profileImgDiv = document.createElement('div');
+             profileImgDiv.className = 'message-profile';
+             let senderPhoto = msg.senderPhoto || defaultProfileImage;
+             profileImgDiv.style.backgroundImage = 'url(' + senderPhoto + ')';
+             profileImgDiv.addEventListener('click', function(e) {
+               e.stopPropagation();
+               showProfileModal({ id: msg.senderId, name: msg.senderName, photoURL: senderPhoto });
+             });
+             messageDiv.appendChild(profileImgDiv);
+    
+             const bubbleDiv = document.createElement('div');
+             bubbleDiv.className = 'message-bubble';
+             bubbleDiv.innerHTML = `<strong>${msg.senderName}:</strong> ${msg.text} <div class="message-time">${timeString}</div>`;
+             messageDiv.appendChild(bubbleDiv);
+    
+             if(msg.senderId === currentUser.id) {
+               const optionsIcon = document.createElement('div');
+               optionsIcon.className = 'options-icon';
+               optionsIcon.innerHTML = '<i class="fa-solid fa-ellipsis-h"></i>';
+               bubbleDiv.appendChild(optionsIcon);
+               bubbleDiv.addEventListener('click', function(e) {
+                 e.stopPropagation();
+                 let panel = bubbleDiv.querySelector('.options-panel');
+                 if(panel) {
+                   panel.style.display = (panel.style.display === 'block') ? 'none' : 'block';
+                 }
+               });
+    
+               const optionsPanel = document.createElement('div');
+               optionsPanel.className = 'options-panel';
+               const editBtn = document.createElement('button');
+               editBtn.textContent = 'تعديل';
+               editBtn.onclick = function(e) {
+                 e.stopPropagation();
+                 openPrivateEditPopup(doc.id, msg.text);
+                 optionsPanel.style.display = 'none';
+               };
+               const deleteBtn = document.createElement('button');
+               deleteBtn.textContent = 'حذف';
+               deleteBtn.onclick = function(e) {
+                 e.stopPropagation();
+                 deletePrivateMessage(doc.id);
+                 optionsPanel.style.display = 'none';
+               };
+               optionsPanel.appendChild(editBtn);
+               optionsPanel.appendChild(deleteBtn);
+               bubbleDiv.appendChild(optionsPanel);
+             }
+    
+             chatArea.appendChild(messageDiv);
+           });
+           chatArea.scrollTop = chatArea.scrollHeight;
+         }, err => console.error("Error loading private chat messages:", err));
+    }
+    
+    function sendPrivateMessage() {
+      const input = document.getElementById('private-message-input');
+      const text = input.value.trim();
+      if(!text) return;
+      const messageData = {
+        text: text,
+        senderId: currentUser.id,
+        senderName: currentUser.name,
+        senderPhoto: currentUser.photoURL || defaultProfileImage,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+        read: false,
+        chatParticipants: [currentUser.id, currentPrivateChatUser]
+      };
+      db.collection('private_chats').doc(privateChatId).set({
+        participants: [currentUser.id, currentPrivateChatUser]
+      }, { merge: true })
+      .then(() => {
+        return db.collection('private_chats').doc(privateChatId).collection('messages').add(messageData);
+      })
+      .then(() => {
+        input.value = "";
+      })
+      .catch(err => console.error("Error sending private message:", err));
+    }
+    
+    function closePrivateChatPopup() {
+      document.getElementById('private-chat-popup').style.display = 'none';
+      currentPrivateChatUser = null;
+      privateChatId = null;
+    }
+    
+    // عند فتح دردشة خاصة، نعلم النظام بأن الرسائل الواردة أصبحت مقروءة
+    function markPrivateChatMessagesAsRead() {
+      db.collection('private_chats').doc(privateChatId).collection('messages')
+        .where('senderId', '!=', currentUser.id)
+        .where('read', '==', false)
+        .get().then(snapshot => {
+          snapshot.forEach(doc => {
+            doc.ref.update({ read: true });
+          });
+        });
+    }
+    
+    // تعديل الرسائل الخاصة
+    function openPrivateEditPopup(messageId, currentText) {
+      editingPrivateMessageId = messageId;
+      document.getElementById('edit-private-message-input').value = currentText;
+      document.getElementById('edit-private-message-popup').style.display = 'block';
+    }
+    function closePrivateEditPopup() {
+      editingPrivateMessageId = null;
+      document.getElementById('edit-private-message-popup').style.display = 'none';
+    }
+    function updatePrivateMessage() {
+      const newText = document.getElementById('edit-private-message-input').value.trim();
+      if(!newText) {
+        alert("الرجاء إدخال نص الرسالة");
+        return;
+      }
+      if(editingPrivateMessageId) {
+        db.collection('private_chats').doc(privateChatId).collection('messages').doc(editingPrivateMessageId).update({
+          text: newText,
+          edited: true,
+          editTimestamp: firebase.firestore.FieldValue.serverTimestamp()
+        }).then(() => {
+          alert("تم تعديل الرسالة بنجاح");
+          closePrivateEditPopup();
+        }).catch(err => console.error("Error updating private message:", err));
+      }
+    }
+    function deletePrivateMessage(messageId) {
+      if(confirm("هل تريد حذف الرسالة؟")) {
+        db.collection('private_chats').doc(privateChatId).collection('messages').doc(messageId).delete()
+          .then(() => {
+            alert("تم حذف الرسالة");
+          })
+          .catch(err => console.error("Error deleting private message:", err));
+      }
+    }
+    
+    // صفحة الملف الشخصي
     function showProfileModal(user) {
       const modalBody = document.getElementById('profile-modal-body');
       modalBody.innerHTML = "";
       if(user.id === currentUser.id) {
-        const header = document.createElement('div');
-        header.style.fontSize = '20px';
-        header.style.marginBottom = '15px';
-        header.textContent = 'تعديل الملف الشخصي';
-        modalBody.appendChild(header);
-
-        const nameInput = document.createElement('input');
-        nameInput.type = 'text';
-        nameInput.value = currentUser.name;
-        nameInput.id = 'profile-edit-name';
-        nameInput.placeholder = 'أدخل اسمك';
-        modalBody.appendChild(nameInput);
-
-        const descInput = document.createElement('textarea');
-        descInput.id = 'profile-edit-description';
-        descInput.placeholder = 'أدخل وصف حسابك';
-        descInput.value = currentUser.description;
-        modalBody.appendChild(descInput);
-
-        const picInput = document.createElement('input');
-        picInput.type = 'text';
-        picInput.value = currentUser.photoURL || "";
-        picInput.id = 'profile-edit-picture';
-        picInput.placeholder = 'أدخل رابط صورة الملف الشخصي';
-        modalBody.appendChild(picInput);
-
-        const saveButton = document.createElement('button');
-        saveButton.textContent = 'حفظ التعديلات';
-        saveButton.onclick = function() {
-          currentUser.name = document.getElementById('profile-edit-name').value;
-          currentUser.description = document.getElementById('profile-edit-description').value;
-          currentUser.photoURL = document.getElementById('profile-edit-picture').value || defaultProfileImage;
-          db.collection('users').doc(currentUser.id).update({
-            name: currentUser.name,
-            description: currentUser.description,
-            photoURL: currentUser.photoURL
-          }).then(() => {
-            alert("تم حفظ التعديلات");
-            loadMessages();
-            closeProfileModal();
-          }).catch(err => console.error("Error updating profile:", err));
-        };
-        modalBody.appendChild(saveButton);
+        modalBody.innerHTML = `
+          <h2>ملفي الشخصي</h2>
+          <img src="${currentUser.photoURL || defaultProfileImage}" style="width:120px;height:120px;border-radius:50%;object-fit:cover;margin:0 auto;display:block;">
+          <p style="font-size:20px;font-weight:bold;margin-top:15px;">${currentUser.name}</p>
+          <p style="font-size:16px;color:#555;">${currentUser.description || "لا يوجد وصف"}</p>
+          <button onclick="openProfileEdit()" style="margin-top:20px;">تعديل الملف الشخصي</button>
+          <button onclick="closeProfileModal()" style="margin-top:10px;background:#dc3545;">إغلاق</button>
+        `;
       } else {
         db.collection('users').doc(user.id).get().then(doc => {
-          let data;
-          if(doc.exists) {
-            data = doc.data();
-            data.id = user.id;
-          } else {
-            data = {
-              id: user.id,
+          let data = doc.exists ? doc.data() : {
               name: user.name,
               description: "لا يوجد وصف",
               createdAt: "غير متاح",
               photoURL: user.photoURL || defaultProfileImage
             };
-          }
-          const header = document.createElement('div');
-          header.style.fontSize = '20px';
-          header.style.marginBottom = '15px';
-          header.textContent = data.name;
-          modalBody.appendChild(header);
-
-          const desc = document.createElement('p');
-          desc.textContent = data.description || "لا يوجد وصف";
-          modalBody.appendChild(desc);
-
-          const createdAt = document.createElement('p');
-          createdAt.textContent = "تاريخ إنشاء الحساب: " + (data.createdAt ? new Date(data.createdAt).toLocaleDateString() : "غير متاح");
-          modalBody.appendChild(createdAt);
+          modalBody.innerHTML = `
+            <h2>${data.name}</h2>
+            <img src="${data.photoURL || defaultProfileImage}" style="width:120px;height:120px;border-radius:50%;object-fit:cover;margin:0 auto;display:block;">
+            <p style="font-size:16px;color:#555;">${data.description || "لا يوجد وصف"}</p>
+            <p style="font-size:14px;color:#999;">تاريخ الإنشاء: ${data.createdAt ? new Date(data.createdAt).toLocaleDateString() : "غير متاح"}</p>
+            <button onclick="openPrivateChat('${data.id}')" style="margin-top:20px;">رسالة خاصة</button>
+            <button onclick="closeProfileModal()" style="margin-top:10px;background:#dc3545;">إغلاق</button>
+          `;
         });
       }
       document.getElementById('profile-modal').style.display = 'block';
     }
-
+      
     function closeProfileModal() {
       document.getElementById('profile-modal').style.display = 'none';
     }
+    
+    // تحرير الملف الشخصي داخل النافذة
+    function openProfileEdit() {
+      const modalBody = document.getElementById('profile-modal-body');
+      modalBody.innerHTML = `
+        <h2>تعديل الملف الشخصي</h2>
+        <img src="${currentUser.photoURL || defaultProfileImage}" id="edit-profile-pic" style="width:120px;height:120px;border-radius:50%;object-fit:cover;margin:0 auto;display:block;">
+        <input type="text" id="edit-profile-name" value="${currentUser.name}" placeholder="أدخل اسمك" style="width:100%;padding:10px;margin-top:15px;">
+        <textarea id="edit-profile-description" placeholder="أدخل وصف حسابك" style="width:100%;padding:10px;margin-top:10px;">${currentUser.description || ''}</textarea>
+        <input type="text" id="edit-profile-photo" value="${currentUser.photoURL || ''}" placeholder="رابط صورة الملف الشخصي" style="width:100%;padding:10px;margin-top:10px;">
+        <button onclick="saveProfileEdit()" style="margin-top:15px;">حفظ التعديلات</button>
+        <button onclick="showProfileModal(currentUser)" style="margin-top:10px;background:#dc3545;">إلغاء</button>
+      `;
+    }
+    
+    function saveProfileEdit() {
+      const newName = document.getElementById('edit-profile-name').value.trim();
+      const newDesc = document.getElementById('edit-profile-description').value.trim();
+      const newPhoto = document.getElementById('edit-profile-photo').value.trim() || defaultProfileImage;
+      if(newName === '') {
+        alert("يرجى إدخال الاسم");
+        return;
+      }
+      db.collection('users').doc(currentUser.id).update({
+        name: newName,
+        description: newDesc,
+        photoURL: newPhoto
+      }).then(() => {
+        currentUser.name = newName;
+        currentUser.description = newDesc;
+        currentUser.photoURL = newPhoto;
+        alert("تم حفظ التعديلات");
+        showProfileModal(currentUser);
+      }).catch(err => console.error("Error updating profile:", err));
+    }
   </script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
 </body>
 </html>
