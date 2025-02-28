@@ -142,7 +142,7 @@
     .fixed-posts-btn:hover {
       background: #0056b3;
     }
-    /* زر الرسائل الخاصة (إرجاع مكانه السابق) */
+    /* زر الرسائل الخاصة */
     .private-messages-btn {
       position: fixed;
       top: 10px;
@@ -163,7 +163,6 @@
     .private-messages-btn:hover {
       background: #5d6dcc;
     }
-    /* إضافة شارة عدد الرسائل غير المقروءة */
     .private-messages-btn .badge {
       display: none;
       background: red;
@@ -575,7 +574,7 @@
       font-size: 24px;
       color: #333;
     }
-    /* نافذة الرسائل الخاصة (قائمة الدردشات الخاصة) */
+    /* نافذة الرسائل الخاصة */
     .private-messages-popup {
       display: none;
       position: fixed;
@@ -618,7 +617,7 @@
       font-size: 20px;
       cursor: pointer;
     }
-    /* نافذة الدردشة الخاصة (تصميم يستجيب للشاشات بالكامل) */
+    /* نافذة الدردشة الخاصة */
     .private-chat-popup {
       display: none;
       position: fixed;
@@ -684,7 +683,7 @@
     <i class="fa-solid fa-pen-to-square"></i>
     <span>منشورات</span>
   </a>
-  <!-- زر الرسائل الخاصة (موقعه السابق) مع شارة عدد الرسائل -->
+  <!-- زر الرسائل الخاصة -->
   <button class="private-messages-btn" onclick="togglePrivateMessagesPopup()">
     <i class="fa-solid fa-comments"></i>
     <span>الرسائل الخاصة</span>
@@ -695,6 +694,10 @@
     <div class="sidebar" id="sidebar">
       <div class="group-list" id="group-list"></div>
       <div class="fixed-buttons">
+        <!-- زر الملف الشخصي الجديد -->
+        <button class="profile-btn-sidebar" onclick="openProfilePopup()">
+          <i class="fa-solid fa-user-circle"></i>
+        </button>
         <button class="settings-btn-sidebar" onclick="showSettingsPopup()">
           <i class="fa-solid fa-cog"></i>
         </button>
@@ -811,7 +814,7 @@
       <!-- سيتم تحميل محادثات الرسائل الخاصة هنا -->
     </div>
   </div>
-  <!-- نافذة الدردشة الخاصة (تصميم يستجيب للشاشات بالكامل) -->
+  <!-- نافذة الدردشة الخاصة -->
   <div class="private-chat-popup" id="private-chat-popup">
     <div class="chat-container">
       <div class="chat-header" id="private-chat-header">
@@ -855,7 +858,7 @@
     const auth = firebase.auth();
     const db = firebase.firestore();
     
-    // جلب بيانات المستخدم عند تغيير حالة المصادقة
+    // عند تغيير حالة المصادقة
     auth.onAuthStateChanged(user => {
       if(user) {
         db.collection('users').doc(user.uid).get().then(doc => {
@@ -867,6 +870,7 @@
               id: user.uid,
               name: user.displayName || "مستخدم مجهول",
               description: "",
+              username: "",
               createdAt: new Date().toISOString(),
               photoURL: user.photoURL || defaultProfileImage
             };
@@ -1407,11 +1411,9 @@
     }
     
     // --- ميزة تحديث عدد الرسائل غير المقروءة ---
-    // نقوم بإضافة حقل "read" إلى كل رسالة خاصة عند إرسالها ونضيف أيضًا "chatParticipants"
-    // ثم نستخدم استعلام مجموعة "collectionGroup" لتجميع عدد الرسائل غير المقروءة
     db.collectionGroup('messages')
       .where('read', '==', false)
-      .where('chatParticipants', 'array-contains', currentUser ? currentUser.id : '') // سيتم تحديثه لاحقاً
+      .where('chatParticipants', 'array-contains', currentUser ? currentUser.id : '')
       .where('senderId', '!=', currentUser ? currentUser.id : '')
       .onSnapshot(snapshot => {
          const badge = document.getElementById('private-badge');
@@ -1423,7 +1425,6 @@
            badge.style.display = 'none';
          }
       });
-    // لتحديث الاستعلام عند توافر currentUser، نستخدم مراقب
     let unsubscribeUnread;
     function updateUnreadListener() {
       if(unsubscribeUnread) unsubscribeUnread();
@@ -1444,7 +1445,6 @@
         });
     }
     
-    // بعد تحميل currentUser نحدث عداد الرسائل غير المقروءة
     auth.onAuthStateChanged(user => {
       if(user) {
         updateUnreadListener();
@@ -1495,7 +1495,6 @@
     
     // الرسائل الخاصة - النافذة المدمجة
     function openPrivateChat(userId) {
-      // إذا تم استدعاؤها من الملف الشخصي، نغلق نافذة الملف الشخصي
       closeProfileModal();
       currentPrivateChatUser = userId;
       db.collection('users').doc(userId).get().then(doc => {
@@ -1505,7 +1504,6 @@
           privateChatId = [currentUser.id, userId].sort().join("_");
           loadPrivateChatMessages();
           document.getElementById('private-chat-popup').style.display = 'block';
-          // عند فتح الدردشة، نعلم النظام بأن الرسائل أصبحت مقروءة
           markPrivateChatMessagesAsRead();
         } else {
           alert("المستخدم غير موجود");
@@ -1614,7 +1612,6 @@
       privateChatId = null;
     }
     
-    // عند فتح دردشة خاصة، نعلم النظام بأن الرسائل الواردة أصبحت مقروءة
     function markPrivateChatMessagesAsRead() {
       db.collection('private_chats').doc(privateChatId).collection('messages')
         .where('senderId', '!=', currentUser.id)
@@ -1673,6 +1670,7 @@
           <img src="${currentUser.photoURL || defaultProfileImage}" style="width:120px;height:120px;border-radius:50%;object-fit:cover;margin:0 auto;display:block;">
           <p style="font-size:20px;font-weight:bold;margin-top:15px;">${currentUser.name}</p>
           <p style="font-size:16px;color:#555;">${currentUser.description || "لا يوجد وصف"}</p>
+          ${ currentUser.username ? `<p style="font-size:16px;color:#555;">المعرف: @${currentUser.username}</p>` : '' }
           <button onclick="openProfileEdit()" style="margin-top:20px;">تعديل الملف الشخصي</button>
           <button onclick="closeProfileModal()" style="margin-top:10px;background:#dc3545;">إغلاق</button>
         `;
@@ -1701,7 +1699,7 @@
       document.getElementById('profile-modal').style.display = 'none';
     }
     
-    // تحرير الملف الشخصي داخل النافذة
+    // تحرير الملف الشخصي داخل النافذة (مع إضافة حقل المعرف)
     function openProfileEdit() {
       const modalBody = document.getElementById('profile-modal-body');
       modalBody.innerHTML = `
@@ -1710,6 +1708,7 @@
         <input type="text" id="edit-profile-name" value="${currentUser.name}" placeholder="أدخل اسمك" style="width:100%;padding:10px;margin-top:15px;">
         <textarea id="edit-profile-description" placeholder="أدخل وصف حسابك" style="width:100%;padding:10px;margin-top:10px;">${currentUser.description || ''}</textarea>
         <input type="text" id="edit-profile-photo" value="${currentUser.photoURL || ''}" placeholder="رابط صورة الملف الشخصي" style="width:100%;padding:10px;margin-top:10px;">
+        <input type="text" id="edit-profile-username" value="${currentUser.username || ''}" placeholder="أدخل المعرف (username)" style="width:100%;padding:10px;margin-top:10px;">
         <button onclick="saveProfileEdit()" style="margin-top:15px;">حفظ التعديلات</button>
         <button onclick="showProfileModal(currentUser)" style="margin-top:10px;background:#dc3545;">إلغاء</button>
       `;
@@ -1719,6 +1718,7 @@
       const newName = document.getElementById('edit-profile-name').value.trim();
       const newDesc = document.getElementById('edit-profile-description').value.trim();
       const newPhoto = document.getElementById('edit-profile-photo').value.trim() || defaultProfileImage;
+      const newUsername = document.getElementById('edit-profile-username').value.trim();
       if(newName === '') {
         alert("يرجى إدخال الاسم");
         return;
@@ -1726,14 +1726,22 @@
       db.collection('users').doc(currentUser.id).update({
         name: newName,
         description: newDesc,
-        photoURL: newPhoto
+        photoURL: newPhoto,
+        username: newUsername
       }).then(() => {
         currentUser.name = newName;
         currentUser.description = newDesc;
         currentUser.photoURL = newPhoto;
+        currentUser.username = newUsername;
         alert("تم حفظ التعديلات");
         showProfileModal(currentUser);
       }).catch(err => console.error("Error updating profile:", err));
+    }
+    
+    // زر فتح نافذة تعديل الملف الشخصي من الشريط الجانبي
+    function openProfilePopup() {
+      openProfileEdit();
+      document.getElementById('profile-modal').style.display = 'block';
     }
   </script>
 </body>
