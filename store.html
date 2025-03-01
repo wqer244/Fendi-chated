@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>قصصي - ستوري</title>
+  <!-- ربط خطوط تاجوال -->
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+  <!-- أيقونات Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" 
+        integrity="sha512-pIVz3r+YZIxG8wfsx9NWeoO59V+byy3pY++jZo+iq8zB0QpUP7q90ymY+gnr9dMW+dE9W/jwhCQq+E3Cz/XXRw==" 
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <!-- مكتبات Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+  <style>
+    :root {
+      --primary-color: #0072ff;
+      --primary-dark: #005bb5;
+      --secondary-color: #28a745;
+      --danger-color: #dc3545;
+      --bg-color: #f4f7f6;
+      --text-color: #333;
+      --header-bg: linear-gradient(45deg, #00c6ff, #0072ff);
+    }
+    /* الوضع الداكن */
+    body.dark-mode {
+      --bg-color: #181818;
+      --text-color: #e0e0e0;
+      --header-bg: linear-gradient(45deg, #333, #111);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Tajawal', sans-serif;
+      background: var(--bg-color);
+      color: var(--text-color);
+      direction: rtl;
+      transition: background 0.3s, color 0.3s;
+    }
+    header {
+      background: var(--header-bg);
+      padding: 20px;
+      text-align: center;
+      color: #fff;
+      position: relative;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    }
+    header h1 { margin: 0; font-size: 2.2rem; }
+    /* زر تبديل الوضع */
+    .theme-toggle-btn {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background: var(--primary-color);
+      border: none;
+      border-radius: 50%;
+      padding: 10px;
+      z-index: 9999;
+      font-size: 1.5rem;
+      color: #fff;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 15px;
+    }
+    /* منطقة عرض القصص */
+    .stories-container {
+      display: flex;
+      overflow-x: auto;
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 10px;
+      margin-top: 20px;
+    }
+    .story {
+      margin: 10px;
+      text-align: center;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .story-img {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      border: 3px solid var(--primary-color);
+      object-fit: cover;
+      transition: transform 0.3s, border-color 0.3s;
+    }
+    .story.multiple .story-img { border: 3px solid #FF1493; }
+    .story:hover .story-img {
+      transform: scale(1.1);
+      border-color: #00c6ff;
+    }
+    .story-name {
+      font-size: 0.9rem;
+      margin-top: 8px;
+      color: #555;
+    }
+    /* قسم الحسابات المقترحة */
+    .suggested-accounts-container {
+      margin-top: 30px;
+      padding: 20px;
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .suggested-accounts-container h2 {
+      text-align: center;
+      margin-bottom: 15px;
+      color: var(--primary-color);
+      font-size: 1.8rem;
+    }
+    .accounts-grid {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+    }
+    .account-card {
+      width: 160px;
+      text-align: center;
+      cursor: pointer;
+      position: relative;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      padding: 10px;
+      background: #fff;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .account-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+    .account-card img {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      border: 3px solid var(--primary-color);
+      object-fit: cover;
+      transition: transform 0.3s;
+    }
+    .account-card img:hover { transform: scale(1.1); }
+    .account-card .account-name {
+      margin-top: 8px;
+      font-size: 1.1rem;
+      color: #333;
+      font-weight: 600;
+    }
+    .account-card .followers-count {
+      font-size: 0.85rem;
+      margin: 5px 0;
+      color: #777;
+    }
+    /* زر متابعة/إلغاء المتابعة */
+    .follow-btn {
+      margin-top: 8px;
+      padding: 5px 10px;
+      background: var(--primary-color);
+      border: none;
+      color: #fff;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.3s;
+      font-size: 0.9rem;
+    }
+    .follow-btn:hover {
+      background: var(--primary-dark);
+    }
+    /* زر نشر القصة العائم */
+    #fabContainer {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      text-align: center;
+      z-index: 1001;
+      transition: opacity 0.3s;
+    }
+    .fab {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      background-color: var(--primary-color);
+      color: #fff;
+      font-size: 2.5rem;
+      border: none;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.3);
+      cursor: pointer;
+      outline: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.3s;
+    }
+    .fab:hover { background-color: var(--primary-dark); }
+    .fab-label {
+      margin-top: 10px;
+      color: var(--primary-color);
+      font-weight: bold;
+      font-size: 1rem;
+    }
+    /* تصميم المودالات العامة */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.85);
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+    .modal-content {
+      background: #fff;
+      padding: 25px;
+      border-radius: 10px;
+      max-width: 500px;
+      width: 90%;
+      text-align: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      position: relative;
+      transition: all 0.3s;
+    }
+    .modal-content h2 {
+      margin-top: 0;
+      color: var(--primary-color);
+      font-size: 1.8rem;
+    }
+    textarea {
+      width: 100%;
+      padding: 12px;
+      margin: 15px 0;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      resize: vertical;
+      font-family: 'Tajawal', sans-serif;
+      font-size: 1rem;
+    }
+    button {
+      padding: 10px 20px;
+      background: var(--primary-color);
+      border: none;
+      color: #fff;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+      margin: 5px;
+      transition: background 0.3s;
+    }
+    button:hover { background: var(--primary-dark); }
+    .btn-danger {
+      background: var(--danger-color);
+    }
+    .btn-danger:hover { background: #b02a37; }
+    .publish-btn {
+      background: var(--secondary-color);
+      border: none;
+      color: #fff;
+      padding: 10px 15px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: background 0.3s;
+      margin-left: 10px;
+    }
+    .publish-btn:hover { background: #218838; }
+    /* مودال عرض القصة */
+    .story-view {
+      width: 100vw;
+      height: 100vh;
+      background-size: cover;
+      background-position: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      color: #fff;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+    .action-bar {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      z-index: 1002;
+      display: flex;
+      gap: 15px;
+    }
+    .nav-btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 2rem;
+      color: #fff;
+      background: rgba(0,0,0,0.4);
+      border: none;
+      border-radius: 50%;
+      padding: 10px;
+      cursor: pointer;
+      z-index: 1001;
+    }
+    .nav-btn.prev { right: 20px; }
+    .nav-btn.next { left: 20px; }
+    .exit-btn {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      font-size: 1.5rem;
+      background: rgba(0,0,0,0.5);
+      border: none;
+      color: #fff;
+      padding: 5px 10px;
+      cursor: pointer;
+      border-radius: 8px;
+      z-index: 1002;
+    }
+    /* مودال معلومات المستخدم */
+    #userInfoModal img {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      border: 3px solid var(--primary-color);
+      object-fit: cover;
+      margin-bottom: 15px;
+      cursor: pointer;
+    }
+    /* مودال الملف الشخصي (يشبه إنستغرام) */
+    #profileModal .modal-content {
+      width: 100vw;
+      height: 100vh;
+      border-radius: 0;
+      padding: 20px;
+      position: relative;
+      overflow: hidden;
+    }
+    #profileModal .profile-header {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      border-bottom: 1px solid #ddd;
+      padding-bottom: 15px;
+      margin-bottom: 15px;
+    }
+    #profileModal .profile-header img {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      border: 3px solid var(--primary-color);
+      object-fit: cover;
+    }
+    #profileModal .profile-header .profile-info {
+      text-align: left;
+    }
+    #profileModal .profile-header .profile-info p {
+      margin: 5px 0;
+      font-size: 1rem;
+    }
+    /* قصص المستخدم تُعرض في الجزء السفلي بشكل طولي وبإطار أحمر */
+    #userStoriesContainer {
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      height: 40%;
+      overflow-y: auto;
+      background: rgba(255,255,255,0.95);
+      padding: 10px;
+      box-sizing: border-box;
+    }
+    .story-card {
+      width: 100%;
+      min-height: 120px;
+      border: 2px solid red;
+      border-radius: 8px;
+      overflow: hidden;
+      background-size: cover;
+      background-position: center;
+      margin-bottom: 10px;
+    }
+    /* استجابة الموقع */
+    @media (max-width: 600px) {
+      header h1 { font-size: 1.5rem; }
+      .fab { width: 60px; height: 60px; font-size: 2rem; }
+      .fab-label { font-size: 0.9rem; }
+    }
+  </style>
+</head>
+<body>
+  <!-- رأس الموقع -->
+  <header>
+    <button id="themeToggle" class="theme-toggle-btn">
+      <i class="fa-solid fa-moon"></i>
+    </button>
+    <div class="container">
+      <h1>قصصي - ستوري</h1>
+    </div>
+  </header>
+
+  <div class="container">
+    <!-- منطقة عرض القصص -->
+    <div class="stories-container" id="storiesContainer">
+      <!-- سيتم تحميل القصص هنا -->
+    </div>
+    <!-- قسم الحسابات المقترحة -->
+    <div class="suggested-accounts-container" id="suggestedAccountsContainer">
+      <h2>حسابات مقترحة</h2>
+      <div class="accounts-grid" id="accountsGrid">
+        <!-- سيتم تحميل حسابات المستخدمين هنا -->
+      </div>
+    </div>
+  </div>
+
+  <!-- زر نشر القصة العائم -->
+  <div id="fabContainer">
+    <button class="fab" id="floatingAddStoryBtn">+</button>
+    <div class="fab-label">نشر قصه جديده</div>
+  </div>
+
+  <!-- مودال إضافة القصة -->
+  <div class="modal-overlay" id="addStoryModal">
+    <div class="modal-content">
+      <h2>نشر قصة جديدة</h2>
+      <textarea id="storyText" rows="4" placeholder="أدخل نص القصة..."></textarea>
+      <br>
+      <button id="postStoryBtn"><i class="fa-solid fa-paper-plane"></i> نشر</button>
+      <button id="closeAddStoryBtn" class="btn-danger"><i class="fa-solid fa-xmark"></i> إغلاق</button>
+    </div>
+  </div>
+
+  <!-- مودال عرض القصة -->
+  <div class="modal-overlay" id="viewStoryModal">
+    <div class="story-view" id="storyView">
+      <!-- محتوى عرض القصة -->
+    </div>
+    <button class="nav-btn prev" id="prevStory">&#10094;</button>
+    <button class="nav-btn next" id="nextStory">&#10095;</button>
+    <button class="exit-btn" id="exitBtn">X</button>
+  </div>
+
+  <!-- مودال معلومات المستخدم -->
+  <div class="modal-overlay" id="userInfoModal">
+    <div class="modal-content" id="userInfoContent">
+      <h2>معلومات المستخدم</h2>
+      <div id="userInfoDetails">
+        <!-- تفاصيل المستخدم -->
+      </div>
+      <button id="closeUserInfoBtn" class="btn-danger"><i class="fa-solid fa-xmark"></i> إغلاق</button>
+    </div>
+  </div>
+
+  <!-- مودال الملف الشخصي (شاشة كاملة مثل إنستغرام) -->
+  <div class="modal-overlay" id="profileModal">
+    <div class="modal-content">
+      <button id="closeProfileBtn" class="btn-danger" style="position:absolute; top:10px; right:10px;">
+        <i class="fa-solid fa-xmark"></i> إغلاق
+      </button>
+      <div class="profile-header">
+        <img id="profilePic" src="" alt="صورة المستخدم">
+        <div class="profile-info" id="profileInfo">
+          <!-- تفاصيل الحساب: الاسم، اسم المستخدم، الوصف، تاريخ الانضمام، عدد المتابعين -->
+        </div>
+      </div>
+      <!-- قصص المستخدم تظهر في الأسفل مع تمييزها بإطار أحمر -->
+      <div id="userStoriesContainer">
+        <!-- سيتم تحميل قصص المستخدم هنا -->
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // تهيئة Firebase (استبدل بيانات التكوين ببيانات مشروعك)
+    const firebaseConfig = {
+      apiKey: "AIzaSyBwwrBtf6AtW7R36FX4j2GQZVEdJldFq7o",
+      authDomain: "you-unblock.firebaseapp.com",
+      projectId: "you-unblock",
+      storageBucket: "you-unblock.appspot.com",
+      messagingSenderId: "306278978440",
+      appId: "1:306278978440:web:4ca87c3856e107a30be03d"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    let currentUser = null;
+    let storyGroups = [];
+    let currentGroupIndex = 0;
+    let currentStoryIndex = 0;
+
+    auth.onAuthStateChanged(user => {
+      if(user) {
+        currentUser = {
+          id: user.uid,
+          name: user.displayName || "مستخدم",
+          photoURL: user.photoURL || "https://www.gravatar.com/avatar/?d=mp"
+        };
+        loadStories();
+        loadSuggestedAccounts();
+      } else {
+        window.location.href = 'login.html';
+      }
+    });
+
+    // تحميل القصص وتجميعها حسب userId
+    function loadStories() {
+      db.collection('stories').orderBy('timestamp', 'desc').onSnapshot(snapshot => {
+        let groups = {};
+        snapshot.forEach(doc => {
+          let story = doc.data();
+          story.id = doc.id;
+          if(story.timestamp && story.timestamp.toDate) {
+            let storyTime = story.timestamp.toDate();
+            let now = new Date();
+            if(now - storyTime > 24 * 60 * 60 * 1000) {
+              db.collection('stories').doc(doc.id).delete();
+              return;
+            }
+          }
+          if(!groups[story.userId]) {
+            groups[story.userId] = [];
+          }
+          groups[story.userId].push(story);
+        });
+        storyGroups = [];
+        for(let userId in groups) {
+          groups[userId].sort((a, b) => a.timestamp.toDate() - b.timestamp.toDate());
+          storyGroups.push({ userId: userId, stories: groups[userId] });
+        }
+        storyGroups.sort((a, b) => {
+          return b.stories[b.stories.length - 1].timestamp.toDate() - a.stories[a.stories.length - 1].timestamp.toDate();
+        });
+        renderStoryGroups();
+      });
+    }
+
+    // عرض القصص في شريط القصص
+    function renderStoryGroups() {
+      const container = document.getElementById('storiesContainer');
+      container.innerHTML = "";
+      storyGroups.forEach(group => {
+        const latestStory = group.stories[group.stories.length - 1];
+        const storyDiv = document.createElement('div');
+        storyDiv.classList.add('story');
+        if(group.stories.length > 1) {
+          storyDiv.classList.add('multiple');
+        }
+        storyDiv.dataset.userId = group.userId;
+        const img = document.createElement('img');
+        img.classList.add('story-img');
+        img.src = latestStory.photoURL || currentUser.photoURL;
+        const nameDiv = document.createElement('div');
+        nameDiv.classList.add('story-name');
+        nameDiv.textContent = latestStory.userName;
+        storyDiv.appendChild(img);
+        storyDiv.appendChild(nameDiv);
+        storyDiv.addEventListener('click', () => {
+          currentGroupIndex = storyGroups.findIndex(g => g.userId === group.userId);
+          currentStoryIndex = 0;
+          showGroupedStory(currentGroupIndex, currentStoryIndex);
+        });
+        container.appendChild(storyDiv);
+      });
+    }
+
+    // عرض قصة معينة من مجموعة
+    function showGroupedStory(groupIndex, storyIndex) {
+      if(groupIndex < 0 || groupIndex >= storyGroups.length) return;
+      let group = storyGroups[groupIndex];
+      if(storyIndex < 0 || storyIndex >= group.stories.length) return;
+      let story = group.stories[storyIndex];
+      const storyView = document.getElementById('storyView');
+      storyView.innerHTML = "";
+      if(story.userId === currentUser.id) {
+        const actionBar = document.createElement('div');
+        actionBar.className = "action-bar";
+        const deleteBtn = document.createElement('button');
+        deleteBtn.className = "btn-danger";
+        deleteBtn.innerHTML = '<i class="fa-solid fa-trash"></i> حذف القصة';
+        deleteBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          if(confirm("هل أنت متأكد من حذف القصة؟")) {
+            deleteStory(story.id);
+          }
+        });
+        const publishNewBtn = document.createElement('button');
+        publishNewBtn.className = "publish-btn";
+        publishNewBtn.innerHTML = '<i class="fa-solid fa-plus-circle"></i> نشر قصة جديدة';
+        publishNewBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          document.getElementById('viewStoryModal').style.display = 'none';
+          document.getElementById('addStoryModal').style.display = 'flex';
+          document.getElementById('storyText').value = '';
+          document.getElementById('fabContainer').style.display = 'block';
+        });
+        actionBar.appendChild(deleteBtn);
+        actionBar.appendChild(publishNewBtn);
+        storyView.appendChild(actionBar);
+      }
+      const contentDiv = document.createElement('div');
+      contentDiv.className = "story-content";
+      contentDiv.innerHTML = `<h2>${story.userName}</h2><p>${story.text}</p>`;
+      storyView.appendChild(contentDiv);
+      storyView.style.backgroundImage = `url('${story.backgroundUrl}')`;
+      document.getElementById('viewStoryModal').style.display = 'flex';
+      // إخفاء زر النشر العائم أثناء عرض القصة
+      document.getElementById('fabContainer').style.display = 'none';
+    }
+
+    // دالة حذف القصة
+    function deleteStory(storyId) {
+      db.collection('stories').doc(storyId).delete().then(() => {
+        document.getElementById('viewStoryModal').style.display = 'none';
+        document.getElementById('fabContainer').style.display = 'block';
+      }).catch(err => console.error("Error deleting story:", err));
+    }
+
+    // تحميل الحسابات المقترحة مع زر متابعة/إلغاء متابعة وتحديث عدد المتابعين
+    function loadSuggestedAccounts() {
+      db.collection("users").get().then(snapshot => {
+        const grid = document.getElementById("accountsGrid");
+        grid.innerHTML = "";
+        snapshot.forEach(doc => {
+          let user = doc.data();
+          user.id = doc.id;
+          if(!user.followers) user.followers = [];
+          if(!user.followersCount) user.followersCount = 0;
+          const card = document.createElement("div");
+          card.classList.add("account-card");
+          const img = document.createElement("img");
+          img.src = user.photoURL || "https://www.gravatar.com/avatar/?d=mp";
+          const nameDiv = document.createElement("div");
+          nameDiv.classList.add("account-name");
+          nameDiv.textContent = user.name || "مستخدم";
+          const follCount = document.createElement("p");
+          follCount.classList.add("followers-count");
+          follCount.textContent = user.followersCount + " متابع";
+          const followBtn = document.createElement("button");
+          followBtn.classList.add("follow-btn");
+          if(user.followers.includes(currentUser.id)) {
+            followBtn.textContent = "تم متابعه";
+          } else {
+            followBtn.textContent = "متابعة";
+          }
+          followBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            let isFollowing = user.followers.includes(currentUser.id);
+            if(!isFollowing) {
+              db.collection("users").doc(user.id).update({
+                followers: firebase.firestore.FieldValue.arrayUnion(currentUser.id),
+                followersCount: firebase.firestore.FieldValue.increment(1)
+              }).then(() => {
+                followBtn.textContent = "تم متابعه";
+                user.followers.push(currentUser.id);
+                user.followersCount++;
+                follCount.textContent = user.followersCount + " متابع";
+              });
+            } else {
+              db.collection("users").doc(user.id).update({
+                followers: firebase.firestore.FieldValue.arrayRemove(currentUser.id),
+                followersCount: firebase.firestore.FieldValue.increment(-1)
+              }).then(() => {
+                followBtn.textContent = "متابعة";
+                user.followers = user.followers.filter(id => id !== currentUser.id);
+                user.followersCount--;
+                follCount.textContent = user.followersCount + " متابع";
+              });
+            }
+          });
+          card.appendChild(img);
+          card.appendChild(nameDiv);
+          card.appendChild(follCount);
+          card.appendChild(followBtn);
+          // عند الضغط على البطاقة (ما عدا زر المتابعة) عرض معلومات المستخدم
+          card.addEventListener("click", () => {
+            showUserInfo(user);
+          });
+          grid.appendChild(card);
+        });
+      }).catch(err => console.error("Error loading suggested accounts:", err));
+    }
+
+    // عرض معلومات المستخدم في مودال
+    function showUserInfo(user) {
+      let joinDate = "غير متوفر";
+      if(user.createdAt) {
+        joinDate = new Date(user.createdAt).toLocaleDateString("ar-EG", {year:"numeric", month:"long", day:"numeric"});
+      }
+      const followersCount = user.followersCount || 0;
+      const detailsDiv = document.getElementById("userInfoDetails");
+      detailsDiv.innerHTML = `
+        <img id="userProfilePic" src="${user.photoURL || "https://www.gravatar.com/avatar/?d=mp"}" alt="صورة المستخدم">
+        <p><strong>الاسم:</strong> ${user.name || "غير معروف"}</p>
+        <p><strong>اسم المستخدم:</strong> ${user.username || "غير متوفر"}</p>
+        <p><strong>الوصف:</strong> ${user.description || "لا يوجد وصف."}</p>
+        <p><strong>عدد المتابعين:</strong> ${followersCount}</p>
+        <p><strong>تاريخ الانضمام:</strong> ${joinDate}</p>
+      `;
+      // عند النقر على صورة المستخدم يتم فتح شاشة الملف الشخصي
+      document.getElementById("userProfilePic").addEventListener("click", () => {
+        // إخفاء زر نشر القصة العائم
+        document.getElementById("fabContainer").style.display = "none";
+        openUserProfile(user);
+      });
+      document.getElementById("userInfoModal").style.display = "flex";
+      // إخفاء زر نشر القصة أثناء عرض معلومات المستخدم
+      document.getElementById("fabContainer").style.display = "none";
+    }
+
+    document.getElementById("closeUserInfoBtn").addEventListener("click", () => {
+      document.getElementById("userInfoModal").style.display = "none";
+      // استعادة زر نشر القصة عند إغلاق معلومات المستخدم
+      document.getElementById("fabContainer").style.display = "block";
+    });
+    document.getElementById("userInfoModal").addEventListener("click", (e) => {
+      if(e.target === document.getElementById("userInfoModal")) {
+        document.getElementById("userInfoModal").style.display = "none";
+        document.getElementById("fabContainer").style.display = "block";
+      }
+    });
+
+    // فتح شاشة الملف الشخصي (تملأ الشاشة بالكامل)
+    function openUserProfile(user) {
+      let joinDate = "غير متوفر";
+      if(user.createdAt) {
+        joinDate = new Date(user.createdAt).toLocaleDateString("ar-EG", {year:"numeric", month:"long", day:"numeric"});
+      }
+      document.getElementById("profilePic").src = user.photoURL || "https://www.gravatar.com/avatar/?d=mp";
+      document.getElementById("profileInfo").innerHTML = `
+        <p><strong>الاسم:</strong> ${user.name || "غير معروف"}</p>
+        <p><strong>اسم المستخدم:</strong> ${user.username || "غير متوفر"}</p>
+        <p><strong>الوصف:</strong> ${user.description || "لا يوجد وصف."}</p>
+        <p><strong>تاريخ الانضمام:</strong> ${joinDate}</p>
+        <p><strong>عدد المتابعين:</strong> ${user.followersCount || 0}</p>
+      `;
+      document.getElementById("profileModal").style.display = "flex";
+      loadUserStories(user.id);
+    }
+
+    // تحميل قصص المستخدم وعرضها في القسم السفلي مع تمييزها بإطار أحمر
+    function loadUserStories(userId) {
+      const storiesContainer = document.getElementById("userStoriesContainer");
+      storiesContainer.innerHTML = "";
+      db.collection('stories')
+        .where('userId', '==', userId)
+        .orderBy('timestamp', 'desc')
+        .get()
+        .then(snapshot => {
+          snapshot.forEach(doc => {
+            let story = doc.data();
+            const storyCard = document.createElement("div");
+            storyCard.classList.add("story-card", "published");
+            storyCard.style.backgroundImage = `url('${story.backgroundUrl}')`;
+            storiesContainer.appendChild(storyCard);
+          });
+        })
+        .catch(err => console.error("Error loading user stories:", err));
+    }
+
+    document.getElementById("profileModal").addEventListener("click", (e) => {
+      if(e.target === document.getElementById("profileModal")) {
+        document.getElementById("profileModal").style.display = "none";
+        // استعادة زر نشر القصة عند إغلاق الملف الشخصي
+        document.getElementById("fabContainer").style.display = "block";
+      }
+    });
+    document.getElementById("closeProfileBtn").addEventListener("click", () => {
+      document.getElementById("profileModal").style.display = "none";
+      document.getElementById("fabContainer").style.display = "block";
+    });
+
+    document.getElementById('prevStory').addEventListener('click', (e) => {
+      e.stopPropagation();
+      if(currentStoryIndex > 0) {
+        currentStoryIndex--;
+        showGroupedStory(currentGroupIndex, currentStoryIndex);
+      } else if(currentGroupIndex > 0) {
+        currentGroupIndex--;
+        currentStoryIndex = storyGroups[currentGroupIndex].stories.length - 1;
+        showGroupedStory(currentGroupIndex, currentStoryIndex);
+      }
+    });
+    document.getElementById('nextStory').addEventListener('click', (e) => {
+      e.stopPropagation();
+      let group = storyGroups[currentGroupIndex];
+      if(currentStoryIndex < group.stories.length - 1) {
+        currentStoryIndex++;
+        showGroupedStory(currentGroupIndex, currentStoryIndex);
+      } else if(currentGroupIndex < storyGroups.length - 1) {
+        currentGroupIndex++;
+        currentStoryIndex = 0;
+        showGroupedStory(currentGroupIndex, currentStoryIndex);
+      }
+    });
+    document.getElementById('exitBtn').addEventListener('click', () => {
+      document.getElementById('viewStoryModal').style.display = 'none';
+      document.getElementById('fabContainer').style.display = 'block';
+    });
+    document.getElementById('viewStoryModal').addEventListener('click', (e) => {
+      if(e.target === document.getElementById('viewStoryModal')) {
+        document.getElementById('viewStoryModal').style.display = 'none';
+        document.getElementById('fabContainer').style.display = 'block';
+      }
+    });
+    document.getElementById('floatingAddStoryBtn').addEventListener('click', () => {
+      document.getElementById('addStoryModal').style.display = 'flex';
+      document.getElementById('storyText').value = '';
+    });
+    document.getElementById('closeAddStoryBtn').addEventListener('click', () => {
+      document.getElementById('addStoryModal').style.display = 'none';
+    });
+    document.getElementById('postStoryBtn').addEventListener('click', () => {
+      const text = document.getElementById('storyText').value.trim();
+      if(!text) {
+        alert('يرجى إدخال نص القصة');
+        return;
+      }
+      const randomBg = "https://picsum.photos/seed/" + Math.floor(Math.random()*1000) + "/600/800";
+      db.collection('stories').add({
+        text: text,
+        userId: currentUser.id,
+        userName: currentUser.name,
+        photoURL: currentUser.photoURL,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+        backgroundUrl: randomBg
+      }).then(() => {
+        document.getElementById('addStoryModal').style.display = 'none';
+      }).catch(err => console.error("Error posting story:", err));
+    });
+
+    const themeToggleBtn = document.getElementById('themeToggle');
+    themeToggleBtn.addEventListener('click', function() {
+      document.body.classList.toggle('dark-mode');
+      if(document.body.classList.contains('dark-mode')) {
+        themeToggleBtn.innerHTML = '<i class="fa-solid fa-sun"></i>';
+      } else {
+        themeToggleBtn.innerHTML = '<i class="fa-solid fa-moon"></i>';
+      }
+    });
+  </script>
+</body>
+</html>
