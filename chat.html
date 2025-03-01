@@ -123,7 +123,7 @@
     /* زر المنشورات */
     .fixed-posts-btn {
       position: fixed;
-      top: 10px;
+      top: 12px;
       left: 50%;
       transform: translateX(-50%);
       background: #007BFF;
@@ -142,6 +142,27 @@
     .fixed-posts-btn:hover {
       background: #0056b3;
     }
+    /* زر القصص */
+    .fixed-stories-btn {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      background: #28a745;
+      color: #fff;
+      padding: 8px 5px;
+      border-radius: 5px;
+      text-decoration: none;
+      font-size: 20px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      z-index: 1200;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: background 0.3s;
+    }
+    .fixed-stories-btn:hover {
+      background: #218838;
+    }
     /* زر الرسائل الخاصة */
     .private-messages-btn {
       position: fixed;
@@ -152,7 +173,7 @@
       border: none;
       padding: 0px 15px;
       border-radius: 5px;
-      font-size: 16px;
+      font-size: 13px;
       cursor: pointer;
       z-index: 1300;
       display: flex;
@@ -682,6 +703,11 @@
   <a href="posts.html" class="fixed-posts-btn">
     <i class="fa-solid fa-pen-to-square"></i>
     <span>منشورات</span>
+  </a>
+  <!-- زر القصص -->
+  <a href="store.html" class="fixed-stories-btn">
+    <i class="fa-solid fa-book-open"></i>
+    <span>القصص </span>
   </a>
   <!-- زر الرسائل الخاصة -->
   <button class="private-messages-btn" onclick="togglePrivateMessagesPopup()">
