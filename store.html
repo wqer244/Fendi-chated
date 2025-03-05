@@ -24,7 +24,7 @@
       --text-color: #333;
       --header-bg: linear-gradient(45deg, #00c6ff, #0072ff);
     }
-    /* الوضع الداكن */
+    /* إذا كنت تريد إزالة الوضع الداكن بالكامل يمكنك حذف هذا القسم */
     body.dark-mode {
       --bg-color: #181818;
       --text-color: #e0e0e0;
@@ -48,21 +48,7 @@
       box-shadow: 0 2px 6px rgba(0,0,0,0.2);
     }
     header h1 { margin: 0; font-size: 2.2rem; }
-    /* زر تبديل الوضع */
-    .theme-toggle-btn {
-      position: absolute;
-      top: 20px;
-      left: 20px;
-      background: var(--primary-color);
-      border: none;
-      border-radius: 50%;
-      padding: 10px;
-      z-index: 9999;
-      font-size: 1.5rem;
-      color: #fff;
-      cursor: pointer;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-    }
+    /* زر الوضع الداكن محذوف حسب الطلب */
     .container {
       max-width: 1200px;
       margin: 0 auto;
@@ -83,6 +69,7 @@
       text-align: center;
       cursor: pointer;
       flex-shrink: 0;
+      position: relative;
     }
     .story-img {
       width: 80px;
@@ -101,6 +88,30 @@
       font-size: 0.9rem;
       margin-top: 8px;
       color: #555;
+    }
+    /* أيقونة وعدد المشاهدات */
+    .view-count {
+      position: absolute;
+      bottom: 20px;
+      right: 20px;
+      background: rgba(0,0,0,0.5);
+      color: #fff;
+      padding: 5px 10px;
+      border-radius: 20px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+    /* أيقونة وعدد اللايك */
+    .like-btn {
+      position: absolute;
+      bottom: 20px;
+      left: 20px;
+      background: rgba(0,0,0,0.5);
+      color: #fff;
+      padding: 5px 10px;
+      border-radius: 20px;
+      font-size: 1rem;
+      cursor: pointer;
     }
     /* قسم الحسابات المقترحة */
     .suggested-accounts-container {
@@ -385,6 +396,10 @@
       background-position: center;
       margin-bottom: 10px;
     }
+    /* مودال عرض مشاهدات القصة */
+    #storyViewsModal .modal-content {
+      max-width: 400px;
+    }
     /* استجابة الموقع */
     @media (max-width: 600px) {
       header h1 { font-size: 1.5rem; }
@@ -394,11 +409,8 @@
   </style>
 </head>
 <body>
-  <!-- رأس الموقع -->
+  <!-- رأس الموقع (زر تبديل الوضع محذوف) -->
   <header>
-    <button id="themeToggle" class="theme-toggle-btn">
-      <i class="fa-solid fa-moon"></i>
-    </button>
     <div class="container">
       <h1>قصصي - ستوري</h1>
     </div>
@@ -438,7 +450,7 @@
   <!-- مودال عرض القصة -->
   <div class="modal-overlay" id="viewStoryModal">
     <div class="story-view" id="storyView">
-      <!-- محتوى عرض القصة -->
+      <!-- سيتم تحميل محتوى عرض القصة هنا -->
     </div>
     <button class="nav-btn prev" id="prevStory">&#10094;</button>
     <button class="nav-btn next" id="nextStory">&#10095;</button>
@@ -456,7 +468,7 @@
     </div>
   </div>
 
-  <!-- مودال الملف الشخصي (شاشة كاملة مثل إنستغرام) -->
+  <!-- مودال الملف الشخصي (يشبه إنستغرام) -->
   <div class="modal-overlay" id="profileModal">
     <div class="modal-content">
       <button id="closeProfileBtn" class="btn-danger" style="position:absolute; top:10px; right:10px;">
@@ -472,6 +484,17 @@
       <div id="userStoriesContainer">
         <!-- سيتم تحميل قصص المستخدم هنا -->
       </div>
+    </div>
+  </div>
+
+  <!-- مودال عرض مشاهدات القصة -->
+  <div class="modal-overlay" id="storyViewsModal">
+    <div class="modal-content">
+      <h2>مشاهدات القصة</h2>
+      <div id="viewsList">
+        <!-- سيتم تحميل قائمة المشاهدين هنا -->
+      </div>
+      <button id="closeViewsModal" class="btn-danger"><i class="fa-solid fa-xmark"></i> إغلاق</button>
     </div>
   </div>
 
@@ -569,7 +592,7 @@
       });
     }
 
-    // عرض قصة معينة من مجموعة
+    // عرض قصة معينة من مجموعة مع عرض المشاهدات واللايكات
     function showGroupedStory(groupIndex, storyIndex) {
       if(groupIndex < 0 || groupIndex >= storyGroups.length) return;
       let group = storyGroups[groupIndex];
@@ -577,6 +600,8 @@
       let story = group.stories[storyIndex];
       const storyView = document.getElementById('storyView');
       storyView.innerHTML = "";
+      
+      // إذا كانت القصة تعود للمستخدم الحالي يتم عرض شريط الإجراءات
       if(story.userId === currentUser.id) {
         const actionBar = document.createElement('div');
         actionBar.className = "action-bar";
@@ -603,14 +628,75 @@
         actionBar.appendChild(publishNewBtn);
         storyView.appendChild(actionBar);
       }
+      
       const contentDiv = document.createElement('div');
       contentDiv.className = "story-content";
       contentDiv.innerHTML = `<h2>${story.userName}</h2><p>${story.text}</p>`;
       storyView.appendChild(contentDiv);
       storyView.style.backgroundImage = `url('${story.backgroundUrl}')`;
+      
+      // إنشاء أيقونة وعدد المشاهدات مع كلمة "مشاهدات"
+      let currentViews = (story.views && story.views.length) ? story.views.length : 0;
+      let viewCountDiv = document.createElement('div');
+      viewCountDiv.className = "view-count";
+      viewCountDiv.innerHTML = '<i class="fa-solid fa-eye"></i> ' + currentViews + ' مشاهدات';
+      viewCountDiv.addEventListener('click', (e) => {
+        e.stopPropagation();
+        showStoryViews(story);
+      });
+      storyView.appendChild(viewCountDiv);
+      
+      // إنشاء زر لايك وعرض عدد اللايكات
+      let currentLikes = (story.likes && story.likes.length) ? story.likes.length : 0;
+      let likeBtn = document.createElement('div');
+      likeBtn.className = "like-btn";
+      if(story.likes && story.likes.includes(currentUser.id)) {
+         likeBtn.innerHTML = '<i class="fa-solid fa-heart" style="color: red;"></i> ' + currentLikes + ' لايك';
+      } else {
+         likeBtn.innerHTML = '<i class="fa-regular fa-heart"></i> ' + currentLikes + ' لايك';
+      }
+      likeBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          if(story.likes && story.likes.includes(currentUser.id)) {
+              // إزالة الإعجاب
+              db.collection('stories').doc(story.id).update({
+                  likes: firebase.firestore.FieldValue.arrayRemove(currentUser.id)
+              }).then(() => {
+                  if(story.likes) {
+                      let index = story.likes.indexOf(currentUser.id);
+                      if(index !== -1) story.likes.splice(index, 1);
+                  }
+                  currentLikes = (story.likes && story.likes.length) ? story.likes.length : 0;
+                  likeBtn.innerHTML = '<i class="fa-regular fa-heart"></i> ' + currentLikes + ' لايك';
+              });
+          } else {
+              // إضافة الإعجاب
+              db.collection('stories').doc(story.id).update({
+                  likes: firebase.firestore.FieldValue.arrayUnion(currentUser.id)
+              }).then(() => {
+                  if(!story.likes) story.likes = [];
+                  story.likes.push(currentUser.id);
+                  currentLikes = (story.likes && story.likes.length) ? story.likes.length : 0;
+                  likeBtn.innerHTML = '<i class="fa-solid fa-heart" style="color: red;"></i> ' + currentLikes + ' لايك';
+              });
+          }
+      });
+      storyView.appendChild(likeBtn);
+      
       document.getElementById('viewStoryModal').style.display = 'flex';
-      // إخفاء زر النشر العائم أثناء عرض القصة
+      // إخفاء زر نشر القصة أثناء عرض القصة
       document.getElementById('fabContainer').style.display = 'none';
+      
+      // تحديث مشاهدات القصة إذا لم يقم المستخدم بعرضها مسبقاً
+      if(!story.views || !story.views.includes(currentUser.id)) {
+        db.collection('stories').doc(story.id).update({
+          views: firebase.firestore.FieldValue.arrayUnion(currentUser.id)
+        }).then(() => {
+          if(!story.views) { story.views = []; }
+          story.views.push(currentUser.id);
+          viewCountDiv.innerHTML = '<i class="fa-solid fa-eye"></i> ' + story.views.length + ' مشاهدات';
+        });
+      }
     }
 
     // دالة حذف القصة
@@ -676,8 +762,6 @@
           card.appendChild(img);
           card.appendChild(nameDiv);
           card.appendChild(follCount);
-          card.appendChild(followBtn);
-          // عند الضغط على البطاقة (ما عدا زر المتابعة) عرض معلومات المستخدم
           card.addEventListener("click", () => {
             showUserInfo(user);
           });
@@ -702,20 +786,16 @@
         <p><strong>عدد المتابعين:</strong> ${followersCount}</p>
         <p><strong>تاريخ الانضمام:</strong> ${joinDate}</p>
       `;
-      // عند النقر على صورة المستخدم يتم فتح شاشة الملف الشخصي
       document.getElementById("userProfilePic").addEventListener("click", () => {
-        // إخفاء زر نشر القصة العائم
         document.getElementById("fabContainer").style.display = "none";
         openUserProfile(user);
       });
       document.getElementById("userInfoModal").style.display = "flex";
-      // إخفاء زر نشر القصة أثناء عرض معلومات المستخدم
       document.getElementById("fabContainer").style.display = "none";
     }
 
     document.getElementById("closeUserInfoBtn").addEventListener("click", () => {
       document.getElementById("userInfoModal").style.display = "none";
-      // استعادة زر نشر القصة عند إغلاق معلومات المستخدم
       document.getElementById("fabContainer").style.display = "block";
     });
     document.getElementById("userInfoModal").addEventListener("click", (e) => {
@@ -725,7 +805,7 @@
       }
     });
 
-    // فتح شاشة الملف الشخصي (تملأ الشاشة بالكامل)
+    // فتح شاشة الملف الشخصي (شاشة كاملة)
     function openUserProfile(user) {
       let joinDate = "غير متوفر";
       if(user.createdAt) {
@@ -766,7 +846,6 @@
     document.getElementById("profileModal").addEventListener("click", (e) => {
       if(e.target === document.getElementById("profileModal")) {
         document.getElementById("profileModal").style.display = "none";
-        // استعادة زر نشر القصة عند إغلاق الملف الشخصي
         document.getElementById("fabContainer").style.display = "block";
       }
     });
@@ -834,14 +913,38 @@
       }).catch(err => console.error("Error posting story:", err));
     });
 
-    const themeToggleBtn = document.getElementById('themeToggle');
-    themeToggleBtn.addEventListener('click', function() {
-      document.body.classList.toggle('dark-mode');
-      if(document.body.classList.contains('dark-mode')) {
-        themeToggleBtn.innerHTML = '<i class="fa-solid fa-sun"></i>';
-      } else {
-        themeToggleBtn.innerHTML = '<i class="fa-solid fa-moon"></i>';
+    // دالة عرض مشاهدات القصة في مودال منفصل
+    function showStoryViews(story) {
+      const modal = document.getElementById('storyViewsModal');
+      const viewsList = document.getElementById('viewsList');
+      viewsList.innerHTML = "جار التحميل...";
+      modal.style.display = 'flex';
+      let viewerIds = story.views || [];
+      if(viewerIds.length === 0) {
+        viewsList.innerHTML = "<p>لا يوجد مشاهدات بعد.</p>";
+        return;
       }
+      db.collection("users").where(firebase.firestore.FieldPath.documentId(), "in", viewerIds).get().then(snapshot => {
+        viewsList.innerHTML = "";
+        snapshot.forEach(doc => {
+          let user = doc.data();
+          user.id = doc.id;
+          let userDiv = document.createElement("div");
+          userDiv.className = "viewer";
+          userDiv.style.display = "flex";
+          userDiv.style.alignItems = "center";
+          userDiv.style.marginBottom = "10px";
+          userDiv.innerHTML = `<img src="${user.photoURL || "https://www.gravatar.com/avatar/?d=mp"}" style="width:40px; height:40px; border-radius:50%; margin-right:10px;"> ${user.name || "مستخدم"}`;
+          viewsList.appendChild(userDiv);
+        });
+      }).catch(err => {
+        console.error("Error fetching viewers:", err);
+        viewsList.innerHTML = "<p>حدث خطأ أثناء جلب المشاهدات.</p>";
+      });
+    }
+
+    document.getElementById('closeViewsModal').addEventListener('click', () => {
+      document.getElementById('storyViewsModal').style.display = 'none';
     });
   </script>
 </body>
