@@ -745,6 +745,14 @@
 }
   </style>
 </head>
+<script>
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/sw.js')
+            .then(() => console.log("✅ تم تسجيل Service Worker بنجاح"))
+            .catch((error) => console.log("❌ فشل تسجيل Service Worker", error));
+    }
+</script>
+
 <body>
   <!-- زر المنشورات -->
   <a href="posts.html" class="fixed-posts-btn">
