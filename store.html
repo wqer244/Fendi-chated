@@ -24,7 +24,6 @@
       --text-color: #333;
       --header-bg: linear-gradient(45deg, #00c6ff, #0072ff);
     }
-    /* إذا كنت تريد إزالة الوضع الداكن بالكامل يمكنك حذف هذا القسم */
     body.dark-mode {
       --bg-color: #181818;
       --text-color: #e0e0e0;
@@ -48,7 +47,31 @@
       box-shadow: 0 2px 6px rgba(0,0,0,0.2);
     }
     header h1 { margin: 0; font-size: 2.2rem; }
-    /* زر الوضع الداكن محذوف حسب الطلب */
+    /* حاوية زر الرجوع مع z-index عالي لضمان ظهوره فوق باقي العناصر */
+    .nav-buttons {
+      position: absolute;
+      top: 0px;
+      left: 0px;
+      z-index: 10000;
+    }
+    .nav-buttons button {
+      background: none;
+      border: none;
+      cursor: pointer;
+      outline: none;
+    }
+    /* تعديل زر الرجوع ليظهر كنص "رجوع" باللون الأحمر مع حدود سوداء */
+    .nav-buttons button span {
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: red;
+      border: 0px solid black;
+      padding: 5px 0px;
+      border-radius: 1px;
+    }
+    .nav-buttons button:hover span {
+      color: #cc0000;
+    }
     .container {
       max-width: 1200px;
       margin: 0 auto;
@@ -89,7 +112,6 @@
       margin-top: 8px;
       color: #555;
     }
-    /* أيقونة وعدد المشاهدات */
     .view-count {
       position: absolute;
       bottom: 20px;
@@ -101,7 +123,6 @@
       font-size: 1rem;
       cursor: pointer;
     }
-    /* أيقونة وعدد اللايك */
     .like-btn {
       position: absolute;
       bottom: 20px;
@@ -113,7 +134,6 @@
       font-size: 1rem;
       cursor: pointer;
     }
-    /* قسم الحسابات المقترحة */
     .suggested-accounts-container {
       margin-top: 30px;
       padding: 20px;
@@ -169,7 +189,6 @@
       margin: 5px 0;
       color: #777;
     }
-    /* زر متابعة/إلغاء المتابعة */
     .follow-btn {
       margin-top: 8px;
       padding: 5px 10px;
@@ -184,7 +203,6 @@
     .follow-btn:hover {
       background: var(--primary-dark);
     }
-    /* زر نشر القصة العائم */
     #fabContainer {
       position: fixed;
       bottom: 30px;
@@ -216,7 +234,6 @@
       font-weight: bold;
       font-size: 1rem;
     }
-    /* تصميم المودالات العامة */
     .modal-overlay {
       display: none;
       position: fixed;
@@ -281,7 +298,6 @@
       margin-left: 10px;
     }
     .publish-btn:hover { background: #218838; }
-    /* مودال عرض القصة */
     .story-view {
       width: 100vw;
       height: 100vh;
@@ -332,7 +348,6 @@
       border-radius: 8px;
       z-index: 1002;
     }
-    /* مودال معلومات المستخدم */
     #userInfoModal img {
       width: 100px;
       height: 100px;
@@ -342,7 +357,6 @@
       margin-bottom: 15px;
       cursor: pointer;
     }
-    /* مودال الملف الشخصي (يشبه إنستغرام) */
     #profileModal .modal-content {
       width: 100vw;
       height: 100vh;
@@ -373,7 +387,6 @@
       margin: 5px 0;
       font-size: 1rem;
     }
-    /* قصص المستخدم تُعرض في الجزء السفلي بشكل طولي وبإطار أحمر */
     #userStoriesContainer {
       position: absolute;
       bottom: 0;
@@ -396,11 +409,38 @@
       background-position: center;
       margin-bottom: 10px;
     }
-    /* مودال عرض مشاهدات القصة */
-    #storyViewsModal .modal-content {
-      max-width: 400px;
+    .story-time {
+      position: absolute;
+      top: 0px;
+      left: 0px;
+      color: #fff;
+      background: rgba(0, 0, 0, 0.5);
+      padding: 5px 10px;
+      border-radius: 5px;
+      font-size: 0.9rem;
+      z-index: 1002;
     }
-    /* استجابة الموقع */
+    .story-text-card {
+      background: rgba(255, 255, 255, 0.9);
+      color: #333;
+      padding: 15px;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+      max-width: 80%;
+      margin: 20px auto;
+      text-align: center;
+      font-family: 'Tajawal', sans-serif;
+    }
+    .story-text-card h2 {
+      margin: 0;
+      font-size: 1.5rem;
+      color: var(--primary-color);
+    }
+    .story-text-card p {
+      margin-top: 10px;
+      font-size: 1.1rem;
+      line-height: 1.5;
+    }
     @media (max-width: 600px) {
       header h1 { font-size: 1.5rem; }
       .fab { width: 60px; height: 60px; font-size: 2rem; }
@@ -409,8 +449,13 @@
   </style>
 </head>
 <body>
-  <!-- رأس الموقع (زر تبديل الوضع محذوف) -->
+  <!-- رأس الموقع مع زر رجوع كنص ظاهر فوق باقي العناصر -->
   <header>
+    <div class="nav-buttons">
+      <button id="backBtn" title="رجوع">
+        <span>رجوع</span>
+      </button>
+    </div>
     <div class="container">
       <h1>قصصي - ستوري</h1>
     </div>
@@ -435,7 +480,6 @@
     <button class="fab" id="floatingAddStoryBtn">+</button>
     <div class="fab-label">نشر قصه جديده</div>
   </div>
-
   <!-- مودال إضافة القصة -->
   <div class="modal-overlay" id="addStoryModal">
     <div class="modal-content">
@@ -443,7 +487,9 @@
       <textarea id="storyText" rows="4" placeholder="أدخل نص القصة..."></textarea>
       <br>
       <button id="postStoryBtn"><i class="fa-solid fa-paper-plane"></i> نشر</button>
-      <button id="closeAddStoryBtn" class="btn-danger"><i class="fa-solid fa-xmark"></i> إغلاق</button>
+      <button id="closeAddStoryBtn" class="btn-danger">
+        <i class="fa-solid fa-xmark"></i> إغلاق
+      </button>
     </div>
   </div>
 
@@ -464,7 +510,9 @@
       <div id="userInfoDetails">
         <!-- تفاصيل المستخدم -->
       </div>
-      <button id="closeUserInfoBtn" class="btn-danger"><i class="fa-solid fa-xmark"></i> إغلاق</button>
+      <button id="closeUserInfoBtn" class="btn-danger">
+        <i class="fa-solid fa-xmark"></i> إغلاق
+      </button>
     </div>
   </div>
 
@@ -477,10 +525,10 @@
       <div class="profile-header">
         <img id="profilePic" src="" alt="صورة المستخدم">
         <div class="profile-info" id="profileInfo">
-          <!-- تفاصيل الحساب: الاسم، اسم المستخدم، الوصف، تاريخ الانضمام، عدد المتابعين -->
+          <!-- تفاصيل الحساب -->
         </div>
       </div>
-      <!-- قصص المستخدم تظهر في الأسفل مع تمييزها بإطار أحمر -->
+      <!-- قصص المستخدم تظهر في الأسفل -->
       <div id="userStoriesContainer">
         <!-- سيتم تحميل قصص المستخدم هنا -->
       </div>
@@ -494,11 +542,31 @@
       <div id="viewsList">
         <!-- سيتم تحميل قائمة المشاهدين هنا -->
       </div>
-      <button id="closeViewsModal" class="btn-danger"><i class="fa-solid fa-xmark"></i> إغلاق</button>
+      <button id="closeViewsModal" class="btn-danger">
+        <i class="fa-solid fa-xmark"></i> إغلاق
+      </button>
     </div>
   </div>
 
   <script>
+    // دالة لحساب الوقت النسبي (مثلاً "قبل 5 دقيقة")
+    function getRelativeTime(date) {
+      const now = new Date();
+      const diffInSeconds = Math.floor((now - date) / 1000);
+      if(diffInSeconds < 60) {
+        return `قبل ${diffInSeconds} ثانية`;
+      } else if(diffInSeconds < 3600) {
+        const minutes = Math.floor(diffInSeconds / 60);
+        return `قبل ${minutes} دقيقة`;
+      } else if(diffInSeconds < 86400) {
+        const hours = Math.floor(diffInSeconds / 3600);
+        return `قبل ${hours} ساعة`;
+      } else {
+        const days = Math.floor(diffInSeconds / 86400);
+        return `قبل ${days} يوم`;
+      }
+    }
+
     // تهيئة Firebase (استبدل بيانات التكوين ببيانات مشروعك)
     const firebaseConfig = {
       apiKey: "AIzaSyBwwrBtf6AtW7R36FX4j2GQZVEdJldFq7o",
@@ -529,6 +597,11 @@
       } else {
         window.location.href = 'login.html';
       }
+    });
+
+    // حدث زر الرجوع: الانتقال إلى ملف chat.html
+    document.getElementById("backBtn").addEventListener("click", () => {
+      window.location.href = "chat.html";
     });
 
     // تحميل القصص وتجميعها حسب userId
@@ -592,7 +665,7 @@
       });
     }
 
-    // عرض قصة معينة من مجموعة مع عرض المشاهدات واللايكات
+    // عرض قصة معينة من مجموعة مع عرض البطاقة الخاصة بنص القصة والوقت النسبي
     function showGroupedStory(groupIndex, storyIndex) {
       if(groupIndex < 0 || groupIndex >= storyGroups.length) return;
       let group = storyGroups[groupIndex];
@@ -601,7 +674,10 @@
       const storyView = document.getElementById('storyView');
       storyView.innerHTML = "";
       
-      // إذا كانت القصة تعود للمستخدم الحالي يتم عرض شريط الإجراءات
+      // عند فتح القصة، إخفاء زر الرجوع
+      document.querySelector('.nav-buttons').style.display = 'none';
+      
+      // عرض شريط الإجراءات إذا كانت القصة للمستخدم الحالي
       if(story.userId === currentUser.id) {
         const actionBar = document.createElement('div');
         actionBar.className = "action-bar";
@@ -629,13 +705,26 @@
         storyView.appendChild(actionBar);
       }
       
-      const contentDiv = document.createElement('div');
-      contentDiv.className = "story-content";
-      contentDiv.innerHTML = `<h2>${story.userName}</h2><p>${story.text}</p>`;
-      storyView.appendChild(contentDiv);
+      // إنشاء بطاقة لعرض نص القصة بشكل احترافي
+      const textCard = document.createElement('div');
+      textCard.className = "story-text-card";
+      textCard.innerHTML = `<h2>${story.userName}</h2><p>${story.text}</p>`;
+      storyView.appendChild(textCard);
+      
+      // حساب الوقت النسبي لعرضه (مثلاً "قبل 5 دقيقة")
+      let relativeTime = "";
+      if(story.timestamp && story.timestamp.toDate) {
+        let storyTime = story.timestamp.toDate();
+        relativeTime = getRelativeTime(storyTime);
+      }
+      const timeDiv = document.createElement('div');
+      timeDiv.className = "story-time";
+      timeDiv.textContent = relativeTime;
+      storyView.appendChild(timeDiv);
+      
       storyView.style.backgroundImage = `url('${story.backgroundUrl}')`;
       
-      // إنشاء أيقونة وعدد المشاهدات مع كلمة "مشاهدات"
+      // إنشاء أيقونة وعدد المشاهدات
       let currentViews = (story.views && story.views.length) ? story.views.length : 0;
       let viewCountDiv = document.createElement('div');
       viewCountDiv.className = "view-count";
@@ -646,7 +735,7 @@
       });
       storyView.appendChild(viewCountDiv);
       
-      // إنشاء زر لايك وعرض عدد اللايكات
+      // إنشاء زر اللايك وعرض عدد اللايكات
       let currentLikes = (story.likes && story.likes.length) ? story.likes.length : 0;
       let likeBtn = document.createElement('div');
       likeBtn.className = "like-btn";
@@ -658,7 +747,6 @@
       likeBtn.addEventListener('click', (e) => {
           e.stopPropagation();
           if(story.likes && story.likes.includes(currentUser.id)) {
-              // إزالة الإعجاب
               db.collection('stories').doc(story.id).update({
                   likes: firebase.firestore.FieldValue.arrayRemove(currentUser.id)
               }).then(() => {
@@ -670,7 +758,6 @@
                   likeBtn.innerHTML = '<i class="fa-regular fa-heart"></i> ' + currentLikes + ' لايك';
               });
           } else {
-              // إضافة الإعجاب
               db.collection('stories').doc(story.id).update({
                   likes: firebase.firestore.FieldValue.arrayUnion(currentUser.id)
               }).then(() => {
@@ -684,10 +771,10 @@
       storyView.appendChild(likeBtn);
       
       document.getElementById('viewStoryModal').style.display = 'flex';
-      // إخفاء زر نشر القصة أثناء عرض القصة
       document.getElementById('fabContainer').style.display = 'none';
       
-      // تحديث مشاهدات القصة إذا لم يقم المستخدم بعرضها مسبقاً
+      // عند إغلاق القصة، إعادة عرض زر الرجوع
+      // يتم ذلك في معالجات إغلاق المودال (الزر X أو عند النقر خارج المودال)
       if(!story.views || !story.views.includes(currentUser.id)) {
         db.collection('stories').doc(story.id).update({
           views: firebase.firestore.FieldValue.arrayUnion(currentUser.id)
@@ -704,10 +791,11 @@
       db.collection('stories').doc(storyId).delete().then(() => {
         document.getElementById('viewStoryModal').style.display = 'none';
         document.getElementById('fabContainer').style.display = 'block';
+        document.querySelector('.nav-buttons').style.display = 'block';
       }).catch(err => console.error("Error deleting story:", err));
     }
 
-    // تحميل الحسابات المقترحة مع زر متابعة/إلغاء متابعة وتحديث عدد المتابعين
+    // تحميل الحسابات المقترحة مع زر متابعة/إلغاء متابعة
     function loadSuggestedAccounts() {
       db.collection("users").get().then(snapshot => {
         const grid = document.getElementById("accountsGrid");
@@ -823,7 +911,7 @@
       loadUserStories(user.id);
     }
 
-    // تحميل قصص المستخدم وعرضها في القسم السفلي مع تمييزها بإطار أحمر
+    // تحميل قصص المستخدم وعرضها في القسم السفلي
     function loadUserStories(userId) {
       const storiesContainer = document.getElementById("userStoriesContainer");
       storiesContainer.innerHTML = "";
@@ -880,11 +968,15 @@
     document.getElementById('exitBtn').addEventListener('click', () => {
       document.getElementById('viewStoryModal').style.display = 'none';
       document.getElementById('fabContainer').style.display = 'block';
+      // عند إغلاق القصة إعادة عرض زر الرجوع
+      document.querySelector('.nav-buttons').style.display = 'block';
     });
     document.getElementById('viewStoryModal').addEventListener('click', (e) => {
       if(e.target === document.getElementById('viewStoryModal')) {
         document.getElementById('viewStoryModal').style.display = 'none';
         document.getElementById('fabContainer').style.display = 'block';
+        // إعادة عرض زر الرجوع عند إغلاق المودال
+        document.querySelector('.nav-buttons').style.display = 'block';
       }
     });
     document.getElementById('floatingAddStoryBtn').addEventListener('click', () => {
