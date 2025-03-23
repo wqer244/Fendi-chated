@@ -53,6 +53,23 @@
       cursor: pointer;
       color: inherit;
     }
+    /* زر الرجوع */
+    #backButton {
+      position: absolute;
+      top: 0px;
+      right: 0px;
+      background: transparent;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      color: inherit;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    #backButton:hover {
+      color: #007bff;
+    }
     /* تنسيق صورة الحساب بشكل دائري */
     .profile-img {
       width: 40px;
@@ -358,7 +375,7 @@
       .forum-section {
         padding: 15px;
       }
-      button, #followButton {
+      button, #followButton, #backButton {
         font-size: 14px;
         padding: 10px 20px;
       }
@@ -384,6 +401,20 @@
       }
     }
   </style>
+  <!-- كود منع الرجوع إلى الصفحة السابقة -->
+  <script>
+    // دفع حالة جديدة إلى سجل التصفح
+    history.pushState(null, null, location.href);
+    // عند محاولة الرجوع يتم إعادة توجيه المستخدم إلى صفحة فارغة
+    window.onpopstate = function () {
+      history.go(1);
+      location.replace("about:blank");
+    };
+    // دالة إعادة التوجيه إلى ملف chat.html عند الضغط على زر الرجوع
+    function redirectToChat() {
+      window.location.href = "chat.html";
+    }
+  </script>
 </head>
 <body>
   <!-- واجهة المنتدى الرئيسية -->
@@ -391,6 +422,11 @@
     <div class="forum-section">
       <!-- زر تبديل الوضع الداكن/الفاتح -->
       <button id="darkModeToggle" onclick="toggleDarkMode()"><i class="fas fa-moon"></i></button>
+      <!-- زر الرجوع -->
+      <button id="backButton" onclick="redirectToChat()" title="رجوع">
+        <i class="fas fa-arrow-left"></i>
+        <span>رجوع</span>
+      </button>
       <h2>المنتدى</h2>
       <!-- أزرار نشر المنشور والتصويت -->
       <div style="display: flex; gap: 10px; flex-wrap: wrap;">
