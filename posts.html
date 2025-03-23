@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>المنتدى - مع زر الوضع الداكن</title>
+  <title>المنتدى - متجاوب مع جميع الأجهزة</title>
   <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
@@ -18,6 +18,7 @@
       background: #f8f9fa;
       color: #333;
       transition: background-color 0.3s, color 0.3s;
+      direction: rtl;
     }
     body.dark-mode {
       background-color: #1a1a1a;
@@ -25,11 +26,11 @@
     }
     .container {
       max-width: 1200px;
-      margin: 0 auto;
+      margin: auto;
       padding: 20px;
     }
     .forum-section {
-      background: white;
+      background: #fff;
       border-radius: 12px;
       box-shadow: 0 6px 12px rgba(0,0,0,0.1);
       padding: 25px;
@@ -52,7 +53,62 @@
       cursor: pointer;
       color: inherit;
     }
-    /* نماذج الإدخال */
+    /* تنسيق صورة الحساب بشكل دائري */
+    .profile-img {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin-right: 8px;
+      vertical-align: middle;
+      cursor: pointer;
+    }
+    /* زر المتابعة داخل ملف المستخدم */
+    #followButton {
+      padding: 10px 20px;
+      background: #007bff;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+      margin-top: 10px;
+    }
+    #followButton:hover {
+      background: #0056b3;
+    }
+    /* زر المتابعة مع المنشور */
+    .follow-btn {
+      padding: 8px 16px;
+      background: #28a745;
+      border: none;
+      border-radius: 6px;
+      color: #fff;
+      font-size: 14px;
+      cursor: pointer;
+      margin-left: 10px;
+    }
+    .follow-btn:hover {
+      background: #218838;
+    }
+    /* أزرار العودة والتعديل */
+    .profile-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    .back-btn, .edit-profile-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 24px;
+      color: #007bff;
+    }
+    .back-btn:hover, .edit-profile-btn:hover {
+      color: #0056b3;
+    }
+    /* النماذج */
     .input-area {
       display: none;
       flex-direction: column;
@@ -84,7 +140,7 @@
     button {
       padding: 12px 24px;
       background: #007bff;
-      color: white;
+      color: #fff;
       border: none;
       border-radius: 8px;
       cursor: pointer;
@@ -110,7 +166,7 @@
       margin-bottom: 20px;
       padding: 20px;
       border-radius: 10px;
-      background: #ffffff;
+      background: #fff;
       box-shadow: 0 4px 8px rgba(0,0,0,0.05);
     }
     body.dark-mode .post {
@@ -126,6 +182,8 @@
     .user-info {
       font-size: 0.9em;
       color: #666;
+      display: flex;
+      align-items: center;
     }
     body.dark-mode .user-info {
       color: #ccc;
@@ -252,6 +310,7 @@
     .posts-container::-webkit-scrollbar-thumb:hover {
       background: #555;
     }
+    /* تنسيق النوافذ المنبثقة (Modal) */
     .modal-overlay {
       position: fixed;
       top: 0;
@@ -277,27 +336,57 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      margin-bottom: 20px;
     }
     .close-modal {
       font-size: 24px;
       cursor: pointer;
     }
-    /* تنسيق خاص لأزرار التصويت داخل الاستفتاءات */
-    .poll-option-btn {
-      padding: 8px 16px;
-      margin: 5px;
-      background: #f0f0f0;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      cursor: pointer;
-      transition: background 0.3s;
+    /* تنسيق قائمة منشورات المستخدم داخل الملف */
+    .user-posts {
+      margin-top: 20px;
     }
-    .poll-option-btn:hover {
-      background: #e0e0e0;
+    /* تنسيق نافذة تحرير الملف */
+    #editProfileModal .modal-content {
+      max-width: 500px;
+    }
+    #editProfileModal input[type="text"],
+    #editProfileModal textarea {
+      margin-bottom: 15px;
+    }
+    @media screen and (max-width: 768px) {
+      .forum-section {
+        padding: 15px;
+      }
+      button, #followButton {
+        font-size: 14px;
+        padding: 10px 20px;
+      }
+      .profile-img {
+        width: 60px;
+        height: 60px;
+      }
+      .modal-content {
+        width: 95%;
+        max-height: 90vh;
+      }
+    }
+    @media screen and (max-width: 480px) {
+      .container {
+        padding: 10px;
+      }
+      .post, .modal-content {
+        padding: 15px;
+      }
+      .profile-img {
+        width: 50px;
+        height: 50px;
+      }
     }
   </style>
 </head>
 <body>
+  <!-- واجهة المنتدى الرئيسية -->
   <div class="container">
     <div class="forum-section">
       <!-- زر تبديل الوضع الداكن/الفاتح -->
@@ -343,7 +432,43 @@
     </div>
   </div>
 
+  <!-- نافذة ملف المستخدم (Profile Modal) بتصميم يملأ الشاشة -->
+  <div class="modal-overlay" id="profileModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button class="back-btn" onclick="closeProfileModal()" title="رجوع"><i class="fas fa-arrow-left"></i></button>
+        <h3 style="flex: 1; text-align: center; margin: 0;">ملف المستخدم</h3>
+        <!-- زر تعديل الملف يظهر فقط للمالك -->
+        <button id="editProfileBtn" class="edit-profile-btn" onclick="openEditProfileModal()" title="تعديل الملف" style="display: none;">
+          <i class="fas fa-pen"></i>
+        </button>
+      </div>
+      <!-- بيانات الملف مع قائمة منشورات المستخدم -->
+      <div id="profileModalContent"></div>
+    </div>
+  </div>
+
+  <!-- نافذة تحرير الملف الشخصي -->
+  <div class="modal-overlay" id="editProfileModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>تحرير الملف الشخصي</h3>
+        <span class="close-modal" onclick="closeEditProfileModal()">&times;</span>
+      </div>
+      <div id="editProfileForm">
+        <label>اسم المستخدم:</label>
+        <input type="text" id="editName" placeholder="اكتب اسم المستخدم">
+        <label>وصف الحساب:</label>
+        <textarea id="editDescription" placeholder="اكتب وصف الحساب"></textarea>
+        <button onclick="saveProfileChanges()">حفظ التغييرات</button>
+      </div>
+    </div>
+  </div>
+
   <script>
+    // مفتاح API الخاص بمعاينة الروابط
+    const LINK_PREVIEW_API_KEY = "=951325d26926d6d2ea4d2ce782629764";
+
     // إعدادات Firebase
     const firebaseConfig = {
       apiKey: "AIzaSyBwwrBtf6AtW7R36FX4j2GQZVEdJldFq7o",
@@ -357,8 +482,21 @@
     const auth = firebase.auth();
     const db = firebase.firestore();
     let currentUser = null;
+    let currentProfileUserId = null;
     let currentModalPostId = null;
-
+    
+    // استرجاع صورة المستخدم
+    function getUserProfileImage(userId) {
+      return db.collection("users").doc(userId).get().then(doc => {
+        if (doc.exists) {
+          const data = doc.data();
+          return data.photoURL || "default-profile.png";
+        }
+        return "default-profile.png";
+      }).catch(() => "default-profile.png");
+    }
+    
+    // تغيير حالة المصادقة
     auth.onAuthStateChanged(user => {
       if (user) {
         currentUser = user;
@@ -368,7 +506,7 @@
       }
     });
 
-    // دالة تبديل الوضع الداكن/الفاتح كما في النسخة السابقة
+    // تبديل الوضع الداكن/الفاتح
     function toggleDarkMode() {
       document.body.classList.toggle("dark-mode");
       const icon = document.querySelector("#darkModeToggle i");
@@ -400,6 +538,39 @@
       document.getElementById('publish-form').style.display = 'none';
     }
 
+    // معالجة المحتوى والروابط
+    function processContent(content, postId) {
+      const regex = /https?:\/\/[^\s]+/g;
+      const links = content.match(regex);
+      let processedText = content.replace(regex, function(url) {
+        return `<a href="${url}" target="_blank" style="color:blue;">${url}</a>`;
+      });
+      processedText += `<div id="link-preview-${postId}"></div>`;
+      if (links) {
+        links.forEach(link => {
+          fetchPreview(link, postId);
+        });
+      }
+      return processedText;
+    }
+
+    // جلب معاينة الرابط
+    function fetchPreview(link, postId) {
+      const previewDiv = document.getElementById(`link-preview-${postId}`);
+      fetch(`https://api.linkpreview.net/?key=${LINK_PREVIEW_API_KEY}&q=${encodeURIComponent(link)}`)
+        .then(response => response.json())
+        .then(data => {
+          const previewHTML = `<div class="link-preview-card">
+            ${data.image ? `<img src="${data.image}" alt="preview image">` : ''}
+            <h4>${data.title}</h4>
+            <p>${data.description}</p>
+            <a href="${link}" target="_blank" style="color:blue;">${link}</a>
+          </div>`;
+          if(previewDiv) previewDiv.innerHTML = previewHTML;
+        })
+        .catch(err => console.error("Error fetching link preview:", err));
+    }
+
     // إنشاء منشور نصي
     function createPost() {
       const postInput = document.getElementById('post-input');
@@ -421,7 +592,7 @@
       }
     }
 
-    // إنشاء تصويت (استفتاء)
+    // إنشاء تصويت
     function createPoll() {
       const pollQuestion = document.getElementById('poll-question').value.trim();
       const optionInputs = document.querySelectorAll('.poll-option');
@@ -456,7 +627,7 @@
       }).catch(error => console.error("Error creating poll:", error));
     }
 
-    // إضافة خيار جديد في نموذج التصويت
+    // إضافة خيار للتصويت
     function addPollOption() {
       const pollOptionsContainer = document.getElementById('poll-options');
       const newOptionInput = document.createElement('input');
@@ -467,7 +638,7 @@
       pollOptionsContainer.appendChild(newOptionInput);
     }
 
-    // تحميل المنشورات بدون استخدام orderBy ثم فرزها يدويًا لضمان ظهور المنشورات القديمة
+    // تحميل المنشورات في الواجهة الرئيسية
     function loadPosts() {
       db.collection("posts")
         .onSnapshot(snapshot => {
@@ -475,11 +646,9 @@
           snapshot.forEach(doc => {
             let postData = doc.data();
             postData.id = doc.id;
-            // إذا لم يوجد timestamp نستخدم قيمة صفر كبديل
             postData._time = postData.timestamp ? postData.timestamp.toMillis() : 0;
             postsArray.push(postData);
           });
-          // فرز المنشورات تنازليًا (الأحدث أولاً)
           postsArray.sort((a, b) => b._time - a._time);
           const postsContainer = document.getElementById('posts');
           postsContainer.innerHTML = "";
@@ -497,89 +666,103 @@
                 </button>`;
               });
               postHTML = `
-                <div class="post-header">
-                  <div class="user-info">
-                    <span>نشر بواسطة: ${post.userName}</span>
-                    <span class="post-timestamp">${timeText}${editedText}</span>
+                <div class="post">
+                  <div class="post-header">
+                    <div class="user-info">
+                      <img id="profile-${post.id}" class="profile-img" src="default-profile.png" alt="صورة المستخدم" onclick="openProfile('${post.userId}')">
+                      <span>نشر بواسطة: ${post.userName}</span>
+                      <span class="post-timestamp">${timeText}${editedText}</span>
+                      ${post.userId !== currentUser.uid ? `<button class="follow-btn" id="follow-btn-${post.id}" onclick="toggleFollowForPost('${post.userId}', '${post.id}')">متابعه</button>` : ""}
+                    </div>
+                    <div class="action-buttons">
+                      ${post.userId === currentUser.uid ? `
+                        <button class="icon-btn edit-btn" onclick="editPoll('${post.id}')">
+                          <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="icon-btn delete-btn" onclick="deletePost('${post.id}')">
+                          <i class="fas fa-trash-alt"></i>
+                        </button>
+                      ` : ''}
+                    </div>
                   </div>
-                  <div class="action-buttons">
-                    ${post.userId === currentUser.uid ? `
-                      <button class="icon-btn edit-btn" onclick="editPoll('${post.id}')">
-                        <i class="fas fa-edit"></i>
-                      </button>
-                      <button class="icon-btn delete-btn" onclick="deletePost('${post.id}')">
-                        <i class="fas fa-trash-alt"></i>
-                      </button>
-                    ` : ''}
+                  <div class="post-content">
+                    <h3>${post.question}</h3>
+                    <div class="poll-options">
+                      ${pollOptionsHTML}
+                    </div>
                   </div>
-                </div>
-                <div class="post-content">
-                  <h3>${post.question}</h3>
-                  <div class="poll-options">
-                    ${pollOptionsHTML}
+                  <div class="btn-group">
+                    <button class="icon-btn like-btn ${post.likedBy && post.likedBy.includes(currentUser.uid) ? 'liked' : ''}" onclick="likePost('${post.id}')">
+                      <i class="fas fa-heart"></i>
+                      <span>${post.likes || 0}</span>
+                    </button>
+                    <button class="comment-btn" onclick="openCommentModal('${post.id}')">
+                      <i class="fa fa-comments"></i>
+                      <span>تعليقات</span>
+                    </button>
                   </div>
-                </div>
-                <div class="btn-group">
-                  <button class="icon-btn like-btn ${post.likedBy && post.likedBy.includes(currentUser.uid) ? 'liked' : ''}" onclick="likePost('${post.id}')">
-                    <i class="fas fa-heart"></i>
-                    <span>${post.likes || 0}</span>
-                  </button>
-                  <button class="comment-btn" onclick="openCommentModal('${post.id}')">
-                    <i class="fa fa-comments"></i>
-                    <span>تعليقات</span>
-                  </button>
                 </div>
               `;
             } else {
               postHTML = `
-                <div class="post-header">
-                  <div class="user-info">
-                    <span>نشر بواسطة: ${post.userName}</span>
-                    <span class="post-timestamp">${timeText}${editedText}</span>
+                <div class="post">
+                  <div class="post-header">
+                    <div class="user-info">
+                      <img id="profile-${post.id}" class="profile-img" src="default-profile.png" alt="صورة المستخدم" onclick="openProfile('${post.userId}')">
+                      <span>نشر بواسطة: ${post.userName}</span>
+                      <span class="post-timestamp">${timeText}${editedText}</span>
+                      ${post.userId !== currentUser.uid ? `<button class="follow-btn" id="follow-btn-${post.id}" onclick="toggleFollowForPost('${post.userId}', '${post.id}')">متابعه</button>` : ""}
+                    </div>
+                    <div class="action-buttons">
+                      ${post.userId === currentUser.uid ? `
+                        <button class="icon-btn edit-btn" onclick="editPost('${post.id}')">
+                          <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="icon-btn delete-btn" onclick="deletePost('${post.id}')">
+                          <i class="fas fa-trash-alt"></i>
+                        </button>
+                      ` : ''}
+                    </div>
                   </div>
-                  <div class="action-buttons">
-                    ${post.userId === currentUser.uid ? `
-                      <button class="icon-btn edit-btn" onclick="editPost('${post.id}')">
-                        <i class="fas fa-edit"></i>
-                      </button>
-                      <button class="icon-btn delete-btn" onclick="deletePost('${post.id}')">
-                        <i class="fas fa-trash-alt"></i>
-                      </button>
-                    ` : ''}
+                  <div class="post-content">
+                    ${processContent(post.content, post.id)}
                   </div>
-                </div>
-                <div class="post-content">${post.content}</div>
-                <div class="btn-group">
-                  <button class="icon-btn like-btn ${post.likedBy && post.likedBy.includes(currentUser.uid) ? 'liked' : ''}" onclick="likePost('${post.id}')">
-                    <i class="fas fa-heart"></i>
-                    <span>${post.likes || 0}</span>
-                  </button>
-                  <button class="comment-btn" onclick="openCommentModal('${post.id}')">
-                    <i class="fa fa-comments"></i>
-                    <span>تعليقات</span>
-                  </button>
-                </div>
-                <div class="comments-section" id="comments-${post.id}">
-                  <div class="comment-input">
-                    <textarea id="comment-input-${post.id}" placeholder="أضف تعليقًا..."></textarea>
-                    <button onclick="addComment('${post.id}')">تعليق</button>
+                  <div class="btn-group">
+                    <button class="icon-btn like-btn ${post.likedBy && post.likedBy.includes(currentUser.uid) ? 'liked' : ''}" onclick="likePost('${post.id}')">
+                      <i class="fas fa-heart"></i>
+                      <span>${post.likes || 0}</span>
+                    </button>
+                    <button class="comment-btn" onclick="openCommentModal('${post.id}')">
+                      <i class="fa fa-comments"></i>
+                      <span>تعليقات</span>
+                    </button>
                   </div>
-                  <div id="comments-list-${post.id}"></div>
+                  <div class="comments-section" id="comments-${post.id}">
+                    <div class="comment-input">
+                      <textarea id="comment-input-${post.id}" placeholder="أضف تعليقًا..."></textarea>
+                      <button onclick="addComment('${post.id}')">تعليق</button>
+                    </div>
+                    <div id="comments-list-${post.id}"></div>
+                  </div>
                 </div>
               `;
             }
-            const postElement = document.createElement('div');
-            postElement.className = 'post';
-            postElement.innerHTML = postHTML;
-            postsContainer.appendChild(postElement);
+            document.getElementById('posts').innerHTML += postHTML;
+            getUserProfileImage(post.userId).then(url => {
+              const imgElement = document.getElementById(`profile-${post.id}`);
+              if (imgElement) imgElement.src = url;
+            });
             if (!post.type || post.type !== "poll") {
               loadComments(post.id);
+            }
+            if(post.userId !== currentUser.uid){
+              checkFollowStatusForPost(post.userId, post.id);
             }
           });
         });
     }
 
-    // دالة اللايك باستخدام معاملة لضمان تحديث العدد بدقة
+    // دالة اللايك
     function likePost(postId) {
       const postRef = db.collection("posts").doc(postId);
       db.runTransaction(transaction => {
@@ -710,6 +893,7 @@
         });
     }
 
+    // دوال إدارة التعليقات في النافذة المنبثقة
     function handleEditComment(commentId) {
       const newContent = prompt("قم بتعديل التعليق:");
       if (newContent?.trim()) {
@@ -792,29 +976,419 @@
         });
     }
 
-    // دالة التصويت في الاستفتاء باستخدام معاملة لتحديث الأصوات
-    function votePoll(pollId, optionIndex) {
-      const pollRef = db.collection("posts").doc(pollId);
-      db.runTransaction(transaction => {
-        return transaction.get(pollRef).then(doc => {
-          if (!doc.exists) throw "التصويت غير موجود";
+    // دوال متابعة المنشورات (زر المتابعة مع المنشور)
+    function checkFollowStatusForPost(userId, postId) {
+      db.collection("users").doc(userId).get().then(doc => {
+        if (doc.exists) {
           const data = doc.data();
-          if (data.voters && data.voters[currentUser.uid] !== undefined) {
-            throw "لقد صوتت بالفعل.";
+          let followers = data.followers || [];
+          let isFollowing = followers.includes(currentUser.uid);
+          const button = document.getElementById("follow-btn-" + postId);
+          if (button) {
+            button.innerText = isFollowing ? "تم متابع" : "متابعه";
           }
-          let options = data.options;
-          if (optionIndex < 0 || optionIndex >= options.length) throw "خيار غير صحيح.";
-          options[optionIndex].votes = (options[optionIndex].votes || 0) + 1;
-          let voters = data.voters || {};
-          voters[currentUser.uid] = optionIndex;
-          transaction.update(pollRef, { options: options, voters: voters });
-          return options;
+        }
+      }).catch(err => console.error(err));
+    }
+
+    function toggleFollowForPost(userId, postId) {
+      db.collection("users").doc(userId).get().then(doc => {
+        if (doc.exists) {
+          const data = doc.data();
+          let followers = data.followers || [];
+          const button = document.getElementById("follow-btn-" + postId);
+          if (followers.includes(currentUser.uid)) {
+            db.collection("users").doc(userId).update({
+              followers: firebase.firestore.FieldValue.arrayRemove(currentUser.uid),
+              followersCount: firebase.firestore.FieldValue.increment(-1)
+            }).then(() => {
+              if (button) button.innerText = "متابعه";
+            }).catch(err => console.error("Error unfollowing:", err));
+          } else {
+            db.collection("users").doc(userId).update({
+              followers: firebase.firestore.FieldValue.arrayUnion(currentUser.uid),
+              followersCount: firebase.firestore.FieldValue.increment(1)
+            }).then(() => {
+              if (button) button.innerText = "تم متابع";
+            }).catch(err => console.error("Error following:", err));
+          }
+        }
+      }).catch(err => console.error(err));
+    }
+
+    // تحميل منشورات المستخدم داخل ملف المستخدم مع كافة الميزات
+    function loadUserPosts(userId) {
+      db.collection("posts")
+        .where("userId", "==", userId)
+        .orderBy("timestamp", "desc")
+        .onSnapshot(snapshot => {
+          const postsContainer = document.getElementById("userPostsList");
+          postsContainer.innerHTML = "";
+          snapshot.forEach(doc => {
+            const post = doc.data();
+            post.id = doc.id;
+            const timeText = post.timestamp ? new Date(post.timestamp.toMillis()).toLocaleString() : '';
+            const editedText = post.edited ? ' (تم التعديل)' : '';
+            let postHTML = "";
+            if (post.type && post.type === "poll") {
+              let pollOptionsHTML = "";
+              const voted = post.voters && post.voters[currentUser.uid] !== undefined;
+              const userVotedIndex = voted ? post.voters[currentUser.uid] : -1;
+              post.options.forEach((option, index) => {
+                pollOptionsHTML += `<button class="poll-option-btn" onclick="votePoll('${post.id}', ${index})" ${voted ? 'disabled' : ''} style="${voted && userVotedIndex === index ? 'background:#28a745;color:#fff;' : ''}">
+                  ${option.optionText} (${option.votes})
+                </button>`;
+              });
+              postHTML = `
+                <div class="post">
+                  <div class="post-header">
+                    <div class="user-info">
+                      <img id="profile-${post.id}" class="profile-img" src="default-profile.png" alt="صورة المستخدم" onclick="openProfile('${post.userId}')">
+                      <span>نشر بواسطة: ${post.userName}</span>
+                      <span class="post-timestamp">${timeText}${editedText}</span>
+                    </div>
+                    <div class="action-buttons">
+                      ${post.userId === currentUser.uid ? `
+                        <button class="icon-btn edit-btn" onclick="editPoll('${post.id}')">
+                          <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="icon-btn delete-btn" onclick="deletePost('${post.id}')">
+                          <i class="fas fa-trash-alt"></i>
+                        </button>
+                      ` : ''}
+                    </div>
+                  </div>
+                  <div class="post-content">
+                    <h3>${post.question}</h3>
+                    <div class="poll-options">
+                      ${pollOptionsHTML}
+                    </div>
+                  </div>
+                  <div class="btn-group">
+                    <button class="icon-btn like-btn ${post.likedBy && post.likedBy.includes(currentUser.uid) ? 'liked' : ''}" onclick="likePost('${post.id}')">
+                      <i class="fas fa-heart"></i>
+                      <span>${post.likes || 0}</span>
+                    </button>
+                    <button class="comment-btn" onclick="openCommentModal('${post.id}')">
+                      <i class="fa fa-comments"></i>
+                      <span>تعليقات</span>
+                    </button>
+                  </div>
+                </div>
+              `;
+            } else {
+              postHTML = `
+                <div class="post">
+                  <div class="post-header">
+                    <div class="user-info">
+                      <img id="profile-${post.id}" class="profile-img" src="default-profile.png" alt="صورة المستخدم" onclick="openProfile('${post.userId}')">
+                      <span>نشر بواسطة: ${post.userName}</span>
+                      <span class="post-timestamp">${timeText}${editedText}</span>
+                    </div>
+                    <div class="action-buttons">
+                      ${post.userId === currentUser.uid ? `
+                        <button class="icon-btn edit-btn" onclick="editPost('${post.id}')">
+                          <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="icon-btn delete-btn" onclick="deletePost('${post.id}')">
+                          <i class="fas fa-trash-alt"></i>
+                        </button>
+                      ` : ''}
+                    </div>
+                  </div>
+                  <div class="post-content">
+                    ${processContent(post.content, post.id)}
+                  </div>
+                  <div class="btn-group">
+                    <button class="icon-btn like-btn ${post.likedBy && post.likedBy.includes(currentUser.uid) ? 'liked' : ''}" onclick="likePost('${post.id}')">
+                      <i class="fas fa-heart"></i>
+                      <span>${post.likes || 0}</span>
+                    </button>
+                    <button class="comment-btn" onclick="openCommentModal('${post.id}')">
+                      <i class="fa fa-comments"></i>
+                      <span>تعليقات</span>
+                    </button>
+                  </div>
+                  <div class="comments-section" id="comments-${post.id}">
+                    <div class="comment-input">
+                      <textarea id="comment-input-${post.id}" placeholder="أضف تعليقًا..."></textarea>
+                      <button onclick="addComment('${post.id}')">تعليق</button>
+                    </div>
+                    <div id="comments-list-${post.id}"></div>
+                  </div>
+                </div>
+              `;
+            }
+            document.getElementById('userPostsList').innerHTML += postHTML;
+            getUserProfileImage(post.userId).then(url => {
+              const imgElement = document.getElementById(`profile-${post.id}`);
+              if (imgElement) imgElement.src = url;
+            });
+            if (!post.type || post.type !== "poll") {
+              loadComments(post.id);
+            }
+          });
         });
-      }).then(updatedOptions => {
-        // ستقوم المراقبة (onSnapshot) بتحديث واجهة المستخدم تلقائيًا
-      }).catch(error => {
-        alert(error);
-      });
+    }
+
+    // عرض ملف المستخدم مع قائمة منشوراته الكاملة والميزات
+    function openProfile(userId) {
+      currentProfileUserId = userId;
+      const userDocRef = db.collection("users").doc(userId);
+      userDocRef.onSnapshot(doc => {
+        if (doc.exists) {
+          const data = doc.data();
+          const createdAt = data.createdAt ? new Date(data.createdAt).toLocaleString() : 'غير محدد';
+          const followersCount = data.followersCount || (data.followers ? data.followers.length : 0);
+          const isFollowing = data.followers && data.followers.includes(currentUser.uid);
+          const followText = isFollowing ? "تم متابع" : "متابعه";
+          if(currentUser.uid === userId) {
+            document.getElementById("editProfileBtn").style.display = "block";
+          } else {
+            document.getElementById("editProfileBtn").style.display = "none";
+          }
+          const profileHTML = `
+            <div class="profile-header" style="text-align: center; margin-bottom: 20px;">
+              <img src="${data.photoURL || 'default-profile.png'}" alt="صورة المستخدم" class="profile-img" style="width:80px;height:80px;">
+              <h2>${data.name || 'مستخدم غير معروف'}</h2>
+            </div>
+            <p><strong>اسم المستخدم:</strong> ${data.username || 'غير محدد'}</p>
+            <p><strong>تاريخ الانضمام:</strong> ${createdAt}</p>
+            <p><strong>عدد المتابعين:</strong> <span id="followersCount">${followersCount}</span></p>
+            <p><strong>وصف الحساب:</strong> ${data.description || 'لا يوجد وصف'}</p>
+            <p style="text-align: center;"><button id="followButton" onclick="toggleFollow('${userId}')">${followText}</button></p>
+            <hr>
+            <h3 style="text-align: center;">منشورات المستخدم</h3>
+            <div class="user-posts" id="userPostsList">
+              <!-- سيتم تحميل منشورات المستخدم هنا -->
+            </div>
+          `;
+          document.getElementById('profileModalContent').innerHTML = profileHTML;
+          document.getElementById('profileModal').style.display = 'flex';
+          loadUserPosts(userId);
+        } else {
+          alert("لم يتم العثور على بيانات المستخدم.");
+        }
+      }, err => console.error("Error in profile listener:", err));
+    }
+
+    function closeProfileModal() {
+      document.getElementById('profileModal').style.display = 'none';
+    }
+
+    // دالة متابعة/إلغاء المتابعة في ملف المستخدم
+    function toggleFollow(userId) {
+      db.collection("users").doc(userId).get().then(doc => {
+        if (doc.exists) {
+          const data = doc.data();
+          let followers = data.followers || [];
+          const isFollowing = followers.includes(currentUser.uid);
+          if (isFollowing) {
+            db.collection("users").doc(userId).update({
+              followers: firebase.firestore.FieldValue.arrayRemove(currentUser.uid),
+              followersCount: firebase.firestore.FieldValue.increment(-1)
+            }).then(() => {
+              document.getElementById("followButton").innerText = "متابعه";
+            }).catch(err => console.error("Error unfollowing:", err));
+          } else {
+            db.collection("users").doc(userId).update({
+              followers: firebase.firestore.FieldValue.arrayUnion(currentUser.uid),
+              followersCount: firebase.firestore.FieldValue.increment(1)
+            }).then(() => {
+              document.getElementById("followButton").innerText = "تم متابع";
+            }).catch(err => console.error("Error following:", err));
+          }
+        }
+      }).catch(err => console.error("Error in toggleFollow:", err));
+    }
+
+    // دوال متابعة المنشورات (زر المتابعة مع المنشور)
+    function checkFollowStatusForPost(userId, postId) {
+      db.collection("users").doc(userId).get().then(doc => {
+        if (doc.exists) {
+          const data = doc.data();
+          let followers = data.followers || [];
+          let isFollowing = followers.includes(currentUser.uid);
+          const button = document.getElementById("follow-btn-" + postId);
+          if (button) {
+            button.innerText = isFollowing ? "تم متابع" : "متابعه";
+          }
+        }
+      }).catch(err => console.error(err));
+    }
+
+    function toggleFollowForPost(userId, postId) {
+      db.collection("users").doc(userId).get().then(doc => {
+        if (doc.exists) {
+          const data = doc.data();
+          let followers = data.followers || [];
+          const button = document.getElementById("follow-btn-" + postId);
+          if (followers.includes(currentUser.uid)) {
+            db.collection("users").doc(userId).update({
+              followers: firebase.firestore.FieldValue.arrayRemove(currentUser.uid),
+              followersCount: firebase.firestore.FieldValue.increment(-1)
+            }).then(() => {
+              if (button) button.innerText = "متابعه";
+            }).catch(err => console.error("Error unfollowing:", err));
+          } else {
+            db.collection("users").doc(userId).update({
+              followers: firebase.firestore.FieldValue.arrayUnion(currentUser.uid),
+              followersCount: firebase.firestore.FieldValue.increment(1)
+            }).then(() => {
+              if (button) button.innerText = "تم متابع";
+            }).catch(err => console.error("Error following:", err));
+          }
+        }
+      }).catch(err => console.error(err));
+    }
+
+    // تحميل منشورات المستخدم داخل ملف المستخدم مع كافة الميزات
+    function loadUserPosts(userId) {
+      db.collection("posts")
+        .where("userId", "==", userId)
+        .orderBy("timestamp", "desc")
+        .onSnapshot(snapshot => {
+          const postsContainer = document.getElementById("userPostsList");
+          postsContainer.innerHTML = "";
+          snapshot.forEach(doc => {
+            const post = doc.data();
+            post.id = doc.id;
+            const timeText = post.timestamp ? new Date(post.timestamp.toMillis()).toLocaleString() : '';
+            const editedText = post.edited ? ' (تم التعديل)' : '';
+            let postHTML = "";
+            if (post.type && post.type === "poll") {
+              let pollOptionsHTML = "";
+              const voted = post.voters && post.voters[currentUser.uid] !== undefined;
+              const userVotedIndex = voted ? post.voters[currentUser.uid] : -1;
+              post.options.forEach((option, index) => {
+                pollOptionsHTML += `<button class="poll-option-btn" onclick="votePoll('${post.id}', ${index})" ${voted ? 'disabled' : ''} style="${voted && userVotedIndex === index ? 'background:#28a745;color:#fff;' : ''}">
+                  ${option.optionText} (${option.votes})
+                </button>`;
+              });
+              postHTML = `
+                <div class="post">
+                  <div class="post-header">
+                    <div class="user-info">
+                      <img id="profile-${post.id}" class="profile-img" src="default-profile.png" alt="صورة المستخدم" onclick="openProfile('${post.userId}')">
+                      <span>نشر بواسطة: ${post.userName}</span>
+                      <span class="post-timestamp">${timeText}${editedText}</span>
+                    </div>
+                    <div class="action-buttons">
+                      ${post.userId === currentUser.uid ? `
+                        <button class="icon-btn edit-btn" onclick="editPoll('${post.id}')">
+                          <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="icon-btn delete-btn" onclick="deletePost('${post.id}')">
+                          <i class="fas fa-trash-alt"></i>
+                        </button>
+                      ` : ''}
+                    </div>
+                  </div>
+                  <div class="post-content">
+                    <h3>${post.question}</h3>
+                    <div class="poll-options">
+                      ${pollOptionsHTML}
+                    </div>
+                  </div>
+                  <div class="btn-group">
+                    <button class="icon-btn like-btn ${post.likedBy && post.likedBy.includes(currentUser.uid) ? 'liked' : ''}" onclick="likePost('${post.id}')">
+                      <i class="fas fa-heart"></i>
+                      <span>${post.likes || 0}</span>
+                    </button>
+                    <button class="comment-btn" onclick="openCommentModal('${post.id}')">
+                      <i class="fa fa-comments"></i>
+                      <span>تعليقات</span>
+                    </button>
+                  </div>
+                </div>
+              `;
+            } else {
+              postHTML = `
+                <div class="post">
+                  <div class="post-header">
+                    <div class="user-info">
+                      <img id="profile-${post.id}" class="profile-img" src="default-profile.png" alt="صورة المستخدم" onclick="openProfile('${post.userId}')">
+                      <span>نشر بواسطة: ${post.userName}</span>
+                      <span class="post-timestamp">${timeText}${editedText}</span>
+                    </div>
+                    <div class="action-buttons">
+                      ${post.userId === currentUser.uid ? `
+                        <button class="icon-btn edit-btn" onclick="editPost('${post.id}')">
+                          <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="icon-btn delete-btn" onclick="deletePost('${post.id}')">
+                          <i class="fas fa-trash-alt"></i>
+                        </button>
+                      ` : ''}
+                    </div>
+                  </div>
+                  <div class="post-content">
+                    ${processContent(post.content, post.id)}
+                  </div>
+                  <div class="btn-group">
+                    <button class="icon-btn like-btn ${post.likedBy && post.likedBy.includes(currentUser.uid) ? 'liked' : ''}" onclick="likePost('${post.id}')">
+                      <i class="fas fa-heart"></i>
+                      <span>${post.likes || 0}</span>
+                    </button>
+                    <button class="comment-btn" onclick="openCommentModal('${post.id}')">
+                      <i class="fa fa-comments"></i>
+                      <span>تعليقات</span>
+                    </button>
+                  </div>
+                  <div class="comments-section" id="comments-${post.id}">
+                    <div class="comment-input">
+                      <textarea id="comment-input-${post.id}" placeholder="أضف تعليقًا..."></textarea>
+                      <button onclick="addComment('${post.id}')">تعليق</button>
+                    </div>
+                    <div id="comments-list-${post.id}"></div>
+                  </div>
+                </div>
+              `;
+            }
+            document.getElementById('userPostsList').innerHTML += postHTML;
+            getUserProfileImage(post.userId).then(url => {
+              const imgElement = document.getElementById(`profile-${post.id}`);
+              if (imgElement) imgElement.src = url;
+            });
+            if (!post.type || post.type !== "poll") {
+              loadComments(post.id);
+            }
+          });
+        });
+    }
+
+    // فتح نافذة تحرير الملف الشخصي
+    function openEditProfileModal() {
+      // جلب البيانات الحالية لملف المستخدم من Firebase
+      db.collection("users").doc(currentUser.uid).get().then(doc => {
+        if (doc.exists) {
+          const data = doc.data();
+          document.getElementById("editName").value = data.name || "";
+          document.getElementById("editDescription").value = data.description || "";
+          // فتح النافذة
+          document.getElementById("editProfileModal").style.display = "flex";
+        }
+      }).catch(err => console.error("Error fetching profile for edit:", err));
+    }
+    
+    function closeEditProfileModal() {
+      document.getElementById("editProfileModal").style.display = "none";
+    }
+    
+    // حفظ التغييرات في الملف الشخصي
+    function saveProfileChanges() {
+      const newName = document.getElementById("editName").value.trim();
+      const newDescription = document.getElementById("editDescription").value.trim();
+      if(newName === "") {
+        alert("يرجى إدخال اسم المستخدم.");
+        return;
+      }
+      db.collection("users").doc(currentUser.uid).update({
+        name: newName,
+        description: newDescription
+      }).then(() => {
+        closeEditProfileModal();
+      }).catch(err => console.error("Error updating profile:", err));
     }
   </script>
 </body>
