@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>سياسة الخصوصية – فندشات</title>
+  <!-- Font Awesome للايقونات -->
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    integrity="sha512-pIVeVu3D+zEbGS/BbBd/H9kckgGq8GS8F3eN6XGmW3TQhGF4lgQpfa6N+8nus/TV0e3rRqmkgxgPp3pXwP+loga=="
+    crossorigin="anonymous"
+    referrerpolicy="no-referrer"
+  />
+  <style>
+    body { font-family:"Segoe UI", Tahoma, sans-serif; margin:0; padding:1rem; background:#f0f2f5; color:#333; }
+    .header { display:flex; align-items:center; justify-content:space-between; background:#fff; padding:1rem 1.5rem; box-shadow:0 2px 6px rgba(0,0,0,0.1); border-radius:.5rem; margin-bottom:1.5rem; }
+    .header h1 { display:flex; align-items:center; font-size:1.5rem; margin:0; }
+    .header h1 i { margin-left:.5rem; color:#0073e6; }
+    .btn { display:inline-flex; align-items:center; background:#0073e6; color:#fff; border:none; padding:.6rem 1rem; font-size:1rem; border-radius:.4rem; cursor:pointer; transition:background .2s; }
+    .btn i { margin-left:.5rem; }
+    .btn:hover { background:#005bb5; }
+    .content { background:#fff; padding:1.5rem; border-radius:.5rem; box-shadow:0 1px 3px rgba(0,0,0,0.1); line-height:1.6; }
+    .modal-backdrop { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.4); display:none; align-items:center; justify-content:center; }
+    .modal { background:#fff; border-radius:.5rem; padding:1rem; width:90%; max-width:400px; box-shadow:0 2px 8px rgba(0,0,0,0.2); position:relative; }
+    .modal h2 { margin-top:0; font-size:1.25rem; text-align:center; }
+    .lang-list { list-style:none; padding:0; margin:1rem 0; max-height:300px; overflow-y:auto; }
+    .lang-list li { padding:.5rem; margin:.25rem 0; display:flex; align-items:center; cursor:pointer; border-radius:.3rem; transition:background .2s; }
+    .lang-list li:hover { background:#f0f0f0; }
+    .lang-list img { width:24px; height:16px; margin-right:.5rem; object-fit:cover; border:1px solid #ddd; }
+    .close-btn { background:none; border:none; font-size:1.2rem; position:absolute; top:.5rem; right:.5rem; cursor:pointer; color:#888; }
+    .close-btn:hover { color:#333; }
+    [data-lang] { display:none; }
+    [data-lang="ar"] { display:block; }
+  </style>
+</head>
+<body>
+
+  <header class="header">
+    <h1><i class="fas fa-shield-alt"></i> <span id="title">سياسة الخصوصية</span></h1>
+    <button class="btn" id="openModal"><i class="fas fa-globe"></i> اختر اللغة</button>
+  </header>
+
+  <section class="content">
+    <!-- Arabic default -->
+    <div data-lang="ar">
+      <p>في عصر الاتصالات الرقمية، أصبحت حماية خصوصية المستخدمين أمرًا بالغ الأهمية. في تطبيق فندشات، ندرك تمامًا هذه المسؤولية ونلتزم بحماية المعلومات الشخصية لمستخدمينا. تهدف سياسة الخصوصية هذه إلى توضيح كيفية جمعنا واستخدامنا والكشف عن معلومات المستخدمين عند استخدام تطبيق فندشات، والذي يُشار إليه بـ "فندشات". باستخدام التطبيق، يُعتبر المستخدم موافقًا على جميع شروط سياسة الخصوصية هذه.</p>
+      <h2>المعلومات التي نجمعها:</h2>
+      <p>نقوم بجمع أنواع مختلفة من المعلومات لتقديم تجربة مستخدم فعالة وآمنة. تشمل هذه المعلومات ما يقدمه المستخدمون مباشرة عند إنشاء حساب، مثل اسم المستخدم وعنوان البريد الإلكتروني. كما نقوم بتسجيل المعلومات التي يقدمها المستخدمون عند التواصل مع فريق الدعم لحل المشكلات أو الاستفسارات. من جانب آخر، يتم جمع بعض المعلومات تلقائيًا عند استخدام التطبيق لفهم كيفية استخدامه وتحسين أدائه.</p>
+      <h2>كيفية استخدام المعلومات:</h2>
+      <p>تُستخدم المعلومات التي يتم جمعها لتقديم خدمات التطبيق وتحسينها وتخصيص تجربة المستخدم، إضافةً إلى تقديم الدعم الفني اللازم وتحليل بيانات المستخدمين لتحسين خدماتنا. نلتزم بعدم مشاركة المعلومات مع أي طرف ثالث دون موافقة المستخدم.</p>
+      <h2>أمان المعلومات:</h2>
+      <p>نولي أهمية قصوى لحماية معلومات المستخدمين، حيث نستخدم إجراءات أمنية قوية ومشفّرة لمنع الوصول غير المصرح به. ومع ذلك، لا يمكن ضمان الأمان المطلق في أي نظام.</p>
+      <h2>حقوق المستخدمين:</h2>
+      <p>يحق للمستخدمين الوصول إلى معلوماتهم الشخصية وتحديثها وحذف حساباتهم وبياناتهم في أي وقت، كما يمكنهم الاعتراض على معالجة معلوماتهم وفقًا للقوانين المعمول بها.</p>
+      <h2>تغييرات سياسة الخصوصية:</h2>
+      <p>قد نقوم بتحديث سياسة الخصوصية من وقت لآخر لمواكبة التغييرات في الخدمات أو القوانين، وسيتم إعلام المستخدمين بأي تغييرات عبر نشر النسخة الجديدة داخل التطبيق.</p>
+      <h2>التواصل معنا:</h2>
+      <p>لأي استفسارات أو تعليقات بخصوص سياسة الخصوصية، يمكن للمستخدمين التواصل معنا عبر البريد الإلكتروني: <a href="mailto:hsly6370@gmail.com">hsly6370@gmail.com</a>.</p>
+    </div>
+
+    <!-- English -->
+    <div data-lang="en">
+      <p>In the age of digital communications, protecting users’ privacy has become crucial. In the FndChat app, we fully acknowledge this responsibility and are committed to safeguarding our users’ personal information. This privacy policy explains how we collect, use, and disclose users’ information when they use FndChat. By using the app, the user agrees to all the terms of this privacy policy.</p>
+      <h2>Information We Collect:</h2>
+      <p>We collect various types of information to deliver an efficient and secure user experience. This includes data provided directly by users when creating an account—such as username and email address—as well as information submitted when contacting support for troubleshooting or inquiries. Additionally, certain data is automatically gathered during app usage to understand usage patterns and improve performance.</p>
+      <h2>How We Use Information:</h2>
+      <p>The information collected is used to deliver and improve the app’s services, personalize the user experience, provide technical support, and analyze user data to enhance our offerings. We will not share information with any third party without the user’s consent.</p>
+      <h2>Data Security:</h2>
+      <p>We prioritize the protection of user data by employing strong, encrypted security measures to prevent unauthorized access. However, absolute security cannot be guaranteed in any system.</p>
+      <h2>User Rights:</h2>
+      <p>Users have the right to access, update, and delete their personal information and accounts at any time, and may object to data processing in accordance with applicable laws.</p>
+      <h2>Policy Updates:</h2>
+      <p>We may update this privacy policy from time to time to reflect changes in our services or legal requirements. Users will be notified of any changes by publishing the new version within the app.</p>
+      <h2>Contact Us:</h2>
+      <p>For any questions or comments regarding this privacy policy, users may contact us at: <a href="mailto:hsly6370@gmail.com">hsly6370@gmail.com</a>.</p>
+    </div>
+
+    <!-- French -->
+    <div data-lang="fr">
+      <p>À l’ère des communications numériques, la protection de la vie privée des utilisateurs est devenue essentielle. Dans l’application FndChat, nous reconnaissons pleinement cette responsabilité et nous engageons à protéger les informations personnelles de nos utilisateurs. Cette politique de confidentialité explique comment nous recueillons, utilisons et divulguons les informations des utilisateurs lors de l’utilisation de FndChat. En utilisant l’application, l’utilisateur accepte tous les termes de cette politique de confidentialité.</p>
+      <h2>Informations que nous recueillons :</h2>
+      <p>Nous recueillons différents types d’informations pour offrir une expérience utilisateur efficace et sécurisée. Cela inclut les données fournies directement par les utilisateurs lors de la création d’un compte (nom d’utilisateur, adresse e‑mail), ainsi que les informations soumises lors de la prise de contact avec le support pour résoudre un problème ou une question. De plus, certaines données sont automatiquement collectées pendant l’utilisation de l’application afin de comprendre les habitudes d’utilisation et d’améliorer les performances.</p>
+      <h2>Comment nous utilisons les informations :</h2>
+      <p>Les informations collectées sont utilisées pour fournir et améliorer les services de l’application, personnaliser l’expérience utilisateur, offrir un support technique et analyser les données afin d’améliorer nos services. Nous ne partagerons aucune information avec un tiers sans le consentement de l’utilisateur.</p>
+      <h2>Sécurité des données :</h2>
+      <p>Nous attachons la plus grande importance à la protection des données des utilisateurs en utilisant des mesures de sécurité robustes et chiffrées pour empêcher tout accès non autorisé. Cependant, aucune garantie absolue de sécurité n’est possible pour un système.</p>
+      <h2>Droits des utilisateurs :</h2>
+      <p>Les utilisateurs ont le droit d’accéder, de mettre à jour et de supprimer leurs informations personnelles et leurs comptes à tout moment, et peuvent s’opposer au traitement de leurs données conformément aux lois en vigueur.</p>
+      <h2>Mises à jour de la politique :</h2>
+      <p>Nous pouvons mettre à jour cette politique de confidentialité de temps à autre pour refléter les changements de nos services ou des exigences légales. Les utilisateurs seront informés de toute modification par la publication de la nouvelle version dans l’application.</p>
+      <h2>Contactez‑nous :</h2>
+      <p>Pour toute question ou commentaire concernant cette politique de confidentialité, les utilisateurs peuvent nous contacter à : <a href="mailto:hsly6370@gmail.com">hsly6370@gmail.com</a>.</p>
+    </div>
+
+    <!-- Spanish -->
+    <div data-lang="es">
+      <p>En la era de las comunicaciones digitales, la protección de la privacidad de los usuarios se ha vuelto crucial. En la aplicación FndChat, reconocemos plenamente esta responsabilidad y nos comprometemos a proteger la información personal de nuestros usuarios. Esta política de privacidad explica cómo recopilamos, usamos y divulgamos la información de los usuarios al usar FndChat. Al usar la aplicación, el usuario acepta todos los términos de esta política de privacidad.</p>
+      <h2>Información que recopilamos:</h2>
+      <p>Recopilamos varios tipos de información para ofrecer una experiencia de usuario eficiente y segura. Esto incluye datos proporcionados directamente por los usuarios al crear una cuenta (nombre de usuario, correo electrónico), así como la información enviada al contactar con soporte para resolver problemas o consultas. Además, ciertos datos se recopilan automáticamente durante el uso de la aplicación para comprender los patrones de uso y mejorar el rendimiento.</p>
+      <h2>Cómo usamos la información:</h2>
+      <p>La información recopilada se utiliza para ofrecer y mejorar los servicios de la aplicación, personalizar la experiencia del usuario, proporcionar soporte técnico y analizar los datos para mejorar nuestras ofertas. No compartiremos información con terceros sin el consentimiento del usuario.</p>
+      <h2>Seguridad de los datos:</h2>
+      <p>Damos prioridad a la protección de los datos de los usuarios mediante medidas de seguridad sólidas y cifradas para evitar accesos no autorizados. Sin embargo, no se puede garantizar una seguridad absoluta en ningún sistema.</p>
+      <h2>Derechos del usuario:</h2>
+      <p>Los usuarios tienen derecho a acceder, actualizar y eliminar su información personal y sus cuentas en cualquier momento, y pueden oponerse al procesamiento de sus datos de acuerdo con las leyes aplicables.</p>
+      <h2>Actualizaciones de la política:</h2>
+      <p>Podemos actualizar esta política de privacidad periódicamente para reflejar cambios en nuestros servicios o requisitos legales. Los usuarios serán notificados de cualquier cambio mediante la publicación de la nueva versión dentro de la aplicación.</p>
+      <h2>Contáctanos:</h2>
+      <p>Para cualquier pregunta o comentario sobre esta política de privacidad, los usuarios pueden contactarnos en: <a href="mailto:hsly6370@gmail.com">hsly6370@gmail.com</a>.</p>
+    </div>
+
+<!-- Chinese -->
+<div data-lang="zh">
+  <p>在数字通信时代，保护用户隐私变得至关重要。在 FndChat 应用中，我们充分认识到这份责任，并致力于保护用户的个人信息。本隐私政策解释了当用户使用 FndChat 时，我们如何收集、使用和披露用户信息。使用本应用即表示您同意本隐私政策的所有条款。</p>
+  <h2>我们收集的信息：</h2>
+  <p>为了提供高效且安全的用户体验，我们会收集多种类型的信息。这包括用户在创建账户时直接提供的数据，如用户名和电子邮件地址，以及在联系支持团队解决问题或提出咨询时提交的信息。此外，我们还会在应用使用过程中自动收集某些数据，以便了解使用模式并优化性能。</p>
+  <h2>我们如何使用信息：</h2>
+  <p>所收集的信息用于提供及改进应用服务、个性化用户体验、提供技术支持，并通过分析用户数据来提升我们的产品。未经用户同意，我们不会向任何第三方分享这些信息。</p>
+  <h2>数据安全：</h2>
+  <p>我们优先采取强大且加密的安全措施来保护用户数据，防止未经授权的访问。但任何系统都无法保证绝对安全。</p>
+  <h2>用户权利：</h2>
+  <p>用户有权随时访问、更新及删除其个人信息和账户，并可根据适用法律反对处理其数据。</p>
+  <h2>政策更新：</h2>
+  <p>我们可能会不时更新本隐私政策，以反映服务或法律要求的变化。任何更改都会通过在应用内发布新版本来通知用户。</p>
+  <h2>联系我们：</h2>
+  <p>如对本隐私政策有任何疑问或意见，请通过以下邮箱与我们联系：<a href="mailto:hsly6370@gmail.com">hsly6370@gmail.com</a></p>
+</div>
+
+    <!-- Hindi -->
+    <div data-lang="hi">
+      <p>डिजिटल संचार के युग में, उपयोगकर्ताओं की गोपनीयता की सुरक्षा अत्यंत महत्वपूर्ण हो गई है। FndChat ऐप में, हम इस जिम्मेदारी को पूरी तरह से स्वीकार करते हैं और अपने उपयोगकर्ताओं की व्यक्तिगत जानकारी की सुरक्षा के लिए प्रतिबद्ध हैं। यह गोपनीयता नीति समझाती है कि जब उपयोगकर्ता FndChat का उपयोग करते हैं, तो हम उनकी जानकारी कैसे एकत्र, उपयोग और प्रकटीकरण करते हैं। ऐप का उपयोग करके, उपयोगकर्ता इस गोपनीयता नीति की सभी शर्तों से सहमत होते हैं।</p>
+      <h2>हम कौन सी जानकारी एकत्र करते हैं:</h2>
+      <p>हम एक प्रभावी और सुरक्षित उपयोगकर्ता अनुभव प्रदान करने के लिए विभिन्न प्रकार की जानकारी एकत्र करते हैं। इसमें उपयोगकर्ता द्वारा खाता बनाने के समय सीधे प्रदान किए गए डेटा—जैसे उपयोगकर्ता नाम और ईमेल पता—के साथ-साथ समस्या निवारण या पूछताछ के लिए समर्थन से संपर्क करते समय प्रस्तुत की गई जानकारी शामिल है। इसके अतिरिक्त, ऐप का उपयोग करते समय उपयोग पैटर्न को समझने और प्रदर्शन में सुधार के लिए कुछ डेटा स्वचालित रूप से एकत्र किए जाते हैं।</p>
+      <h2>हम जानकारी का उपयोग कैसे करते हैं:</h2>
+      <p>इकत्र की गई जानकारी का उपयोग ऐप की सेवाओं को प्रदान करने और सुधारने, उपयोगकर्ता अनुभव को वैयक्तिकृत करने, तकनीकी सहायता प्रदान करने और हमारी पेशकश को बढ़ाने के लिए उपयोगकर्ता डेटा का विश्लेषण करने के लिए किया जाता है। हम उपयोगकर्ता की सहमति के बिना किसी तीसरे पक्ष के साथ जानकारी साझा नहीं करेंगे।</p>
+      <h2>डेटा सुरक्षा:</h2>
+      <p>हम अनधिकृत पहुँच को रोकने के लिए मजबूत, एन्क्रिप्टेड सुरक्षा उपायों को लागू करके उपयोगकर्ता डेटा की सुरक्षा को प्राथमिकता देते हैं। हालांकि, किसी भी प्रणाली में पूर्ण सुरक्षा की गारंटी नहीं दी जा सकती।</p>
+      <h2>उपयोगकर्ता अधिकार:</h2>
+      <p>उपयोगकर्ताओं को किसी भी समय अपनी व्यक्तिगत जानकारी और खातों तक पहुँचने, उन्हें अपडेट करने और हटाने का अधिकार है, और वे लागू कानूनों के अनुसार डेटा प्रसंस्करण का विरोध कर सकते हैं।</p>
+      <h2>नीति अपडेट:</h2>
+      <p>हम समय-समय पर अपनी सेवाओं या कानूनी आवश्यकताओं में परिवर्तन को प्रतिबिंबित करने के लिए इस गोपनीयता नीति को अपडेट कर सकते हैं। उपयोगकर्ताओं को ऐप के भीतर नई संस्करण प्रकाशित करके किसी भी परिवर्तन की सूचना दी जाएगी।</p>
+      <h2>संपर्क करें:</h2>
+      <p>इस गोपनीयता नीति के संबंध में किसी भी प्रश्न या टिप्पणी के लिए, उपयोगकर्ता हमसे संपर्क कर सकते हैं: <a href="mailto:hsly6370@gmail.com">hsly6370@gmail.com</a>.</p>
+    </div>
+
+    <!-- Bengali -->
+    <div data-lang="bn">
+      <p>ডিজিটাল যোগাযোগের যুগে, ব্যবহারকারীদের গোপনীয়তার সুরক্ষা অত্যন্ত গুরুত্বপূর্ণ হয়ে উঠেছে। FndChat অ্যাপে, আমরা এই দায়িত্বকে সম্পূর্ণরূপে স্বীকার করি এবং আমাদের ব্যবহারকারীদের ব্যক্তিগত তথ্য সুরক্ষিত করার জন্য প্রতিশ্রুতিবদ্ধ। এই গোপনীয়তা নীতি ব্যাখ্যা করে যে ব্যবহারকারী যখন FndChat ব্যবহার করে, তখন আমরা কীভাবে তাঁদের তথ্য সংগ্রহ, ব্যবহার এবং প্রকাশ করি। অ্যাপ ব্যবহার করে, ব্যবহারকারী এই গোপনীয়তা নীতির সমস্ত শর্তে সম্মত হন।</p>
+      <h2>আমরা কোন তথ্য সংগ্রহ করি:</h2>
+      <p>কার্যকর এবং নিরাপদ ব্যবহারকারী অভিজ্ঞতা প্রদান করার জন্য আমরা বিভিন্ন ধরনের তথ্য সংগ্রহ করি। এতে অ্যাকাউন্ট তৈরি করার সময় ব্যবহারকারী সরাসরি প্রদান করা তথ্য—যেমন ব্যবহারকারীর নাম এবং ইমেল ঠিকানা—এছাড়াও সমস্যা সমাধান বা অনুসন্ধানের জন্য সহায়তায় যোগাযোগ করার সময় জমা দেওয়া তথ্য অন্তর্ভুক্ত। এর অতিরিক্ত, ব্যবহার প্যাটার্ন বুঝতে এবং কর্মক্ষমতা উন্নত করতে অ্যাপ ব্যবহারের সময় কিছু তথ্য স্বয়ংক্রিয়ভাবে একত্রিত করা হয়।</p>
+      <h2>আমরা কীভাবে তথ্য ব্যবহার করি:</h2>
+      <p>সংগ্রহ করা তথ্য অ্যাপের পরিষেবা প্রদানের এবং উন্নত করার, ব্যবহারকারী অভিজ্ঞতা ব্যক্তিগতকরণ করার, প্রযুক্তিগত সহায়তা প্রদান করার এবং আমাদের পরিষেবাগুলি উন্নত করার জন্য ব্যবহারকারী তথ্য বিশ্লেষণ করার জন্য ব্যবহৃত হয়। ব্যবহারকারীর সম্মতি ছাড়া আমরা কোনও তৃতীয় পক্ষের সাথে তথ্য শেয়ার করব না।</p>
+      <h2>ডেটা নিরাপত্তা:</h2>
+      <p>অঅনুমোদিত অ্যাক্সেস প্রতিরোধ করতে শক্তিশালী, এনক্রিপ্ট করা সুরক্ষা ব্যবস্থা প্রয়োগ করে আমরা ব্যবহারকারীর ডেটা সুরক্ষাকে অগ্রাধিকার দিই। যাহোক, কোনও সিস্টেমে সম্পূর্ণ নিরাপত্তার গ্যারান্টি দেওয়া যায় না।</p>
+      <h2>ব্যবহারকারীর অধিকার:</h2>
+      <p>ব্যবহারকারীদের কোনও সময় তাদের ব্যক্তিগত তথ্য এবং অ্যাকাউন্ট অ্যাক্সেস, আপডেট এবং মুছতে এবং প্রযোজ্য আইন অনুসারে ডেটা প্রসেসিং-এর বিরুদ্ধে আপত্তি জানানোর অধিকার রয়েছে।</p>
+      <h2>নীতির আপডেট:</h2>
+      <p>আমরা সময়ের সাথে সাথে আমাদের পরিষেবা বা আইনগত প্রয়োজনীয়তায় পরিবর্তন প্রতিফলিত করার জন্য এই গোপনীয়তা নীতি আপডেট করতে পারি। অ্যাপের ভিতরে নতুন সংস্করণ প্রকাশের মাধ্যমে যেকোনো পরিবর্তনের তথ্য ব্যবহারকারীদের জানিয়ে দেওয়া হবে।</p>
+      <h2>যোগাযোগ:</h2>
+      <p>এই গোপনীয়তা নীতি সম্পর্কে কোনও প্রশ্ন বা মন্তব্যের জন্য, ব্যবহারকারীরা আমাদের সাথে যোগাযোগ করতে পারেন: <a href="mailto:hsly6370@gmail.com">hsly6370@gmail.com</a>.</p>
+    </div>
+
+<!-- إضافة هذا داخل الـ <section class="content"> -->
+<div data-lang="ru">
+  <p>В эпоху цифровых коммуникаций защита конфиденциальности пользователей стала чрезвычайно важной. В приложении FndChat мы полностью осознаем эту ответственность и привержены защите личных данных наших пользователей. Настоящая политика конфиденциальности объясняет, как мы собираем, используем и раскрываем информацию пользователей при использовании FndChat. Используя приложение, пользователь принимает все условия данной политики конфиденциальности.</p>
+  <h2>Информация, которую мы собираем:</h2>
+  <p>Мы собираем различные типы информации для обеспечения эффективного и безопасного пользовательского опыта. Это включает данные, которые пользователи предоставляют при создании аккаунта, такие как имя пользователя и адрес электронной почты, а также информацию, отправленную при обращении в службу поддержки для решения проблем или вопросов. Кроме того, некоторые данные автоматически собираются во время использования приложения для понимания шаблонов использования и повышения производительности.</p>
+  <h2>Как мы используем информацию:</h2>
+  <p>Собранная информация используется для предоставления и улучшения услуг приложения, персонализации пользовательского опыта, оказания технической поддержки и анализа данных пользователей с целью совершенствования наших предложений. Мы не передаём информацию третьим лицам без согласия пользователя.</p>
+  <h2>Безопасность данных:</h2>
+  <p>Мы приоритезируем защиту пользовательских данных, применяя надёжные, зашифрованные меры безопасности, чтобы предотвратить несанкционированный доступ. Однако ни одна система не может гарантировать абсолютную безопасность.</p>
+  <h2>Права пользователей:</h2>
+  <p>Пользователи имеют право в любой момент получить доступ, обновить и удалить свои личные данные и аккаунты, а также могут возражать против обработки своих данных в соответствии с применимым законодательством.</p>
+  <h2>Обновления политики:</h2>
+  <p>Мы можем время от времени обновлять эту политику конфиденциальности, чтобы отразить изменения в наших сервисах или правовых требованиях. Пользователи будут уведомлены о любых изменениях путём публикации новой версии внутри приложения.</p>
+  <h2>Связаться с нами:</h2>
+  <p>По любым вопросам или комментариям относительно этой политики конфиденциальности пользователи могут связаться с нами по адресу: <a href="mailto:hsly6370@gmail.com">hsly6370@gmail.com</a>.</p>
+</div>
+
+    <!-- Tamil -->
+    <div data-lang="ta">
+      <p>டிஜிட்டல் தொடர்பு காலத்தில், பயனர்களின் தனியுரிமையை பாதுகாப்பது மிக முக்கியமானதாகிவிட்டது. FndChat ஆப்பில், இந்த பொறுப்பை முழுமையாக ஏற்று, எங்கள் பயனர்களின் ব্যক্তிநிலை தகவலை பாதுகாப்பதில் கவனம் செலுத்துகிறோம். இந்த தனியுரிமைக் கொள்கை, பயனர் FndChat யை பயன்படுத்தும் போது எவ்வாறு தகவலை சேகரிக்க, பயன்படுத்த மற்றும் பகிர்கிறோம் என்பதை விளக்குகிறது. ஆப்பை பயன்படுத்துவதன் மூலம், பயனர் இந்த தனியுரிமைக் கொள்கையின் அனைத்து நிபந்தனைகளுக்கும் ஒப்புக்கொள்கிறார்.</p>
+      <h2>நாம் எந்த தகவலை சேகரிக்கிறோம்:</h2>
+      <p>ஒரு திறமையாகவும் பாதுகாப்பானவுமாகும் பயனர் அனுபவத்தை வழங்க, நாங்கள் பல்வேறு வகையான தகவல்களை சேகரிக்கிறோம். இதில் கணக்கு உருவாக்கும்போது பயனர் நேரடியாக வழங்கும் தரவு—பயனர் பெயர் மற்றும் மின்னஞ்சல் முகவரி போன்றவை—மேலும் துறை ஆதரவை தொடர்பு கொண்டபோது சமர்ப்பிக்கப்படும் தகவல் ஆகியவை அடங்கும். கூடுதலாக, பயன்பாட்டு முறைமைகளைப் புரிந்துகொண்டு செயல்திறனை மேம்படுத்த சில தரவுகள் பயன்பாட்டின் போது தானாகவே சேகரிக்கப்படும்.</p>
+      <h2>நாம் தகவலை எப்படி பயன்படுத்துகிறோம்:</h2>
+      <p>சேகரிக்கப்பட்ட தகவல் ஆப்பின் சேவைகளை வழங்க மற்றும் மேம்படுத்த, பயனர் அனுபவத்தை தனித் தனித்துவமாக மாற்ற, தொழில்நுட்ப ஆதரவை வழங்க மற்றும் எங்கள் சேவைகளை அதிகரிக்க பயனர் தரவை பகுப்பாய்வு செய்ய பயன்படுகிறது. பயனர் சம்மதம் இல்லாமல் எந்த மூன்றாம் பக்கத்துடனும் தகவலைப் பகிர்வோம்.</p>
+      <h2>தரவு பாதுகாப்பு:</h2>
+      <p>அனுமதி பெறாத அணுகலைத் தடுப்பதற்காக வலுவான, குறியாக்க செய்யப்பட்ட பாதுகாப்பு நடவடிக்கைகளை அமல்படுத்துவதை நாம் முன்னுரிமை செய்கிறோம். இருப்பினும், எந்த முறையிலும் முழுமையான பாதுகாப்பு உறுதி செய்ய இயலாது.</p>
+      <h2>பயனர் உரிமைகள்:</h2>
+      <p>பயனர்கள் எந்த நேரத்திலும் தங்களது தனியுரிமைத் தகவல்களையும் கணக்குகளையும் அணுக, புதுப்பித்து, நீக்க உரிமையுடையர்; பொருந்தக்கூடிய சட்டங்களின் அடிப்படையில் தரவு செயலாக்கத்துக்கு எதிராக எதிர்ப்பு தெரிவிக்கலாம்.</p>
+      <h2>கொள்கை மேம்படுத்தல்கள்:</h2>
+      <p>எங்கள் சேவைகள் அல்லது சட்டத்தேர்வுகளில் ஏற்படும் மாற்றங்களைப் பிரதிபலிக்க இந்த தனியுரிமைக் கொள்கையை காலக் கழிவில் புதுப்பிக்கலாம். புதிய பதிப்பை ஆப்பில் வெளியிட்டு எந்த மாற்றத்தையும் பயனர்களுக்கு அறிவிப்போம்.</p>
+      <h2>தொடர்பு:</h2>
+      <p>இந்த தனியுரிமைக் கொள்கை குறித்து ஏதேனும் கேள்வி அல்லது கருத்துக்கு, பயனர்கள் எங்களுடன் தொடர்பு கொள்ளலாம்: <a href="mailto:hsly6370@gmail.com">hsly6370@gmail.com</a>.</p>
+    </div>
+
+    <!-- Turkish -->
+    <div data-lang="tr">
+      <p>Dijital iletişim çağında, kullanıcıların gizliliğini korumak çok önemli hale geldi. FndChat uygulamasında, bu sorumluluğu tamamen kabul ediyor ve kullanıcılarımızın kişisel bilgilerinin güvenliğini sağlamaya kararlıyız. Bu gizlilik politikası, kullanıcıların FndChat'i kullandığında bilgilerini nasıl topladığımızı, kullandığımızı ve açıkladığımızı açıklar. Uygulamayı kullanarak, kullanıcı bu gizlilik politikasının tüm şartlarını kabul etmiş olur.</p>
+      <h2>Topladığımız Bilgiler:</h2>
+      <p>Verimli ve güvenli bir kullanıcı deneyimi sunmak için çeşitli türde bilgiler toplarız. Buna kullanıcıların hesap oluştururken doğrudan sağladığı veriler (kullanıcı adı ve e-posta adresi gibi) ile sorun giderme veya sorgular için destekle iletişime geçtiğinde sunulan bilgiler dahildir. Ayrıca, kullanım desenlerini anlamak ve performansı iyileştirmek için uygulama kullanımında belirli veriler otomatik olarak toplanır.</p>
+      <h2>Bilgileri Nasıl Kullanıyoruz:</h2>
+      <p>Toplanan bilgiler, uygulamanın hizmetlerini sunmak ve iyileştirmek, kullanıcı deneyimini kişiselleştirmek, teknik destek sağlamak ve tekliflerimizi geliştirmek için kullanıcı verilerini analiz etmek amacıyla kullanılır. Kullanıcının izni olmadan bilgileri üçüncü taraflarla paylaşmayacağız.</p>
+      <h2>Veri Güvenliği:</h2>
+      <p>Yetkisiz erişimi önlemek için güçlü, şifreli güvenlik önlemleri uygulayarak kullanıcı verilerinin korunmasını önceliklendiriyoruz. Ancak, hiçbir sistemde mutlak güvenlik garanti edilemez.</p>
+      <h2>Kullanıcı Hakları:</h2>
+      <p>Kullanıcılar, kişisel bilgilerine ve hesaplarına istedikleri zaman erişme, güncelleme ve silme hakkına sahiptir ve geçerli yasalara uygun olarak veri işlemeye itiraz edebilirler.</p>
+      <h2>Politika Güncellemeleri:</h2>
+      <p>Hizmetlerimizde veya yasal gereksinimlerdeki değişiklikleri yansıtmak için bu gizlilik politikasını zaman zaman güncelleyebiliriz. Kullanıcılar, uygulama içinde yeni sürümü yayınlayarak herhangi bir değişiklikten haberdar edilecektir.</p>
+      <h2>Bize Ulaşın:</h2>
+      <p>Bu gizlilik politikası ile ilgili herhangi bir soru veya yorum için kullanıcılar şuradan bize ulaşabilir: <a href="mailto:hsly6370@gmail.com">hsly6370@gmail.com</a>.</p>
+    </div>
+
+    <!-- Persian -->
+    <div data-lang="fa">
+      <p>در عصر ارتباطات دیجیتال، حفاظت از حریم خصوصی کاربران بسیار حیاتی شده است. در اپلیکیشن FndChat، ما این مسئولیت را به‌طور کامل پذیرفته و متعهد به حفظ اطلاعات شخصی کاربران خود هستیم. این سیاست حریم خصوصی توضیح می‌دهد که زمانی که کاربران از FndChat استفاده می‌کنند، چگونه اطلاعات آن‌ها را جمع‌آوری، استفاده و افشا می‌کنیم. با استفاده از اپلیکیشن، کاربر با تمام شرایط این سیاست حریم خصوصی موافقت می‌کند.</p>
+      <h2>اطلاعاتی که جمع‌آوری می‌کنیم:</h2>
+      <p>ما انواع مختلفی از اطلاعات را برای ارائه تجربه کاربری کارآمد و ایمن جمع‌آوری می‌کنیم. این شامل داده‌هایی است که کاربران هنگام ایجاد حساب کاربری به‌طور مستقیم ارائه می‌دهند — مانند نام کاربری و نشانی ایمیل — و همچنین اطلاعاتی که هنگام تماس با پشتیبانی برای حل مشکلات یا پرسش‌ها ارسال می‌کنند. علاوه بر این، برخی داده‌ها به صورت خودکار در حین استفاده از برنامه جمع‌آوری می‌شوند تا الگوهای استفاده را درک کرده و عملکرد را بهبود بخشند.</p>
+      <h2>نحوه استفاده از اطلاعات:</h2>
+      <p>اطلاعات جمع‌آوری‌شده برای ارائه و بهبود خدمات اپلیکیشن، شخصی‌سازی تجربه کاربری، ارائه پشتیبانی فنی و تجزیه‌وتحلیل داده‌های کاربران برای ارتقاء خدمات ما استفاده می‌شود. بدون رضایت کاربر، این اطلاعات را با هیچ شخص ثالثی به اشتراک نخواهیم گذاشت.</p>
+      <h2>امنیت داده‌ها:</h2>
+      <p>ما با استفاده از تدابیر امنیتی قوی و رمزگذاری‌شده برای جلوگیری از دسترسی غیرمجاز، حفاظت از داده‌های کاربران را در اولویت قرار می‌دهیم. با این حال، هیچ سیستمی نمی‌تواند امنیت مطلق را تضمین کند.</p>
+      <h2>حقوق کاربران:</h2>
+      <p>کاربران حق دسترسی، به‌روزرسانی و حذف اطلاعات شخصی و حساب‌های خود را در هر زمان دارند و می‌توانند مطابق قوانین جاری با پردازش داده‌های خود مخالفت کنند.</p>
+      <h2>به‌روزرسانی‌های سیاست:</h2>
+      <p>ممکن است این سیاست حریم خصوصی را به‌طور دوره‌ای برای بازتاب تغییرات در خدمات یا الزامات قانونی به‌روزرسانی کنیم. کاربران از طریق انتشار نسخه جدید درون اپلیکیشن از هرگونه تغییر مطلع خواهند شد.</p>
+      <h2>تماس با ما:</h2>
+      <p>برای هرگونه پرسش یا نظر در مورد این سیاست حریم خصوصی، کاربران می‌توانند از طریق ایمیل با ما تماس بگیرند: <a href="mailto:hsly6370@gmail.com">hsly6370@gmail.com</a>.</p>
+    </div>
+
+    <!-- Greek -->
+    <div data-lang="el">
+      <p>Στην εποχή των ψηφιακών επικοινωνιών, η προστασία της ιδιωτικότητας των χρηστών έχει γίνει κρίσιμη. Στην εφαρμογή FndChat, αναλαμβάνουμε πλήρως αυτή την ευθύνη και δεσμευόμαστε να προστατεύουμε τα προσωπικά δεδομένα των χρηστών μας. Αυτή η πολιτική απορρήτου εξηγεί πώς συλλέγουμε, χρησιμοποιούμε και αποκαλύπτουμε τις πληροφορίες των χρηστών όταν χρησιμοποιούν το FndChat. Με τη χρήση της εφαρμογής, ο χρήστης συμφωνεί με όλους τους όρους αυτής της πολιτικής απορρήτου.</p>
+      <h2>Πληροφορίες που Συλλέγουμε:</h2>
+      <p>Συλλέγουμε διάφορους τύπους πληροφοριών για να παρέχουμε μια αποτελεσματική και ασφαλή εμπειρία χρήστη. Αυτό περιλαμβάνει δεδομένα που παρέχονται άμεσα από τους χρήστες κατά τη δημιουργία λογαριασμού —όπως όνομα χρήστη και διεύθυνση ηλεκτρονικού ταχυδρομείου— καθώς και πληροφορίες που υποβάλλονται κατά την επικοινωνία με την υποστήριξη για αντιμετώπιση προβλημάτων ή ερωτήματα. Επιπλέον, ορισμένα δεδομένα συλλέγονται αυτόματα κατά τη χρήση της εφαρμογής για να κατανοήσουμε τα πρότυπα χρήσης και να βελτιώσουμε την απόδοση.</p>
+      <h2>Πώς Χρησιμοποιούμε τις Πληροφορίες:</h2>
+      <p>Οι συλλεγόμενες πληροφορίες χρησιμοποιούνται για την παροχή και βελτίωση των υπηρεσιών της εφαρμογής, την εξατομίκευση της εμπειρίας χρήστη, την παροχή τεχνικής υποστήριξης και την ανάλυση των δεδομένων χρήστη για την ενίσχυση των προσφορών μας. Δεν θα μοιραστούμε πληροφορίες με κανένα τρίτο μέρος χωρίς τη συγκατάθεση του χρήστη.</p>
+      <h2>Ασφάλεια Δεδομένων:</h2>
+      <p>Δίνουμε προτεραιότητα στην προστασία των δεδομένων των χρηστών εφαρμόζοντας ισχυρά, κρυπτογραφημένα μέτρα ασφάλειας για την αποτροπή μη εξουσιοδοτημένης πρόσβασης. Ωστόσο, δεν μπορεί να εγγυηθεί απόλυτη ασφάλεια σε κανένα σύστημα.</p>
+      <h2>Δικαιώματα Χρηστών:</h2>
+      <p>Οι χρήστες έχουν το δικαίωμα να έχουν πρόσβαση, να ενημερώνουν και να διαγράφουν τις προσωπικές τους πληροφορίες και τους λογαριασμούς τους ανά πάσα στιγμή, και μπορούν να αντιταχθούν στην επεξεργασία δεδομένων σύμφωνα με την ισχύουσα νομοθεσία.</p>
+      <h2>Ενημερώσεις Πολιτικής:</h2>
+      <p>Μπορούμε να ενημερώνουμε περιοδικά αυτή την πολιτική απορρήτου για να αντικατοπτρίζει αλλαγές στις υπηρεσίες μας ή στις νομικές απαιτήσεις. Οι χρήστες θα ενημερώνονται για οποιεσδήποτε αλλαγές με τη δημοσίευση της νέας έκδοσης εντός της εφαρμογής.</p>
+      <h2>Επικοινωνία:</h2>
+      <p>Για οποιαδήποτε ερώτηση ή σχόλιο σχετικά με αυτή την πολιτική απορρήτου, οι χρήστες μπορούν να επικοινωνήσουν μαζί μας στο: <a href="mailto:hsly6370@gmail.com">hsly6370@gmail.com</a>.</p>
+    </div>
+
+    <!-- Czech -->
+    <div data-lang="cs">
+      <p>V době digitální komunikace se ochrana soukromí uživatelů stala zásadní. V aplikaci FndChat plně uznáváme tuto odpovědnost a zavazujeme se chránit osobní údaje našich uživatelů. Tato zásady ochrany osobních údajů vysvětluje, jak shromažďujeme, používáme a zveřejňujeme informace uživatelů při používání FndChat. Používáním aplikace uživatel souhlasí se všemi podmínkami této zásady ochrany osobních údajů.</p>
+      <h2>Informace, které shromažďujeme:</h2>
+      <p>Shromažďujeme různé typy informací, abychom poskytli efektivní a bezpečný uživatelský zážitek. To zahrnuje data poskytnutá přímo uživateli při vytváření účtu — jako uživatelské jméno a e‑mailová adresa — stejně jako informace zaslané při kontaktu s podporou pro řešení problémů nebo dotazů. Kromě toho se některá data automaticky shromažďují během používání aplikace, abychom pochopili vzorce používání a zlepšili výkon.</p>
+      <h2>Jak využíváme informace:</h2>
+      <p>Shromážděné informace se používají k poskytování a zlepšování služeb aplikace, přizpůsobení uživatelského zážitku, poskytování technické podpory a analýze uživatelských dat za účelem vylepšení našich nabídek. Bez souhlasu uživatele nebudeme sdílet informace s žádnou třetí stranou.</p>
+      <h2>Bezpečnost dat:</h2>
+      <p>Při ochraně uživatelských dat upřednostňujeme silná, šifrovaná bezpečnostní opatření, aby se zabránilo neoprávněnému přístupu. Nicméně absolutní bezpečnost v žádném systému zaručit nelze.</p>
+      <h2>Práva uživatelů:</h2>
+      <p>Uživatelé mají právo kdykoli přistupovat, aktualizovat a mazat své osobní údaje a účty a mohou vznést námitku proti zpracování svých údajů v souladu s platnými právními předpisy.</p>
+      <h2>Aktualizace politiky:</h2>
+      <p>Tuto zásady ochrany osobních údajů můžeme čas od času aktualizovat, aby odrážely změny v našich službách nebo právních požadavcích. Uživatelé budou o jakýchkoli změnách informováni zveřejněním nové verze v aplikaci.</p>
+      <h2>Kontaktujte nás:</h2>
+      <p>V případě jakýchkoli otázek nebo připomínek k této zásady ochrany osobních údajů nás uživatelé mohou kontaktovat na: <a href="mailto:hsly6370@gmail.com">hsly6370@gmail.com</a>.</p>
+    </div>
+
+    <!-- Swedish -->
+    <div data-lang="sv">
+      <p>I den digitala kommunikationens era har skyddet av användarnas integritet blivit avgörande. I FndChat-appen erkänner vi detta ansvar fullt ut och är engagerade i att skydda våra användares personliga information. Denna integritetspolicy förklarar hur vi samlar in, använder och avslöjar användarinformation när de använder FndChat. Genom att använda appen godkänner användaren alla villkor i denna integritetspolicy.</p>
+      <h2>Information vi samlar in:</h2>
+      <p>Vi samlar in olika typer av information för att leverera en effektiv och säker användarupplevelse. Detta inkluderar data som tillhandahålls direkt av användare vid kontoskapande—såsom användarnamn och e‑postadress—samt information som skickas vid kontakt med supporten för felsökning eller förfrågningar. Dessutom samlas viss data automatiskt in under användning av appen för att förstå användningsmönster och förbättra prestandan.</p>
+      <h2>Hur vi använder information:</h2>
+      <p>Den insamlade informationen används för att leverera och förbättra appens tjänster, anpassa användarupplevelsen, tillhandahålla teknisk support och analysera användardata för att förbättra våra erbjudanden. Vi kommer inte att dela information med någon tredje part utan användarens samtycke.</p>
+      <h2>Datasäkerhet:</h2>
+      <p>Vi prioriterar skyddet av användardata genom att använda starka, krypterade säkerhetsåtgärder för att förhindra obehörig åtkomst. Dock kan ingen system garantera absolut säkerhet.</p>
+      <h2>Användarrättigheter:</h2>
+      <p>Användare har rätt att när som helst få tillgång till, uppdatera och radera sina personuppgifter och konton, och kan motsätta sig databehandling i enlighet med gällande lagstiftning.</p>
+      <h2>Policyuppdateringar:</h2>
+      <p>Vi kan uppdatera denna integritetspolicy från tid till annan för att återspegla ändringar i våra tjänster eller rättsliga krav. Användare kommer att meddelas om eventuella ändringar genom publicering av den nya versionen i appen.</p>
+      <h2>Kontakta oss:</h2>
+      <p>För frågor eller kommentarer om denna integritetspolicy kan användare kontakta oss på: <a href="mailto:hsly6370@gmail.com">hsly6370@gmail.com</a>.</p>
+    </div>
+
+    <!-- Finnish -->
+    <div data-lang="fi">
+      <p>Digitaalisen viestinnän aikakaudella käyttäjien yksityisyyden suojaamisesta on tullut ratkaisevan tärkeää. FndChat-sovelluksessa tunnustamme täysin tämän vastuun ja sitoudumme suojaamaan käyttäjiemme henkilötietoja. Tämä tietosuojakäytäntö selittää, miten keräämme, käytämme ja paljastamme käyttäjien tietoja, kun he käyttävät FndChatia. Käyttämällä sovellusta käyttäjä hyväksyy kaikki tämän tietosuojakäytännön ehdot.</p>
+      <h2>Kerättävät tiedot:</h2>
+      <p>Keräämme eri tyyppisiä tietoja tarjotaksemme tehokkaan ja turvallisen käyttäjäkokemuksen. Tämä sisältää tiedot, jotka käyttäjät antavat suoraan tilin luomisen yhteydessä—kuten käyttäjänimi ja sähköpostiosoite—sekä tiedot, jotka lähetetään ottaessa yhteyttä tukeen vianmääritystä tai tiedusteluja varten. Lisäksi tiettyjä tietoja kerätään automaattisesti sovelluksen käytön aikana, jotta ymmärrämme käyttökuvioita ja parannamme suorituskykyä.</p>
+      <h2>Kuinka käytämme tietoja:</h2>
+      <p>Kerättyjä tietoja käytetään sovelluksen palveluiden tarjoamiseen ja parantamiseen, käyttäjäkokemuksen räätälöimiseen, teknisen tuen tarjoamiseen ja käyttäjätietojen analysointiin tarjontojemme parantamiseksi. Emme jaa tietoja kolmansien osapuolten kanssa ilman käyttäjän suostumusta.</p>
+      <h2>Tietoturva:</h2>
+      <p>Priorisoimme käyttäjätietojen suojaamisen käyttämällä vahvoja, salattuja turvatoimia estääksemme luvattoman pääsyn. Kuitenkin mikään järjestelmä ei voi taata ehdotonta turvallisuutta.</p>
+      <h2>Käyttäjän oikeudet:</h2>
+      <p>Käyttäjillä on oikeus milloin tahansa käyttää, päivittää ja poistaa henkilötietonsa ja tilinsä, ja he voivat vastustaa tietojenkäsittelyä sovellettavien lakien mukaisesti.</p>
+      <h2>Käytännön päivitykset:</h2>
+      <p>Voimme päivittää tätä tietosuojakäytäntöä aika ajoin heijastamaan palveluidemme tai lakivaatimusten muutoksia. Käyttäjille ilmoitetaan kaikista muutoksista julkaisemalla uusi versio sovelluksessa.</p>
+      <h2>Ota yhteyttä:</h2>
+      <p>Kysymyksiä tai kommentteja tästä tietosuojakäytännöstä varten käyttäjät voivat ottaa yhteyttä: <a href="mailto:hsly6370@gmail.com">hsly6370@gmail.com</a>.</p>
+    </div>
+
+    <!-- Hebrew -->
+    <div data-lang="he">
+      <p>בעידן התקשורת הדיגיטלית, הגנה על פרטיות המשתמשים הפכה לקריטית. באפליקציית FndChat, אנו מכירים באחריות זו במלואה ומחויבים להגן על המידע האישי של המשתמשים שלנו. מדיניות פרטיות זו מסבירה כיצד אנו אוספים, משתמשים ומחשפים מידע של משתמשים בעת השימוש ב‑FndChat. בשימוש באפליקציה, המשתמש מסכים לכל תנאי מדיניות פרטיות זו.</p>
+      <h2>מידע שאנו אוספים:</h2>
+      <p>אנו אוספים סוגים שונים של מידע כדי לספק חווית משתמש יעילה ובטוחה. זה כולל נתונים שנמסרים על‑ידי המשתמשים בעת יצירת חשבון—כמו שם משתמש וכתובת אימייל—וכן מידע שנשלח בעת יצירת קשר עם התמיכה לטיפול בתקלות או שאלות. בנוסף, נתונים מסוימים נאספים אוטומטית במהלך השימוש באפליקציה כדי להבין דפוסי שימוש ולשפר ביצועים.</p>
+      <h2>כיצד אנו משתמשים במידע:</h2>
+      <p>המידע הנאסף משמש לספק ולשפר את שירותי האפליקציה, להתאים אישית את חווית המשתמש, לספק תמיכה טכנית ולנתח נתוני משתמשים על מנת לשדרג את השירותים שלנו. לא נשיתף מידע עם שום צד שלישי ללא הסכמת המשתמש.</p>
+      <h2>אבטחת נתונים:</h2>
+      <p>אנו מקדמים את הגנת נתוני המשתמשים באמצעות אמצעי אבטחה חזקים ומוצפנים כדי למנוע גישה בלתי מורשית. עם זאת, אין מערכת שיכולה להבטיח אבטחה מוחלטת.</p>
+      <h2>זכויות המשתמש:</h2>
+      <p>למשתמשים הזכות לגשת, לעדכן ולמחוק את המידע האישי והחשבונות שלהם בכל עת, והם יכולים להתנגד לעיבוד הנתונים שלהם בהתאם לחוקים החל.</p>
+      <h2>עדכוני מדיניות:</h2>
+      <p>אנו עשויים לעדכן מדי פעם מדיניות פרטיות זו כדי לשקף שינויים בשירותים שלנו או בדרישות חוקיות. המשתמשים יודעו על כל שינוי באמצעות פרסום הגרסה החדשה בתוך האפליקציה.</p>
+      <h2>צור קשר:</h2>
+      <p>לכל שאלה או הערה לגבי מדיניות פרטיות זו, המשתמשים יכולים לפנות אלינו בכתובת: <a href="mailto:hsly6370@gmail.com">hsly6370@gmail.com</a>.</p>
+    </div>
+
+    <!-- Hungarian -->
+    <div data-lang="hu">
+      <p>A digitális kommunikáció korszakában a felhasználók magánéletének védelme kritikus jelentőségűvé vált. Az FndChat alkalmazásban teljes mértékben felismerjük ezt a felelősséget, és elkötelezettek vagyunk felhasználóink személyes adatainak védelme mellett. Ez az adatvédelmi irányelv elmagyarázza, hogyan gyűjtjük, használjuk és hozzuk nyilvánosságra a felhasználók adatait, amikor használják az FndChatet. Az alkalmazás használatával a felhasználó elfogadja ezen adatvédelmi irányelv minden feltételét.</p>
+      <h2>Az általunk gyűjtött információk:</h2>
+      <p>Különféle típusú információkat gyűjtünk az eredményes és biztonságos felhasználói élmény biztosítása érdekében. Ez magában foglalja a felhasználók által a fiók létrehozásakor közvetlenül megadott adatokat (például felhasználónév és e-mail cím), valamint azokat az információkat, amelyeket a támogatással való kapcsolatfelvétel során küldenek be hibakeresés vagy kérdések esetén. Ezenkívül bizonyos adatokat automatikusan gyűjtünk az alkalmazás használata során a használati minták megértése és a teljesítmény javítása érdekében.</p>
+      <h2>Hogyan használjuk az információkat:</h2>
+      <p>A gyűjtött információkat az alkalmazás szolgáltatásainak nyújtására és fejlesztésére, a felhasználói élmény személyre szabására, műszaki támogatás nyújtására és a felhasználói adatok elemzésére használjuk kínálataink javítása érdekében. A felhasználó beleegyezése nélkül nem osztjuk meg az információkat harmadik felekkel.</p>
+      <h2>Adatbiztonság:</h2>
+      <p>Az illetéktelen hozzáférés megelőzése érdekében erős, titkosított biztonsági intézkedéseket alkalmazunk a felhasználói adatok védelme érdekében. Azonban egyik rendszer sem garantálhatja az abszolút biztonságot.</p>
+      <h2>Felhasználói jogok:</h2>
+      <p>A felhasználóknak jogukban áll bármikor hozzáférni, frissíteni és törölni személyes adataikat és fiókjaikat, és tiltakozhatnak az adataik feldolgozása ellen az alkalmazandó jogszabályok szerint.</p>
+      <h2>Irányelv frissítések:</h2>
+      <p>Időről időre frissíthetjük ezt az adatvédelmi irányelvet, hogy tükrözze szolgáltatásaink vagy jogi követelmények változásait. A felhasználókat bármilyen változásról tájékoztatjuk az új verzió alkalmazáson belüli közzétételével.</p>
+      <h2>Lépjen kapcsolatba velünk:</h2>
+      <p>Ha kérdése vagy észrevétele van ezzel az adatvédelmi irányelvvel kapcsolatban, a felhasználók elérhetnek minket a következő címen: <a href="mailto:hsly6370@gmail.com">hsly6370@gmail.com</a>.</p>
+    </div>
+
+    <!-- Ukrainian -->
+    <div data-lang="uk">
+      <p>В епоху цифрових комунікацій захист приватності користувачів став критично важливим. У застосунку FndChat ми повністю усвідомлюємо цю відповідальність і прагнемо захищати особисті дані наших користувачів. Ця політика конфіденційності пояснює, як ми збираємо, використовуємо та розкриваємо інформацію користувачів під час використання FndChat. Використовуючи застосунок, користувач погоджується з усіма умовами цієї політики конфіденційності.</p>
+      <h2>Інформація, яку ми збираємо:</h2>
+      <p>Ми збираємо різні типи інформації, щоб забезпечити ефективний і безпечний досвід користувача. Це включає дані, надані безпосередньо користувачами під час створення облікового запису (ім’я користувача та адреса електронної пошти), а також інформацію, надіслану під час звернення до служби підтримки для вирішення проблем або запитів. Крім того, певні дані автоматично збираються під час використання застосунку, щоб зрозуміти шаблони використання та покращити продуктивність.</p>
+      <h2>Як ми використовуємо інформацію:</h2>
+      <p>Зібрану інформацію використовують для надання та покращення послуг застосунку, персоналізації досвіду користувача, надання технічної підтримки та аналізу даних користувачів для вдосконалення наших пропозицій. Ми не передаватимемо інформацію третім особам без згоди користувача.</p>
+      <h2>Безпека даних:</h2>
+      <p>Ми надаємо пріоритет захисту даних користувачів, застосовуючи надійні, зашифровані заходи безпеки, щоб запобігти несанкціонованому доступу. Однак жодна система не може гарантувати абсолютну безпеку.</p>
+      <h2>Права користувачів:</h2>
+      <p>Користувачі мають право будь-коли отримати доступ, оновити та видалити свої особисті дані та акаунти, а також можуть заперечувати проти обробки своїх даних відповідно до чинного законодавства.</p>
+      <h2>Оновлення політики:</h2>
+      <p>Ми можемо час від часу оновлювати цю політику конфіденційності, щоб відобразити зміни в наших послугах або правових вимогах. Користувачів буде повідомлено про будь-які зміни шляхом публікації нової версії в застосунку.</p>
+      <h2>Зв’яжіться з нами:</h2>
+      <p>З будь-яких питань чи зауважень щодо цієї політики конфіденційності користувачі можуть звертатися за адресою: <a href="mailto:hsly6370@gmail.com">hsly6370@gmail.com</a>.</p>
+    </div>
+
+    <!-- Vietnamese -->
+    <div data-lang="vi">
+      <p>Trong kỷ nguyên truyền thông kỹ thuật số, việc bảo vệ quyền riêng tư của người dùng trở nên rất quan trọng. Trong ứng dụng FndChat, chúng tôi hoàn toàn thừa nhận trách nhiệm này và cam kết bảo vệ thông tin cá nhân của người dùng. Chính sách quyền riêng tư này giải thích cách chúng tôi thu thập, sử dụng và tiết lộ thông tin của người dùng khi họ sử dụng FndChat. Bằng cách sử dụng ứng dụng, người dùng đồng ý với tất cả các điều khoản của chính sách này.</p>
+      <h2>Thông tin Chúng Tôi Thu Thập:</h2>
+      <p>Chúng tôi thu thập nhiều loại thông tin để mang đến trải nghiệm người dùng hiệu quả và an toàn. Điều này bao gồm dữ liệu do người dùng cung cấp trực tiếp khi tạo tài khoản—như tên người dùng và địa chỉ email—cũng như thông tin khi liên hệ hỗ trợ để khắc phục sự cố hoặc thắc mắc. Ngoài ra, một số dữ liệu được thu thập tự động trong quá trình sử dụng ứng dụng để hiểu mô hình sử dụng và cải thiện hiệu suất.</p>
+      <h2>Cách Chúng Tôi Sử Dụng Thông Tin:</h2>
+      <p>Thông tin thu thập được sử dụng để cung cấp và cải thiện dịch vụ của ứng dụng, cá nhân hóa trải nghiệm người dùng, cung cấp hỗ trợ kỹ thuật và phân tích dữ liệu người dùng để nâng cao dịch vụ. Chúng tôi sẽ không chia sẻ thông tin với bất kỳ bên thứ ba nào mà không có sự đồng ý của người dùng.</p>
+      <h2>Bảo Mật Dữ Liệu:</h2>
+      <p>Chúng tôi ưu tiên bảo vệ dữ liệu người dùng bằng cách áp dụng các biện pháp bảo mật mạnh mẽ, được mã hóa để ngăn chặn truy cập trái phép. Tuy nhiên, không hệ thống nào có thể đảm bảo an toàn tuyệt đối.</p>
+      <h2>Quyền của Người Dùng:</h2>
+      <p>Người dùng có quyền truy cập, cập nhật và xóa thông tin cá nhân và tài khoản của họ bất cứ lúc nào, và có thể phản đối việc xử lý dữ liệu theo luật hiện hành.</p>
+      <h2>Cập Nhật Chính Sách:</h2>
+      <p>Chúng tôi có thể cập nhật chính sách quyền riêng tư này theo thời gian để phản ánh các thay đổi trong dịch vụ hoặc yêu cầu pháp lý. Người dùng sẽ được thông báo về bất kỳ thay đổi nào bằng cách xuất bản phiên bản mới trong ứng dụng.</p>
+      <h2>Liên Hệ Với Chúng Tôi:</h2>
+      <p>Đối với bất kỳ câu hỏi hoặc phản hồi nào về chính sách quyền riêng tư này, người dùng có thể liên hệ với chúng tôi tại: <a href="mailto:hsly6370@gmail.com">hsly6370@gmail.com</a>.</p>
+    </div>
+
+    <!-- Thai -->
+    <div data-lang="th">
+      <p>ในยุคของการสื่อสารดิจิทัล การปกป้องความเป็นส่วนตัวของผู้ใช้กลายเป็นเรื่องสำคัญอย่างยิ่ง ในแอป FndChat เราตระหนักถึงความรับผิดชอบนี้อย่างเต็มที่และมุ่งมั่นที่จะปกป้องข้อมูลส่วนบุคคลของผู้ใช้ นโยบายความเป็นส่วนตัวนี้อธิบายว่าเมื่อผู้ใช้ใช้ FndChat เราจะรวบรวม ใช้ และเปิดเผยข้อมูลของผู้ใช้อย่างไร การใช้แอปถือเป็นการยอมรับข้อกำหนดทั้งหมดของนโยบายนี้</p>
+      <h2>ข้อมูลที่เรารวบรวม:</h2>
+      <p>เราเก็บรวบรวมข้อมูลหลายประเภทเพื่อมอบประสบการณ์ผู้ใช้ที่มีประสิทธิภาพและปลอดภัย ซึ่งรวมถึงข้อมูลที่ผู้ใช้ให้โดยตรงเมื่อสร้างบัญชี เช่น ชื่อผู้ใช้และที่อยู่อีเมล รวมถึงข้อมูลที่ส่งเมื่อผู้ใช้ติดต่อฝ่ายสนับสนุนเพื่อแก้ไขปัญหาหรือสอบถาม นอกจากนี้ ยังมีการเก็บรวบรวมข้อมูลบางส่วนโดยอัตโนมัติระหว่างการใช้งานแอปเพื่อทำความเข้าใจรูปแบบการใช้งานและปรับปรุงประสิทธิภาพ</p>
+      <h2>วิธีการใช้ข้อมูล:</h2>
+      <p>ข้อมูลที่รวบรวมจะถูกใช้เพื่อให้บริการและปรับปรุงฟีเจอร์ของแอป ปรับแต่งประสบการณ์ผู้ใช้ ให้การสนับสนุนด้านเทคนิค และวิเคราะห์ข้อมูลผู้ใช้เพื่อพัฒนาบริการของเรา เราจะไม่แบ่งปันข้อมูลกับบุคคลที่สามใด ๆ โดยไม่ได้รับความยินยอมจากผู้ใช้</p>
+      <h2>ความปลอดภัยของข้อมูล:</h2>
+      <p>เราให้ความสำคัญกับการปกป้องข้อมูลผู้ใช้ด้วยการใช้มาตรการรักษาความปลอดภัยที่แข็งแกร่งและเข้ารหัสเพื่อป้องกันการเข้าถึงโดยไม่ได้รับอนุญาต แต่ไม่สามารถรับประกันความปลอดภัยได้อย่างสมบูรณ์ในทุกระบบ</p>
+      <h2>สิทธิของผู้ใช้:</h2>
+      <p>ผู้ใช้มีสิทธิ์เข้าถึง อัปเดต และลบข้อมูลส่วนบุคคลและบัญชีของตนได้ตลอดเวลา และสามารถคัดค้านการประมวลผลข้อมูลตามกฎหมายที่เกี่ยวข้อง</p>
+      <h2>การปรับปรุงนโยบาย:</h2>
+      <p>เราอาจปรับปรุงนโยบายความเป็นส่วนตัวนี้เป็นครั้งคราวเพื่อสะท้อนการเปลี่ยนแปลงในบริการหรือข้อกำหนดทางกฎหมาย ผู้ใช้จะได้รับแจ้งเกี่ยวกับการเปลี่ยนแปลงใด ๆ โดยการเผยแพร่เวอร์ชันใหม่ในแอป</p>
+      <h2>ติดต่อเรา:</h2>
+      <p>สำหรับคำถามหรือความคิดเห็นเกี่ยวกับนโยบายความเป็นส่วนตัวนี้ ผู้ใช้สามารถติดต่อเราที่: <a href="mailto:hsly6370@gmail.com">hsly6370@gmail.com</a></p>
+    </div>
+
+    <!-- Romanian -->
+    <div data-lang="ro">
+      <p>În epoca comunicațiilor digitale, protejarea confidențialității utilizatorilor a devenit crucială. În aplicația FndChat, recunoaștem pe deplin această responsabilitate și ne angajăm să protejăm informațiile personale ale utilizatorilor noștri. Această politică de confidențialitate explică modul în care colectăm, utilizăm și divulgăm informațiile utilizatorilor atunci când utilizează FndChat. Prin utilizarea aplicației, utilizatorul este de acord cu toate termenii acestei politici de confidențialitate.</p>
+      <h2>Informațiile pe care le colectăm:</h2>
+      <p>Colectăm diferite tipuri de informații pentru a oferi o experiență eficientă și sigură utilizatorilor. Aceasta include date furnizate direct de utilizatori la crearea contului — cum ar fi numele de utilizator și adresa de email — precum și informații trimise la contactarea asistenței pentru depanare sau întrebări. De asemenea, anumite date sunt colectate automat în timpul utilizării aplicației pentru a înțelege tiparele de utilizare și a îmbunătăți performanța.</p>
+      <h2>Cum folosim informațiile:</h2>
+      <p>Informațiile colectate sunt utilizate pentru a furniza și îmbunătăți serviciile aplicației, a personaliza experiența utilizatorului, a oferi asistență tehnică și a analiza datele utilizatorilor pentru a îmbunătăți ofertele noastre. Nu vom partaja informațiile cu nicio terță parte fără consimțământul utilizatorului.</p>
+      <h2>Securitatea datelor:</h2>
+      <p>Punem prioritate pe protejarea datelor utilizatorilor prin aplicarea unor măsuri de securitate puternice, criptate, pentru a preveni accesul neautorizat. Cu toate acestea, niciun sistem nu poate garanta securitate absolută.</p>
+      <h2>Drepturile utilizatorilor:</h2>
+      <p>Utilizatorii au dreptul de a accesa, actualiza și șterge informațiile personale și conturile lor în orice moment și pot obiecta la procesarea datelor conform legilor aplicabile.</p>
+      <h2>Actualizări ale politicii:</h2>
+      <p>Putem actualiza periodic această politică de confidențialitate pentru a reflecta modificările serviciilor noastre sau cerințelor legale. Utilizatorii vor fi notificați despre orice modificări prin publicarea noii versiuni în aplicație.</p>
+      <h2>Contactați‑ne:</h2>
+      <p>Pentru orice întrebări sau comentarii privind această politică de confidențialitate, utilizatorii ne pot contacta la: <a href="mailto:hsly6370@gmail.com">hsly6370@gmail.com</a>.</p>
+    </div>
+
+  </section>
+
+  <!-- Modal اختيار اللغة -->
+  <div class="modal-backdrop" id="langModal">
+    <div class="modal">
+      <button class="close-btn" id="closeModal">&times;</button>
+      <h2>اختر لغتك</h2>
+      <ul class="lang-list">
+        <!-- existing 6 -->
+        <li data-code="ar"><img src="https://flagcdn.com/sa.svg" alt=""> العربية</li>
+        <li data-code="en"><img src="https://flagcdn.com/us.svg" alt=""> English</li>
+        <li data-code="fr"><img src="https://flagcdn.com/fr.svg" alt=""> Français</li>
+        <li data-code="es"><img src="https://flagcdn.com/es.svg" alt=""> Español</li>
+        <li data-code="zh"><img src="https://flagcdn.com/cn.svg" alt=""> 中文</li>
+        <li data-code="ru"><img src="https://flagcdn.com/ru.svg" alt=""> Русский</li>
+        <!-- 15 new -->
+        <li data-code="hi"><img src="https://flagcdn.com/in.svg" alt=""> Hindi</li>
+        <li data-code="bn"><img src="https://flagcdn.com/bd.svg" alt=""> বাংলা</li>
+        <li data-code="ta"><img src="https://flagcdn.com/in.svg" alt=""> தமிழ்</li>
+        <li data-code="tr"><img src="https://flagcdn.com/tr.svg" alt=""> Türkçe</li>
+        <li data-code="fa"><img src="https://flagcdn.com/ir.svg" alt=""> فارسی</li>
+        <li data-code="el"><img src="https://flagcdn.com/gr.svg" alt=""> Ελληνικά</li>
+        <li data-code="cs"><img src="https://flagcdn.com/cz.svg" alt=""> Čeština</li>
+        <li data-code="sv"><img src="https://flagcdn.com/se.svg" alt=""> Svenska</li>
+        <li data-code="fi"><img src="https://flagcdn.com/fi.svg" alt=""> Suomi</li>
+        <li data-code="he"><img src="https://flagcdn.com/il.svg" alt=""> עברית</li>
+        <li data-code="hu"><img src="https://flagcdn.com/hu.svg" alt=""> Magyar</li>
+        <li data-code="uk"><img src="https://flagcdn.com/ua.svg" alt=""> Українська</li>
+        <li data-code="vi"><img src="https://flagcdn.com/vn.svg" alt=""> Tiếng Việt</li>
+        <li data-code="th"><img src="https://flagcdn.com/th.svg" alt=""> ไทย</li>
+        <li data-code="ro"><img src="https://flagcdn.com/ro.svg" alt=""> Română</li>
+      </ul>
+    </div>
+  </div>
+
+<script>
+const supported = ['ar','en','fr','es','zh','ru','hi','bn','ta','tr','fa','el','cs','sv','fi','he','hu','uk','vi','th','ro'];
+  let current = 'ar';
+  const openBtn = document.getElementById('openModal');
+  const titles = {
+    ar:'سياسة الخصوصية', en:'Privacy Policy', fr:'Politique de confidentialité',
+    es:'Política de privacidad', zh:'隐私政策', ru:'Политика конфиденциальности',
+    hi:'प्राइवेसी पॉलिसी', bn:'নীতিমালা', ta:'தனியுரிமைக் கொள்கை', tr:'Gizlilik Politikası',
+    fa:'سیاست حریم خصوصی', el:'Πολιτική απορρήτου', cs:'Zásady ochrany osobních údajů', sv:'Integritetspolicy',
+    fi:'Tietosuojakäytäntö', he:'מדיניות פרטיות', hu:'Adatvédelmi irányelv', uk:'Політика конфіденційності',
+    vi:'Chính sách quyền riêng tư', th:'นโยบายความเป็นส่วนตัว', ro:'Politica de confidențialitate'
+  };
+
+  openBtn.onclick = () => {
+    document.getElementById('langModal').style.display = 'flex';
+  };
+  document.getElementById('closeModal').onclick = () => {
+    document.getElementById('langModal').style.display = 'none';
+  };
+  document.querySelectorAll('.lang-list li').forEach(li => {
+    li.onclick = () => {
+      const code = li.dataset.code;
+      // إخفاء اللغة السابقة وإظهار الجديدة
+      document.querySelector(`[data-lang="${current}"]`).style.display = 'none';
+      document.querySelector(`[data-lang="${code}"]`).style.display = 'block';
+      // تحديث عنوان الصفحة
+      document.getElementById('title').textContent = titles[code];
+      // تحديث لغة المستند واتجاهه
+      document.documentElement.lang = code;
+      document.documentElement.dir = (code === 'ar' ? 'rtl' : 'ltr');
+      // ** هذا السطر يحدّث نص الزر بإظهار اللغة المختارة **
+      openBtn.innerHTML = `<i class="fas fa-globe"></i> ${titles[code]}`;
+      // إغلاق المودال
+      document.getElementById('langModal').style.display = 'none';
+      current = code;
+    };
+  });
+  
+</script>
