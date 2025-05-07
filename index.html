@@ -12,13 +12,7 @@
       --secondary-color: #9013fe;
       --accent-color: #28a745;
     }
-
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
+    * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       font-family: 'Tajawal', 'Segoe UI', sans-serif;
       min-height: 100vh;
@@ -27,39 +21,21 @@
       color: #fff;
       line-height: 1.6;
     }
-
-    /* === أنيميشن الخلفية === */
     @keyframes backgroundAnimation {
       0% { background-position: 0% 50%; }
       50% { background-position: 100% 50%; }
       100% { background-position: 0% 50%; }
     }
-
-    /* === الهيدر === */
     header {
-      padding: 0rem 5%;
-      background: rgba(0, 0, 0, 0.7);
+      padding: 1rem 5%;
+      background: rgba(0,0,0,0.7);
       backdrop-filter: blur(10px);
-      position: fixed;
-      top: 0;
-      width: 100%;
-      z-index: 1000;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+      position: fixed; top: 0; width: 100%; z-index: 1000;
+      display: flex; justify-content: space-between; align-items: center;
       box-shadow: 0 4px 20px rgba(0,0,0,0.2);
     }
-
-    .logo img {
-      width: 180px;
-      transition: transform 0.3s;
-    }
-
-    .logo:hover img {
-      transform: scale(1.005);
-    }
-
-    /* === أزرار التحميل === */
+    .logo img { width: 180px; transition: transform 0.3s; }
+    .logo:hover img { transform: scale(1.005); }
     .download-btn {
       background: var(--accent-color);
       color: #fff;
@@ -73,184 +49,400 @@
       transition: all 0.3s;
       box-shadow: 0 4px 15px rgba(40,167,69,0.3);
     }
-
     .download-btn:hover {
       transform: translateY(-3px);
       box-shadow: 0 6px 20px rgba(40,167,69,0.5);
     }
-
-    /* === زر التحميل للجوال فقط === */
-    .mobile-download-btn {
-      display: none;
-    }
-
-    @media (max-width: 768px) {
-      .mobile-download-btn {
-        display: inline-flex;
-      }
-    }
-
-    /* === قسم الترحيب === */
+    .mobile-download-btn { display: none; }
+    @media (max-width: 768px) { .mobile-download-btn { display: inline-flex; } }
     .welcome-container {
-      background: rgba(0, 0, 0, 0.8);
+      background: rgba(0,0,0,0.8);
       padding: 3rem;
       border-radius: 25px;
       max-width: 600px;
-      margin: 120px auto 40px;
+      margin: 140px auto 40px;
       backdrop-filter: blur(8px);
       border: 1px solid rgba(255,255,255,0.1);
+      text-align: center;
     }
-
-    .welcome-container h1 {
-      font-size: 2.5rem;
-      margin-bottom: 1.5rem;
+    .welcome-container h1 { font-size: 2.5rem; margin-bottom: 1.5rem;
       background: linear-gradient(45deg, #fff, #4a90e2);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
-
-    /* === قسم الأسئلة الشائعة === */
-    .faq-section {
-      padding: 4rem 5%;
-    }
-
+    section { padding: 4rem 5%; }
     .faq-container {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(300px,1fr));
       gap: 30px;
       max-width: 1200px;
       margin: 0 auto;
     }
-
-    .faq-card {
-      background: rgba(255, 255, 255, 0.1);
+    .faq-card, .feature-card, .chat-card {
+      background: rgba(255,255,255,0.1);
       padding: 2rem;
       border-radius: 20px;
       backdrop-filter: blur(8px);
-      border: 1px solid rgba(255,255,255,0.1);
+      border:1px solid rgba(255,255,255,0.1);
       transition: all 0.3s;
-      cursor: pointer;
     }
-
-    .faq-card:hover {
-      background: rgba(255, 255, 255, 0.15);
-      transform: translateY(-10px);
+    .faq-card:hover { background: rgba(255,255,255,0.15); transform: translateY(-10px); }
+    .feature-card, .chat-card { cursor: default; }
+    .goal-card {
+      display: inline-flex;
+      align-items: center;
+      gap: 1.5rem;
+      background: rgba(255,255,255,0.1);
+      padding: 2rem;
+      border-radius: 20px;
+      backdrop-filter: blur(8px);
+      border:1px solid rgba(255,255,255,0.1);
+      max-width: 800px;
+      margin: 0 auto;
     }
-
-    /* === الفوتر === */
+    .goal-card i, .chat-card i {
+      font-size: 3rem;
+      color: var(--accent-color);
+    }
     footer {
-      background: rgba(0, 0, 0, 0.7);
+      background: rgba(0,0,0,0.7);
       padding: 2rem;
       margin-top: 4rem;
       backdrop-filter: blur(8px);
+      text-align: center;
     }
-
-    /* === التصميم المتجاوب === */
     @media (max-width: 768px) {
-      header {
-        padding: 0rem 5%;
-      }
-
-      .logo img {
-        width: 60px;
-      }
-
-      .welcome-container {
-        padding: 2rem;
-        margin-top: 100px;
-      }
-
-      .welcome-container h1 {
-        font-size: 2rem;
-      }
+      header { padding: 1rem 5%; }
+      .logo img { width: 60px; }
+      .welcome-container { padding: 2rem; margin-top: 120px; }
+      .welcome-container h1 { font-size: 2rem; }
+      .goal-card, .feature-card, .chat-card { text-align: center; flex-direction: column; }
+    }
+    /* === اللغة === */
+    .lang-switcher { position: relative; }
+    .lang-select {
+      appearance: none;
+      background: transparent;
+      color: #fff;
+      border: none;
+      font-size: 1rem;
+      cursor: pointer;
+      padding: 0.5rem 2rem 0.5rem 0.5rem;
+    }
+    .lang-switcher .fa-globe {
+      position: absolute; right: 1rem; top: 50%; transform: translateY(-50%);
+      pointer-events: none;
     }
   </style>
-  <script>
-    // إذا كان المستخدم قد زار الموقع من قبل (تم تعيين "visited" في localStorage)
-    // يتم إعادة توجيهه مباشرةً إلى صفحة "start.html"
-    if(localStorage.getItem('visited')) {
-      window.location.href = "start.html";
-    }
-  </script>
 </head>
 <body>
   <header>
-    <div class="logo">
-      <img src="fndchat.png" alt="شعار فنديه شات">
+    <div class="logo"><img src="fndchat.png" alt="شعار فندشات"></div>
+    <div class="lang-switcher">
+      <select id="language" class="lang-select"></select>
+      <i class="fas fa-globe"></i>
     </div>
-    <!-- زر التحميل للجوال فقط -->
     <a href="apk.html" class="download-btn mobile-download-btn">
-      <i class="fas fa-download"></i> 
-      <span>تحميل التطبيق</span>
+      <i class="fas fa-download"></i><span data-i18n="download_app">تحميل التطبيق</span>
     </a>
   </header>
 
   <div class="welcome-container">
-    <h1>مرحبًا بك في فندشات</h1>
-    <p>منصة التواصل الاجتماعي الأولى في العراق، تواصل مع الأصدقاء وشارك اللحظات المميزة</p>
+    <h1 data-i18n="welcome">مرحبًا بك في فندشات</h1>
+    <p data-i18n="tagline">منصة التواصل الاجتماعي الأولى في العراق، تواصل مع الأصدقاء وشارك اللحظات المميزة</p>
     <div class="cta-buttons" style="margin-top: 2rem;">
-      <!-- عند النقر على هذا الزر يتم تعيين علامة "visited" ثم الانتقال -->
-      <a href="start.html" class="download-btn" style="background: #fff; color: var(--primary-color);" onclick="localStorage.setItem('visited', 'true')">
-        <i class="fas fa-sign-in-alt"></i>
-        بدء الاستخدام
+      <a href="start.html" class="download-btn" style="background: #fff; color: var(--primary-color);" id="start-btn">
+        <i class="fas fa-sign-in-alt"></i><span data-i18n="get_started">بدء الاستخدام</span>
       </a>
     </div>
   </div>
 
-  <section class="faq-section">
-    <h2 style="font-size: 2rem; margin-bottom: 3rem;">الأسئلة الشائعة</h2>
+  <!-- الأسئلة الشائعة -->
+  <section>
+    <h2 data-i18n="faq_title">الأسئلة الشائعة</h2>
     <div class="faq-container">
       <div class="faq-card">
-        <h3><i class="fas fa-globe"></i> ما هو موقع فندشات؟</h3>
-        <p>موقع فندشات هو منصة تواصل اجتماعي عراقية تم تأسيسها بواسطة ابن الفنديه، نعمل على توفير أفضل تجربة للمستخدمين</p>
+        <h3><i class="fas fa-globe"></i> <span data-i18n="faq_what">ما هو موقع فندشات؟</span></h3>
+        <p data-i18n="faq_what_desc">موقع فندشات هو منصة تواصل اجتماعي عراقية تم تأسيسها بواسطة ابن الفنديه، نعمل على توفير أفضل تجربة للمستخدمين</p>
       </div>
       <div class="faq-card">
-        <h3><i class="fas fa-shield-alt"></i> هل المنصة آمنة؟</h3>
-        <p>نعم، المنصة آمنة تمامًا. نحرص على توفير أعلى معايير الأمان مع الحفاظ على حرية الاستخدام، حيث نستخدم تقنيات متقدمة في تشفير البيانات وحماية المعلومات.</p>
-      </div>
-      <div class="faq-card">
-        <h3><i class="fas fa-star"></i> مميزات الموقع</h3>
-        <ul style="text-align: right; padding-right: 20px;">
-          <li>سرعة فائقة في إرسال الرسائل ونشر المنشورات مع قدرة على تحمّل الأحمال الكبيرة</li>
-          <li>نظام حماية متكامل مع تشفير قوي للبيانات</li>
-          <li>واجهة مستخدم بديهية وسلسة تجمع بين البساطة والإحترافية</li>
-        </ul>
-      </div>
-      <div class="faq-card">
-        <h3><i class="fas fa-bullseye"></i> هدفنا</h3>
-        <p>نسعى لتوفير أفضل تجربة للمستخدمين والوصول إلى أعلى مستويات الرضا، كما نطمح لأن نكون المنصة الاجتماعية الرائدة في العراق والوطن العربي من خلال التطوير المستمر وتحسين الخدمات.</p>
-      </div>
-      <div class="faq-card">
-        <h3><i class="fas fa-comments"></i> قسم الدردشة</h3>
-        <p>قسم المراسلة الفورية المصمم باحترافية لتسهيل التواصل بين المستخدمين مع الحفاظ على السرعة والأداء العالي (قيد التطوير المستمر).</p>
-      </div>
-      <div class="faq-card">
-        <h3><i class="fas fa-newspaper"></i> قسم المنتدى والمنشورات</h3>
-        <p>مساحة تفاعلية لنشر المحتوى بسرعة وسهولة مع دعم كامل لمشاركة الأفكار والمواضيع المتنوعة (خاضع للتطوير الدائم).</p>
-      </div>
-      <!-- إضافة قسم سياسة الخصوصية -->
-      <div class="faq-card">
-        <h3><i class="fas fa-user-secret"></i> سياسة الخصوصية</h3>
-        <p>في عصر الاتصالات الرقمية، أصبحت حماية خصوصية المستخدمين أمرًا بالغ الأهمية. في تطبيق فندشات، ندرك تمامًا هذه المسؤولية ونلتزم بحماية المعلومات الشخصية لمستخدمينا. تهدف سياسة الخصوصية هذه إلى توضيح كيفية جمعنا واستخدامنا والكشف عن معلومات المستخدمين عند استخدام تطبيق فندشات، والذي يُشار إليه بـ "فندشات". باستخدام التطبيق، يُعتبر المستخدم موافقًا على جميع شروط سياسة الخصوصية هذه.</p>
-        <p><strong>المعلومات التي نجمعها:</strong> نقوم بجمع أنواع مختلفة من المعلومات لتقديم تجربة مستخدم فعالة وآمنة. تشمل هذه المعلومات ما يقدمه المستخدمون مباشرة عند إنشاء حساب، مثل اسم المستخدم وعنوان البريد الإلكتروني. كما نقوم بتسجيل المعلومات التي يقدمها المستخدمون عند التواصل مع فريق الدعم لحل المشكلات أو الاستفسارات. من جانب آخر، يتم جمع بعض المعلومات تلقائيًا عند استخدام التطبيق لفهم كيفية استخدامه وتحسين أدائه.</p>
-        <p><strong>كيفية استخدام المعلومات:</strong> تُستخدم المعلومات التي يتم جمعها لتقديم خدمات التطبيق وتحسينها وتخصيص تجربة المستخدم، إضافةً إلى تقديم الدعم الفني اللازم وتحليل بيانات المستخدمين لتحسين خدماتنا. نلتزم بعدم مشاركة المعلومات مع أي طرف ثالث دون موافقة المستخدم.</p>
-        <p><strong>أمان المعلومات:</strong> نولي أهمية قصوى لحماية معلومات المستخدمين، حيث نستخدم إجراءات أمنية قوية ومشفّرة لمنع الوصول غير المصرح به. ومع ذلك، لا يمكن ضمان الأمان المطلق في أي نظام.</p>
-        <p><strong>حقوق المستخدمين:</strong> يحق للمستخدمين الوصول إلى معلوماتهم الشخصية وتحديثها وحذف حساباتهم وبياناتهم في أي وقت، كما يمكنهم الاعتراض على معالجة معلوماتهم وفقًا للقوانين المعمول بها.</p>
-        <p><strong>تغييرات سياسة الخصوصية:</strong> قد نقوم بتحديث سياسة الخصوصية من وقت لآخر لمواكبة التغييرات في الخدمات أو القوانين، وسيتم إعلام المستخدمين بأي تغييرات عبر نشر النسخة الجديدة داخل التطبيق.</p>
-        <p><strong>التواصل معنا:</strong> لأي استفسارات أو تعليقات بخصوص سياسة الخصوصية، يمكن للمستخدمين التواصل معنا عبر البريد الإلكتروني: hsly6370@gmail.com.</p>
+        <h3><i class="fas fa-shield-alt"></i> <span data-i18n="faq_safe">هل المنصة آمنة؟</span></h3>
+        <p data-i18n="faq_safe_desc">نعم، المنصة آمنة تمامًا. نحرص على توفير أعلى معايير الأمان مع الحفاظ على حرية الاستخدام، حيث نستخدم تقنيات متقدمة في تشفير البيانات وحماية المعلومات.</p>
       </div>
     </div>
   </section>
-  
+
+  <!-- مميزات الموقع -->
+  <section>
+    <h2 data-i18n="features_title">مميزات الموقع</h2>
+    <div class="faq-container">
+      <div class="feature-card">
+        <h3 data-i18n="feature_speed_title">سرعة فائقة</h3>
+        <p data-i18n="feature_speed_desc">سرعة فائقة في إرسال الرسائل ونشر المنشورات مع قدرة على تحمّل الأحمال الكبيرة</p>
+      </div>
+      <div class="feature-card">
+        <h3 data-i18n="feature_security_title">نظام حماية متكامل</h3>
+        <p data-i18n="feature_security_desc">نظام حماية متكامل مع تشفير قوي للبيانات</p>
+      </div>
+      <div class="feature-card">
+        <h3 data-i18n="feature_ui_title">واجهة مستخدم احترافية</h3>
+        <p data-i18n="feature_ui_desc">واجهة مستخدم بديهية وسلسة تجمع بين البساطة والإحترافية</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- قسم هدفنا -->
+  <section>
+    <div class="goal-card">
+      <i class="fas fa-bullseye"></i>
+      <div>
+        <h2 data-i18n="goal_title">هدفنا</h2>
+        <p data-i18n="goal_desc">نسعى لتوفير أفضل تجربة للمستخدمين والوصول إلى أعلى مستويات الرضا، كما نطمح لأن نكون المنصة الاجتماعية الرائدة في العراق والوطن العربي من خلال التطوير المستمر وتحسين الخدمات.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- قسم الدردشة -->
+  <section>
+    <h2 data-i18n="chat_title"><i class="fas fa-comments"></i> قسم الدردشة</h2>
+    <div class="chat-card">
+      <p data-i18n="chat_desc">قسم المراسلة الفورية المصمم باحترافية لتسهيل التواصل بين المستخدمين مع الحفاظ على السرعة والأداء العالي (قيد التطوير المستمر).</p>
+    </div>
+  </section>
+
+  <!-- قسم المنتدى والمنشورات -->
+  <section>
+    <h2 data-i18n="forum_title"><i class="fas fa-comments-alt"></i> قسم المنتدى والمنشورات</h2>
+    <div class="chat-card">
+      <p data-i18n="forum_desc">مساحة تفاعلية لنشر المحتوى بسرعة وسهولة مع دعم كامل لمشاركة الأفكار والمواضيع المتنوعة (خاضع للتطوير الدائم).</p>
+    </div>
+  </section>
+
   <footer>
-    <p>كل شيء تحتاج تعرفه عن موقع فندشات : <a href="what.html">اقرأ المزيد</a></p>
-  </footer>
-  <footer>
-    <p>© 2025 . جميع الحقوق محفوظة</p>
-    <div style="margin-top: 1rem;">
-      <a href="#" style="color: #fff; margin: 0 10px;">الشروط والأحكام</a>
-      <a href="#" style="color: #fff; margin: 0 10px;">سياسة الخصوصية</a>
+    <p><span data-i18n="footer_info">كل شيء تحتاج تعرفه عن موقع فندشات :</span> <a href="what.html" data-i18n="read_more">اقرأ المزيد</a></p>
+    <p>© 2025 . <span data-i18n="all_rights">جميع الحقوق محفوظة</span></p>
+    <div style="margin-top:1rem;">
+      <a href="#" data-i18n="terms">الشروط والأحكام</a>
+      <a href="why.html" data-i18n="privacy">سياسة الخصوصية</a>
     </div>
   </footer>
+
+  <script>
+    const translations = {
+      ar: {
+        download_app: "تحميل التطبيق", welcome: "مرحبًا بك في فندشات",
+        tagline: "منصة التواصل الاجتماعي الأولى في العراق، تواصل مع الأصدقاء وشارك اللحظات المميزة",
+        get_started: "بدء الاستخدام",
+        faq_title: "الأسئلة الشائعة", faq_what: "ما هو موقع فندشات؟",
+        faq_what_desc: "موقع فندشات هو منصة تواصل اجتماعي عراقية تم تأسيسها بواسطة ابن الفنديه، نعمل على توفير أفضل تجربة للمستخدمين",
+        faq_safe: "هل المنصة آمنة؟", faq_safe_desc: "نعم، المنصة آمنة تمامًا. نحرص على توفير أعلى معايير الأمان مع الحفاظ على حرية الاستخدام، حيث نستخدم تقنيات متقدمة في تشفير البيانات وحماية المعلومات.",
+        features_title: "مميزات الموقع",
+        feature_speed_title: "سرعة فائقة", feature_speed_desc: "سرعة فائقة في إرسال الرسائل ونشر المنشورات مع قدرة على تحمّل الأحمال الكبيرة",
+        feature_security_title: "نظام حماية متكامل", feature_security_desc: "نظام حماية متكامل مع تشفير قوي للبيانات",
+        feature_ui_title: "واجهة مستخدم احترافية", feature_ui_desc: "واجهة مستخدم بديهية وسلسة تجمع بين البساطة والإحترافية",
+        goal_title: "هدفنا", goal_desc: "نسعى لتوفير أفضل تجربة للمستخدمين والوصول إلى أعلى مستويات الرضا، كما نطمح لأن نكون المنصة الاجتماعية الرائدة في العراق والوطن العربي من خلال التطوير المستمر وتحسين الخدمات.",
+        chat_title: "قسم الدردشة", chat_desc: "قسم المراسلة الفورية المصمم باحترافية لتسهيل التواصل بين المستخدمين مع الحفاظ على السرعة والأداء العالي (قيد التطوير المستمر).",
+        forum_title: "قسم المنتدى والمنشورات", forum_desc: "مساحة تفاعلية لنشر المحتوى بسرعة وسهولة مع دعم كامل لمشاركة الأفكار والمواضيع المتنوعة (خاضع للتطوير الدائم).",
+        footer_info: "كل شيء تحتاج تعرفه عن موقع فندشات :", read_more: "اقرأ المزيد",
+        all_rights: "جميع الحقوق محفوظة", terms: "الشروط والأحكام", privacy: "سياسة الخصوصية"
+      },
+      en: {
+        download_app: "Download App", welcome: "Welcome to FndChat",
+        tagline: "Iraq's No.1 social platform, connect with friends and share special moments",
+        get_started: "Get Started",
+        faq_title: "Frequently Asked Questions", faq_what: "What is FndChat?",
+        faq_what_desc: "FndChat is an Iraqi social platform founded by the son of the innkeeper, aimed at offering the best user experience.",
+        faq_safe: "Is the platform safe?", faq_safe_desc: "Yes, it is fully secure. We maintain the highest standards of security while preserving user freedom, using advanced data encryption and protection techniques.",
+        features_title: "Platform Features",
+        feature_speed_title: "High Speed", feature_speed_desc: "Ultra-fast messaging and post publishing with high load tolerance",
+        feature_security_title: "Comprehensive Security", feature_security_desc: "An integrated security system with strong data encryption",
+        feature_ui_title: "Professional UI", feature_ui_desc: "An intuitive and smooth user interface combining simplicity and professionalism",
+        goal_title: "Our Mission", goal_desc: "We strive to deliver the best user experience and achieve the highest levels of satisfaction. We also aspire to be the leading social platform in Iraq and the Arab world through continuous development and service improvement.",
+        chat_title: "Chat Section", chat_desc: "An instant‑messaging section professionally designed to facilitate communication between users while maintaining high speed and performance (under continuous development).",
+        forum_title: "Forum & Posts Section", forum_desc: "An interactive space to publish content quickly and easily, with full support for sharing ideas and various topics (under continuous development).",
+        footer_info: "Everything you need to know about FndChat:", read_more: "Read More",
+        all_rights: "All rights reserved", terms: "Terms & Conditions", privacy: "Privacy Policy"
+      },
+      es: {
+        download_app: "Descargar aplicación", welcome: "Bienvenido a FndChat",
+        tagline: "La plataforma social n.º 1 de Irak, conecta con amigos y comparte momentos especiales",
+        get_started: "Comenzar",
+        faq_title: "Preguntas frecuentes", faq_what: "¿Qué es FndChat?",
+        faq_what_desc: "FndChat es una plataforma social iraquí fundada por el hijo del posadero, con el objetivo de ofrecer la mejor experiencia de usuario.",
+        faq_safe: "¿Es segura la plataforma?", faq_safe_desc: "Sí, es completamente segura. Mantenemos los más altos estándares de seguridad mientras preservamos la libertad del usuario, utilizando técnicas avanzadas de cifrado y protección de datos.",
+        features_title: "Características del sitio",
+        feature_speed_title: "Alta velocidad", feature_speed_desc: "Velocidad ultrarrápida en el envío de mensajes y publicación de contenidos con alta tolerancia de carga",
+        feature_security_title: "Seguridad integral", feature_security_desc: "Un sistema de seguridad integral con encriptación sólida de datos",
+        feature_ui_title: "Interfaz profesional", feature_ui_desc: "Una interfaz de usuario intuitiva y fluida que combina simplicidad y profesionalidad",
+        goal_title: "Nuestra misión", goal_desc: "Nos esforzamos por ofrecer la mejor experiencia de usuario y alcanzar los más altos niveles de satisfacción. También aspiramos a ser la plataforma social líder en Irak y el mundo árabe mediante el desarrollo continuo y la mejora de los servicios.",
+        chat_title: "Sección de chat", chat_desc: "Sección de mensajería instantánea diseñada profesionalmente para facilitar la comunicación entre usuarios manteniendo alta velocidad y rendimiento (en desarrollo continuo).",
+        forum_title: "Sección de foro y publicaciones", forum_desc: "Un espacio interactivo para publicar contenido de forma rápida y sencilla, con soporte completo para compartir ideas y temas diversos (en desarrollo continuo).",
+        footer_info: "Todo lo que necesitas saber sobre FndChat:", read_more: "Leer más",
+        all_rights: "Todos los derechos reservados", terms: "Términos y condiciones", privacy: "Política de privacidad"
+      },
+      zh: {
+        download_app: "下载应用", welcome: "欢迎来到 FndChat",
+        tagline: "伊拉克第一社交平台，与朋友联系并分享特殊时刻",
+        get_started: "开始使用",
+        faq_title: "常见问题", faq_what: "什么是 FndChat？",
+        faq_what_desc: "FndChat 是一个由客栈老板之子创立的伊拉克社交平台，旨在提供最佳用户体验。",
+        faq_safe: "该平台安全吗？", faq_safe_desc: "是的，它完全安全。我们保持最高的安全标准，同时保留用户自由，使用先进的数据加密和保护技术。",
+        features_title: "网站功能",
+        feature_speed_title: "超高速度", feature_speed_desc: "超高速消息发送和帖子发布，具备高负载承载能力",
+        feature_security_title: "综合安全系统", feature_security_desc: "集成安全系统，数据强加密",
+        feature_ui_title: "专业用户界面", feature_ui_desc: "直观流畅的用户界面，兼具简洁性和专业性",
+        goal_title: "我们的目标", goal_desc: "我们致力于提供最佳的用户体验并实现最高的满意度。我们还通过持续开发和改进服务，力争成为伊拉克及阿拉伯世界的领先社交平台。",
+        chat_title: "聊天区", chat_desc: "专业设计的即时消息部分，旨在促进用户之间的沟通，同时保持高速和高性能（持续开发中）。",
+        forum_title: "论坛与发布区", forum_desc: "一个互动空间，可快速轻松地发布内容，全面支持分享想法和各种话题（持续开发中）。",
+        footer_info: "关于 FndChat 的所有信息：", read_more: "阅读全文",
+        all_rights: "版权所有", terms: "条款及条件", privacy: "隐私政策"
+      },
+      hi: {
+        download_app: "ऐप डाउनलोड करें", welcome: "FndChat में आपका स्वागत है",
+        tagline: "इराक का नंबर 1 सोशल प्लेटफार्म, दोस्तों से जुड़ें और खास पल साझा करें",
+        get_started: "शुरू करें",
+        faq_title: "अक्सर पूछे जाने वाले प्रश्न", faq_what: "FndChat क्या है?",
+        faq_what_desc: "FndChat एक इराकी सोशल प्लेटफार्म है जिसे इन्नकीपर के बेटे ने स्थापित किया है, सर्वश्रेष्ठ उपयोगकर्ता अनुभव प्रदान करने के उद्देश्य से।",
+        faq_safe: "क्या प्लेटफार्म सुरक्षित है?", faq_safe_desc: "हाँ, यह पूरी तरह से सुरक्षित है। हम उन्नत डेटा एन्क्रिप्शन और सुरक्षा तकनीकों का उपयोग करते हुए उच्चतम सुरक्षा मानकों को बनाए रखते हैं।",
+        features_title: "साइट की विशेषताएँ",
+        feature_speed_title: "अत्यधिक गति", feature_speed_desc: "संदेश भेजने और पोस्ट प्रकाशित करने में अल्ट्रा-तेज़ गति के साथ उच्च लोड क्षमता",
+        feature_security_title: "समग्र सुरक्षा प्रणाली", feature_security_desc: "मजबूत डेटा एन्क्रिप्शन के साथ एक समग्र सुरक्षा प्रणाली",
+        feature_ui_title: "पेशेवर UI", feature_ui_desc: "सरलता और पेशेवरता को मिलाने वाला एक सहज और सुचारू उपयोगकर्ता इंटरफ़ेस",
+        goal_title: "हमारा लक्ष्य", goal_desc: "हम सर्वश्रेष्ठ उपयोगकर्ता अनुभव प्रदान करने और उच्चतम संतुष्टि स्तर प्राप्त करने का प्रयास करते हैं। हम निरंतर विकास और सेवाओं में सुधार के माध्यम से इराक और अरब दुनिया में अग्रणी सोशल प्लेटफ़ॉर्म बनने की भी आकांक्षा रखते हैं।",
+        chat_title: "चैट सेक्शन", chat_desc: "एक त्वरित-मैसेजिंग अनुभाग जिसे उपयोगकर्ताओं के बीच संचार को सुविधाजनक बनाने के लिए पेशेवर रूप से डिजाइन किया गया है, उच्च गति और प्रदर्शन बनाए रखते हुए (लगातार विकासाधीन)।",
+        forum_title: "फोरम और पोस्ट सेक्शन", forum_desc: "एक इंटरैक्टिव क्षेत्र जहां आप तेज़ी से और आसानी से सामग्री प्रकाशित कर सकते हैं, विभिन्न विचारों और विषयों को साझा करने के लिए पूर्ण समर्थन के साथ (निरंतर विकासाधीन)।",
+        footer_info: "FndChat के बारे में जानने के लिए आपको जो कुछ भी चाहिए:", read_more: "और पढ़ें",
+        all_rights: "सर्वाधिकार सुरक्षित", terms: "नियम और शर्तें", privacy: "गोपनीयता नीति"
+      },
+      bn: {
+        download_app: "অ্যাপ ডাউনলোড করুন", welcome: "FndChat-এ আপনাকে স্বাগত",
+        tagline: "ইরাকের নং 1 সামাজিক প্ল্যাটফর্ম, বন্ধুদের সাথে সংযোগ করুন ও বিশেষ মুহূর্ত ভাগ করুন",
+        get_started: "শুরু করুন",
+        faq_title: "প্রায়শই জিজ্ঞাসিত প্রশ্ন", faq_what: "FndChat কী?",
+        faq_what_desc: "FndChat একটি ইরাকি সামাজিক প্ল্যাটফর্ম যা ইনকিপারের ছেলে দ্বারা প্রতিষ্ঠিত, সেরা ব্যবহারকারী অভিজ্ঞতা দেওয়ার উদ্দেশ্যে।",
+        faq_safe: "প্ল্যাটফর্মটি কি নিরাপদ?", faq_safe_desc: "হ্যাঁ, এটি সম্পূর্ণ নিরাপদ। আমরা উন্নত ডেটা এনক্রিপশন ও সুরক্ষা প্রযুক্তি ব্যবহার করে সর্বোচ্চ নিরাপত্তা মান বজায় রাখি।",
+        features_title: "সাইটের বৈশিষ্ট্য",
+        feature_speed_title: "অতিদ্রুত গতি", feature_speed_desc: "বার্তা প্রেরণ এবং পোস্ট প্রকাশের ক্ষেত্রে অতিদ্রুত গতি এবং উচ্চ লোড সহনশীলতা",
+        feature_security_title: "সমন্বিত নিরাপত্তা ব্যবস্থা", feature_security_desc: "হাই-লেভেল ডেটা এনক্রিপশনসহ সমন্বিত সুরক্ষা ব্যবস্থা",
+        feature_ui_title: "পেশাদার UI", feature_ui_desc: "সরলতা ও পেশাদারিত্ব একত্রিত করে একটি স্বজ্ঞাত এবং মসৃণ ইউজার ইন্টারফেস",
+        goal_title: "আমাদের লক্ষ্য", goal_desc: "আমরা সেরা ব্যবহারকারী অভিজ্ঞতা প্রদান এবং সর্বোচ্চ সন্তুষ্টি অর্জনের জন্য কাজ করি। অবিরত উন্নয়ন ও পরিষেবা উন্নতির মাধ্যমে আমরা ইরাক ও আরব জগতে শীর্ষস্থানীয় সামাজিক প্ল্যাটফর্ম হওয়ার আশাবাদী।",
+        chat_title: "চ্যাট বিভাগ", chat_desc: "একটি দ্রুত-বার্তা বিভাগ যা ব্যবহারকারীদের মধ্যে যোগাযোগ সহজ করার জন্য পেশাদারভাবে ডিজাইন করা হয়েছে, উচ্চ গতি এবং কর্মক্ষমতা বজায় রাখছে (ক্রমাগত উন্নয়নাধীন)।",
+        forum_title: "ফোরাম ও পোস্ট বিভাগ", forum_desc: "একটি ইন্টারেক্টিভ স্থান যেখানে দ্রুত এবং সহজে বিষয়বস্তু প্রকাশ করা যায়, বিভিন্ন ধারণা এবং বিষয় শেয়ার করার জন্য পূর্ণ সহায়তা (ক্রমাগত উন্নয়নাধীন)।",
+        footer_info: "FndChat সম্পর্কে জানা সব কিছু:", read_more: "আরও পড়ুন",
+        all_rights: "সর্বস্বত্ব সংরক্ষিত", terms: "শর্তাবলী", privacy: "গোপনীয়তা নীতি"
+      },
+      pt: {
+        download_app: "Baixar aplicativo", welcome: "Bem-vindo ao FndChat",
+        tagline: "A plataforma social nº 1 do Iraque, conecte-se com amigos e compartilhe momentos especiais",
+        get_started: "Começar",
+        faq_title: "Perguntas frequentes", faq_what: "O que é FndChat?",
+        faq_what_desc: "FndChat é uma plataforma social iraquiana fundada pelo filho do estalajeiro, com o objetivo de oferecer a melhor experiência ao usuário.",
+        faq_safe: "A plataforma é segura?", faq_safe_desc: "Sim, é totalmente segura. Mantemos os mais altos padrões de segurança enquanto preservamos a liberdade do usuário, usando técnicas avançadas de criptografia e proteção de dados.",
+        features_title: "Recursos do site",
+        feature_speed_title: "Alta velocidade", feature_speed_desc: "Velocidade ultrarrápida no envio de mensagens e publicação de posts com alta tolerância a carga",
+        feature_security_title: "Segurança abrangente", feature_security_desc: "Um sistema de segurança integrado com forte criptografia de dados",
+        feature_ui_title: "Interface Profissional", feature_ui_desc: "Uma interface de usuário intuitiva e suave que combina simplicidade e profissionalismo",
+        goal_title: "Nossa missão", goal_desc: "Esforçamo-nos para oferecer a melhor experiência ao usuário e alcançar os mais altos níveis de satisfação. Também aspiramos ser a plataforma social líder no Iraque e no mundo árabe por meio de desenvolvimento contínuo e aprimoramento de serviços.",
+        chat_title: "Seção de bate‑papo", chat_desc: "Seção de mensagens instantâneas projetada profissionalmente para facilitar a comunicação entre usuários, mantendo alta velocidade e desempenho (em desenvolvimento contínuo).",
+        forum_title: "Seção de fórum e publicações", forum_desc: "Seção interativa para publicar conteúdo rápida e facilmente, com suporte completo para compartilhamento de ideias e tópicos variados (em desenvolvimento contínuo).",
+        footer_info: "Tudo o que você precisa saber sobre o FndChat:", read_more: "Leia mais",
+        all_rights: "Todos os direitos reservados", terms: "Termos e Condições", privacy: "Política de Privacidade"
+      },
+      ru: {
+        download_app: "Скачать приложение", welcome: "Добро пожаловать в FndChat",
+        tagline: "Социальная платформа № 1 в Ираке, общайтесь с друзьями и делитесь особенными моментами",
+        get_started: "Начать",
+        faq_title: "Часто задаваемые вопросы", faq_what: "Что такое FndChat?",
+        faq_what_desc: "FndChat — иракская социальная платформа, основанная сыном хозяина гостиницы, призванная предоставить лучший пользовательский опыт.",
+        faq_safe: "Платформа безопасна?", faq_safe_desc: "Да, она полностью безопасна. Мы используем передовые технологии шифрования и защиты данных, обеспечивая высочайшие стандарты безопасности.",
+        features_title: "Особенности сайта",
+        feature_speed_title: "Высокая скорость", feature_speed_desc: "Сверхбыстрая отправка сообщений и публикация постов с высокой нагрузочной способностью",
+        feature_security_title: "Комплексная безопасность", feature_security_desc: "Интегрированная система защиты с надежным шифрованием данных",
+        feature_ui_title: "Профессиональный интерфейс", feature_ui_desc: "Интуитивно понятный и плавный пользовательский интерфейс, сочетающий простоту и профессионализм",
+        goal_title: "Наша миссия", goal_desc: "Мы стремимся предоставить наилучший пользовательский опыт и достичь высочайшего уровня удовлетворенности. Мы также стремимся стать ведущей социальной платформой в Ираке и арабском мире через постоянное развитие и улучшение услуг.",
+        chat_title: "Раздел чата", chat_desc: "Раздел мгновенных сообщений, профессионально разработанный для облегчения общения между пользователями при сохранении высокой скорости и производительности (в процессе постоянной разработки).",
+        forum_title: "Раздел форума и публикаций", forum_desc: "Интерактивное пространство для быстрой и легкой публикации контента с полной поддержкой обмена идеями и различными темами (находится в постоянной разработке).",
+        footer_info: "Все, что нужно знать о FndChat:", read_more: "Читать далее",
+        all_rights: "Все права защищены", terms: "Условия использования", privacy: "Политика конфиденциальности"
+      },
+      ja: {
+        download_app: "アプリをダウンロード", welcome: "FndChatへようこそ",
+        tagline: "イラクNo.1のソーシャルプラットフォーム、友達とつながり特別な瞬間を共有しよう",
+        get_started: "始める",
+        faq_title: "よくある質問", faq_what: "FndChatとは？",
+        faq_what_desc: "FndChatは宿屋の息子によって設立されたイラクのソーシャルプラットフォームで、最高のユーザー体験を提供することを目指しています。",
+        faq_safe: "プラットフォームは安全ですか？", faq_safe_desc: "はい、完全に安全です。高度なデータ暗号化と保護技術を使用して最高水準のセキュリティを維持しています。",
+        features_title: "サイトの機能",
+        feature_speed_title: "超高速", feature_speed_desc: "メッセージ送信と投稿の超高速化、高い負荷耐性を備えています",
+        feature_security_title: "総合的なセキュリティ", feature_security_desc: "強力なデータ暗号化を備えた統合セキュリティシステム",
+        feature_ui_title: "プロフェッショナルUI", feature_ui_desc: "シンプルさとプロフェッショナリズムを兼ね備えた直感的でスムーズなユーザーインターフェース",
+        goal_title: "私たちの目標", goal_desc: "私たちは最高のユーザー体験を提供し、最高水準の満足度を達成することを目指しています。また、継続的な開発とサービス改善を通じて、イラクおよびアラブ世界でリーディングソーシャルプラットフォームとなることを志しています。",
+        chat_title: "チャットセクション", chat_desc: "ユーザー間のコミュニケーションを促進するために専門的に設計されたインスタントメッセージングセクションで、高速かつ高性能を維持（継続的に開発中）。",
+        forum_title: "フォーラム＆投稿セクション", forum_desc: "コンテンツを迅速かつ簡単に公開できるインタラクティブなスペースで、アイデアやさまざまなトピックの共有を完全にサポート（継続的に開発中）。",
+        footer_info: "FndChatについて知っておくべきこと：", read_more: "続きを読む",
+        all_rights: "全著作権所有", terms: "利用規約", privacy: "プライバシーポリシー"
+      },
+      de: {
+        download_app: "App herunterladen", welcome: "Willkommen bei FndChat",
+        tagline: "Iraks soziale Plattform Nr. 1, verbinde dich mit Freunden und teile besondere Momente",
+        get_started: "Loslegen",
+        faq_title: "Häufig gestellte Fragen", faq_what: "Was ist FndChat?",
+        faq_what_desc: "FndChat ist eine irakische soziale Plattform, gegründet vom Sohn des Gastwirts, mit dem Ziel, die beste Nutzererfahrung zu bieten.",
+        faq_safe: "Ist die Plattform sicher?", faq_safe_desc: "Ja, sie ist vollständig sicher. Wir verwenden fortschrittliche Datenverschlüsselung und -schutztechniken und gewährleisten höchste Sicherheitsstandards.",
+        features_title: "Website-Funktionen",
+        feature_speed_title: "Hohe Geschwindigkeit", feature_speed_desc: "Ultraschnelles Senden von Nachrichten und Veröffentlichen von Beiträgen mit hoher Lasttoleranz",
+        feature_security_title: "Umfassende Sicherheit", feature_security_desc: "Ein integriertes Sicherheitssystem mit starker Datenverschlüsselung",
+        feature_ui_title: "Professionelle UI", feature_ui_desc: "Eine intuitive und reibungslose Benutzeroberfläche, die Einfachheit und Professionalität vereint",
+        goal_title: "Unsere Mission", goal_desc: "Wir sind bestrebt, das beste Benutzererlebnis zu bieten und die höchsten Zufriedenheitsniveaus zu erreichen. Wir streben auch danach, durch kontinuierliche Weiterentwicklung und Verbesserung der Dienstleistungen die führende Social-Media-Plattform im Irak und in der arabischen Welt zu werden.",
+        chat_title: "Chat‑Bereich", chat_desc: "Ein Instant‑Messaging‑Bereich, professionell entworfen, um die Kommunikation zwischen Benutzern bei hoher Geschwindigkeit und Leistung zu erleichtern (laufende Entwicklung).",
+        forum_title: "Forum‑ & Beitragsbereich", forum_desc: "Ein interaktiver Bereich zum schnellen und einfachen Veröffentlichen von Inhalten, mit umfassender Unterstützung zum Teilen von Ideen und verschiedenen Themen (in ständiger Entwicklung).",
+        footer_info: "Alles, was Sie über FndChat wissen müssen:", read_more: "Weiterlesen",
+        all_rights: "Alle Rechte vorbehalten", terms: "Geschäftsbedingungen", privacy: "Datenschutzrichtlinie"
+      },
+      pa: {
+        download_app: "ਐਪ ਡਾਊਨਲੋਡ ਕਰੋ", welcome: "FndChat ਵਿੱਚ ਤੁਹਾਡਾ ਸਵਾਗਤ ਹੈ",
+        tagline: "ਅਰਾਕ ਦੀ ਨੰਬਰ 1 ਸੋਸ਼ਲ ਪਲੇਟਫਾਰਮ, ਦੋਸਤਾਂ ਨਾਲ ਜੁੜੋ ਅਤੇ ਖਾਸ ਪਲ ਸਾਂਝੇ ਕਰੋ",
+        get_started: "ਸ਼ੁਰੂ ਕਰੋ",
+        faq_title: "ਅਕਸਰ ਪੁੱਛੇ ਜਾਂਦੇ ਸਵਾਲ", faq_what: "FndChat ਕੀ ਹੈ?",
+        faq_what_desc: "FndChat ਇੱਕ ਅਰਾਕੀ ਸੋਸ਼ਲ ਪਲੇਟਫਾਰਮ ਹੈ ਜਿਸਨੂੰ ਇਨਕੀਪਰ ਦੇ ਪੁੱਤ ਨੇ ਸਥਾਪਿਤ ਕੀਤਾ ਹੈ, ਸਭ ਤੋਂ ਵਧੀਆ ਯੂਜ਼ਰ ਅਨੁਭਵ ਮੁਹੱਈਆ ਕਰਨ ਲਈ।",
+        faq_safe: "ਕੀ ਪਲੇਟਫਾਰਮ ਸੁਰੱਖਿਅਤ ਹੈ?", faq_safe_desc: "ਹਾਂ, ਇਹ ਪੂਰੀ ਤਰ੍ਹਾਂ ਸੁਰੱਖਿਅਤ ਹੈ। ਅਸੀਂ ਉੱਨਤ ਡੇਟਾ ਇੰਕ੍ਰਿਪਸ਼ਨ ਅਤੇ ਸੁਰੱਖਿਆ ਪ੍ਰਕਿਰਿਆਵਾਂ ਦੀ ਵਰਤੋਂ ਕਰਦੀਆਂ ਹਾਂ।",
+        features_title: "ਸਾਈਟ ਦੀਆਂ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ",
+        feature_speed_title: "ਉੱਚ ਗਤਿਧਾਰਾ", feature_speed_desc: "ਸੁਨੇਹੇ ਭੇਜਣ ਅਤੇ ਪੋਸਟ ਪ੍ਰਕਾਸ਼ਿਤ ਕਰਨ ਵਿੱਚ ਅਤਿ ਤੇਜ਼ ਗati ਅਤੇ ਉੱਚ ਲੋਡ ਢਹਿੜਣ ਯੋਗਤਾ",
+        feature_security_title: "ਸੰਯੁਕਤ ਸੁਰੱਖਿਆ ਪ੍ਰਣਾਲੀ", feature_security_desc: "ਮਜ਼ਬੂਤ ਡੇਟਾ ਇੰਕ੍ਰਿਪਸ਼ਨ ਨਾਲ ਇੱਕ ਸਮਗ੍ਰ ਸੁਰੱਖਿਆ ਪ੍ਰਣਾਲੀ",
+        feature_ui_title: "ਪੇਸ਼ੇਵਰ UI", feature_ui_desc: "ਸਰਲਤਾ ਅਤੇ ਪੇਸ਼ੇਵਰਤਾ ਨੂੰ ਮਿਲਾਉਂਦਾ ਇਕ ਸੁਗਮ ਅਤੇ ਸੁਚੱਜਾ ਯੂਜ਼ਰ ਇੰਟਰਫੇਸ",
+        goal_title: "ਸਾਡਾ ਮਿਸ਼ਨ", goal_desc: "ਅਸੀਂ ਸਭ ਤੋਂ ਵਧੀਆ ਯੂਜ਼ਰ ਅਨੁਭਵ ਪ੍ਰਦਾਨ ਕਰਨ ਅਤੇ ਸਭ ਤੋਂ ਉੱਚੀ ਸੰਤੁਸ਼ਟੀ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ ਯਤਨਸ਼ੀਲ ਹਾਂ। ਅਸੀਂ ਲਗਾਤਾਰ ਵਿਕਾਸ ਅਤੇ ਸੇਵਾਵਾਂ ਵਿੱਚ ਸੁਧਾਰ ਰਾਹੀਂ ਇਰਾਕ ਅਤੇ ਅਰਬ ਦੁਨੀਆ ਵਿੱਚ ਅਗੇਤਰ ਸੋਸ਼ਲ ਪਲੇਟਫਾਰਮ ਬਣਣ ਦੀ ਵੀ ਆਸ ਰੱਖਦੇ ਹਾਂ।",
+        chat_title: "ਚੈਟ ਸੈਕਸ਼ਨ", chat_desc: "ਇੱਕ ਇੰਸਟੈਂਟ ਮੈਸੇਜਿੰਗ ਖੰਡ ਜੋ ਉਪਭੋਗਤਿਆਂ ਦੇ ਵਿਚਕਾਰ ਸੰਚਾਰ ਨੂੰ ਸੁਗਮ ਬਣਾਉਣ ਲਈ ਪ੍ਰੋਫੈਸ਼ਨਲ ਤੌਰ 'ਤੇ ਡਿਜ਼ਾਈਨ ਕੀਤਾ ਗਿਆ ਹੈ, ਉচ্চ ਗati ਅਤੇ ਕਾਰਗੁਜ਼ਾਰੀ برقرار ਰੱਖਦੇ ਹੋਏ (ਲੱਗਾਤਾਰ ਵਿਕਾਸ ਵਿੱਚ)।",
+        forum_title: "ਫੋਰਮ ਅਤੇ ਪੋਸਟ ਸੈਕਸ਼ਨ", forum_desc: "ਇੱਕ ਇੰਟਰऐਕਟਿਵ ਖੇਤਰ ਜਿੱਥੇ ਤੁਸੀਂ ਤੇਜ਼ੀ ਨਾਲ ਅਤੇ ਆਸਾਨੀ ਨਾਲ ਸਮੱਗਰੀ ਪ੍ਰਕਾšਤ ਕਰ ਸਕਦੇ ਹੋ, ਵੱਖ-ਵੱਖ ਵਿਚਾਰਾਂ ਅਤੇ ਵਿਸ਼ਿਆਂ ਨੂੰ ਸਾਂਝਾ ਕਰਨ ਲਈ ਪੂਰਾ ਸਮਰਥਨ (ਲੱਗਾਤਾਰ ਵਿਕਾਸ ਵਿੱਚ)।",
+        footer_info: "FndChat ਬਾਰੇ ਸਭ ਕੁਝ ਜਾਣਨ ਲਈ:", read_more: "ਹੋਰ ਪੜ੍ਹੋ",
+        all_rights: "ਸਾਰੇ ਅਧਿਕਾਰ ਰਾਖਵੇਂ", terms: "ਨਿਯਮ ਅਤੇ ਸ਼ਰਤਾਂ", privacy: "ਪਰਦੇਦਾਰੀ ਨੀਤੀ"
+      }
+    };
+
+    const supported = Object.keys(translations);
+    const select = document.getElementById('language');
+    supported.forEach(lang => {
+      const opt = document.createElement('option');
+      opt.value = lang; opt.textContent = lang.toUpperCase();
+      select.appendChild(opt);
+    });
+
+    function setLanguage(lang) {
+      if (!translations[lang]) lang = 'en';
+      document.documentElement.lang = lang;
+      document.documentElement.dir = ['ar','he','fa','ur'].includes(lang) ? 'rtl' : 'ltr';
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        el.textContent = translations[lang][key] || translations['en'][key] || key;
+      });
+      select.value = lang;
+      localStorage.setItem('lang', lang);
+    }
+
+    const saved = localStorage.getItem('lang');
+    const browser = navigator.language.split('-')[0];
+    setLanguage(saved || (supported.includes(browser) ? browser : 'en'));
+
+    select.addEventListener('change', e => setLanguage(e.target.value));
+  </script>
 </body>
 </html>
