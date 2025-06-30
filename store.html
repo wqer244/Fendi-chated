@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title> القصص (ستوري) منصه فندشات </title>
+  <title>تطبيق القصص والمنشورات</title>
   <!-- ربط خطوط تاجوال -->
   <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
   <!-- أيقونات Font Awesome -->
@@ -87,6 +87,7 @@
       border-radius: 8px;
       padding: 10px;
       margin-top: 20px;
+      min-height: 140px;
     }
     .story {
       margin: 10px;
@@ -94,6 +95,13 @@
       cursor: pointer;
       flex-shrink: 0;
       position: relative;
+      width: 90px;
+    }
+    .story-img-container {
+      position: relative;
+      width: 80px;
+      height: 80px;
+      margin: 0 auto;
     }
     .story-img {
       width: 80px;
@@ -102,6 +110,18 @@
       border: 3px solid var(--primary-color);
       object-fit: cover;
       transition: transform 0.3s, border-color 0.3s;
+    }
+    .story-img-loader {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(255,255,255,0.7);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
     .story.multiple .story-img { border: 3px solid #FF1493; }
     .story:hover .story-img {
@@ -112,6 +132,9 @@
       font-size: 0.9rem;
       margin-top: 8px;
       color: #555;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
     .view-count {
       position: absolute;
@@ -123,6 +146,7 @@
       border-radius: 20px;
       font-size: 1rem;
       cursor: pointer;
+      z-index: 10;
     }
     .like-btn {
       position: absolute;
@@ -134,6 +158,7 @@
       border-radius: 20px;
       font-size: 1rem;
       cursor: pointer;
+      z-index: 10;
     }
     .suggested-accounts-container {
       margin-top: 10px;
@@ -313,6 +338,18 @@
       padding: 20px;
       box-sizing: border-box;
     }
+    .story-view-loader {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+    }
     .action-bar {
       position: absolute;
       top: 20px;
@@ -409,6 +446,18 @@
       background-size: cover;
       background-position: center;
       margin-bottom: 10px;
+      position: relative;
+    }
+    .story-card-loader {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(255,255,255,0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
     .story-time {
       position: absolute;
@@ -431,6 +480,8 @@
       margin: 20px auto;
       text-align: center;
       font-family: 'Tajawal', sans-serif;
+      position: relative;
+      z-index: 10;
     }
     .story-text-card h2 {
       margin: 0;
@@ -464,24 +515,65 @@
       box-shadow: 0 2px 8px rgba(0,0,0,0.1);
       overflow: hidden;
       position: relative;
+      min-height: 300px;
     }
-    .gallery .post img {
+    .post-header {
+      display: flex;
+      align-items: center;
+      padding: 10px;
+      border-bottom: 1px solid #eee;
+    }
+    .post-header img {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 2px solid var(--primary-color);
+      object-fit: cover;
+      margin-left: 10px;
+      cursor: pointer;
+      transition: transform 0.3s;
+    }
+    .post-header img:hover {
+      transform: scale(1.1);
+    }
+    .post-header .user-name {
+      font-weight: bold;
+      font-size: 0.95rem;
+    }
+    .gallery .post .post-img-container {
+      position: relative;
+      height: 200px;
+      overflow: hidden;
+    }
+    .gallery .post img.post-image {
       width: 100%;
       height: 200px;
       object-fit: cover;
     }
-    .gallery .post .user-name {
-      padding: 8px;
-      text-align: center;
-      font-weight: bold;
+    .gallery .post .post-loader {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(255,255,255,0.8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
     .gallery .post .delete-btn {
       background: #dc3545;
       color: white;
       border: none;
-      padding: 5px;
+      padding: ;adding: 10px;
       width: 100%;
       cursor: pointer;
+      font-weight: bold;
+      font-size: 1rem;
+      transition: background 0.3s;
+    }
+    .gallery .post .delete-btn:hover {
+      background: #b02a37;
     }
     
     /* تبويبات الصفحة الرئيسية */
@@ -598,6 +690,88 @@
       margin-left: 8px;
     }
     
+    /* أيقونة التحميل الاحترافية */
+    .loader {
+      display: inline-block;
+      width: 30px;
+      height: 30px;
+      border: 3px solid rgba(0,0,0,0.1);
+      border-radius: 50%;
+      border-top-color: var(--primary-color);
+      animation: spin 1s linear infinite;
+    }
+    
+    .loader.large {
+      width: 60px;
+      height: 60px;
+      border-width: 5px;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    /* مشاهدات القصة */
+    .viewer {
+      display: flex;
+      align-items: center;
+      padding: 10px;
+      border-bottom: 1px solid #eee;
+    }
+    .viewer img {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      margin-left: 10px;
+    }
+    .viewer-name {
+      font-weight: bold;
+    }
+    
+    /* التعديلات الجديدة لحل المشكلات */
+    
+    /* تحسين أيقونة زر نشر الصورة */
+    .fab .icon-fallback {
+      display: none;
+      font-size: 1.5rem;
+      font-weight: bold;
+    }
+    
+    /* تحسين موضع زر نشر الصورة */
+    #fabContainerForImage {
+      position: fixed;
+      bottom: 120px;
+      right: 30px;
+      text-align: center;
+      z-index: 1001;
+    }
+    
+    /* تصميم وقت النشر */
+    .post-time {
+      position: absolute;
+      top: 10px;
+      right: 230px;
+      color: #fff;
+      background: rgba(0, 0, 0, 0.5);
+      padding: 3px 8px;
+      border-radius: 10px;
+      font-size: 0.8rem;
+      z-index: 10;
+    }
+    
+    .story-time-preview {
+      position: absolute;
+      bottom: 95px;
+      left: 5px;
+      color: #fff;
+      background: rgba(0, 0, 0, 0.5);
+      padding: 3px 8px;
+      border-radius: 10px;
+      font-size: 0.7rem;
+      z-index: 10;
+    }
+    
     @media (max-width: 600px) {
       header h1 { font-size: 1.5rem; }
       .fab { width: 60px; height: 60px; font-size: 2rem; }
@@ -612,6 +786,21 @@
       .story-type-btn {
         padding: 10px 15px;
         font-size: 1rem;
+      }
+      .story {
+        width: 80px;
+      }
+      .story-img-container {
+        width: 70px;
+        height: 70px;
+      }
+      .story-img {
+        width: 70px;
+        height: 70px;
+      }
+      #fabContainerForImage {
+        bottom: 125px;
+        right: 20px;
       }
     }
   </style>
@@ -630,8 +819,9 @@
   </header>
 
   <div class="container">
-    <!-- منطقة عرض القصص -->
+    <!-- منطقة عرض القصص مع أيقونة التحميل -->
     <div class="stories-container" id="storiesContainer">
+      <div class="loader large" id="storiesLoader"></div>
       <!-- سيتم تحميل القصص هنا -->
     </div>
     
@@ -643,16 +833,19 @@
     
     <!-- محتوى التبويبات -->
     <div id="postsContent" class="tab-content active">
-      <!-- معرض الصور (المنشورات) -->
+      <!-- معرض الصور (المنشورات) مع أيقونة التحميل -->
       <div class="gallery-container">
-        <div class="gallery" id="gallery"></div>
+        <div class="gallery" id="gallery">
+          <div class="loader large" id="galleryLoader"></div>
+        </div>
       </div>
     </div>
     
     <div id="suggestedContent" class="tab-content">
-      <!-- قسم الحسابات المقترحة -->
+      <!-- قسم الحسابات المقترحة مع أيقونة التحميل -->
       <div class="suggested-accounts-container">
         <h2>حسابات مقترحة</h2>
+        <div class="loader large" id="accountsLoader"></div>
         <div class="accounts-grid" id="accountsGrid">
           <!-- سيتم تحميل حسابات المستخدمين هنا -->
         </div>
@@ -666,9 +859,12 @@
     <div class="fab-label">نشر قصه جديده</div>
   </div>
   
-  <!-- زر نشر الصورة العائم -->
-  <div id="fabContainerForImage" style="position: fixed; bottom: 120px; right: 30px; text-align: center; z-index: 1001;">
-    <button class="fab" id="floatingAddImageBtn" style="background-color: #4CAF50;">📷</button>
+  <!-- زر نشر الصورة العائم مع أيقونة احترافية -->
+  <div id="fabContainerForImage">
+    <button class="fab" id="floatingAddImageBtn" style="background-color: #4CAF50;">
+      <i class="fas fa-camera" style="font-size: 1.8rem;"></i>
+      <span class="icon-fallback">صورة</span>
+    </button>
     <div class="fab-label">نشر صورة</div>
   </div>
   
@@ -713,6 +909,9 @@
   <!-- مودال عرض القصة -->
   <div class="modal-overlay" id="viewStoryModal">
     <div class="story-view" id="storyView">
+      <div class="story-view-loader" id="storyViewLoader">
+        <div class="loader large"></div>
+      </div>
       <!-- سيتم تحميل محتوى عرض القصة هنا -->
     </div>
     <button class="nav-btn prev" id="prevStory">&#10094;</button>
@@ -777,17 +976,24 @@
     function getRelativeTime(date) {
       const now = new Date();
       const diffInSeconds = Math.floor((now - date) / 1000);
-      if(diffInSeconds < 60) {
+      
+      if (diffInSeconds < 60) {
         return `قبل ${diffInSeconds} ثانية`;
-      } else if(diffInSeconds < 3600) {
+      } else if (diffInSeconds < 3600) {
         const minutes = Math.floor(diffInSeconds / 60);
-        return `قبل ${minutes} دقيقة`;
-      } else if(diffInSeconds < 86400) {
+        return minutes === 1 ? "قبل دقيقة" : `قبل ${minutes} دقائق`;
+      } else if (diffInSeconds < 86400) {
         const hours = Math.floor(diffInSeconds / 3600);
-        return `قبل ${hours} ساعة`;
-      } else {
+        return hours === 1 ? "قبل ساعة" : `قبل ${hours} ساعات`;
+      } else if (diffInSeconds < 604800) {
         const days = Math.floor(diffInSeconds / 86400);
-        return `قبل ${days} يوم`;
+        return days === 1 ? "قبل يوم" : `قبل ${days} أيام`;
+      } else if (diffInSeconds < 2592000) {
+        const weeks = Math.floor(diffInSeconds / 604800);
+        return weeks === 1 ? "قبل أسبوع" : `قبل ${weeks} أسابيع`;
+      } else {
+        const months = Math.floor(diffInSeconds / 2592000);
+        return months === 1 ? "قبل شهر" : `قبل ${months} أشهر`;
       }
     }
 
@@ -809,6 +1015,7 @@
     let currentGroupIndex = 0;
     let currentStoryIndex = 0;
     let uploadType = 'story'; // القيمة الافتراضية: قصة
+    let usersCache = {}; // كاش لتخزين بيانات المستخدمين
 
     auth.onAuthStateChanged(user => {
       if(user) {
@@ -832,6 +1039,9 @@
 
     // تحميل القصص وتجميعها حسب userId
     function loadStories() {
+      // إظهار أيقونة التحميل
+      document.getElementById('storiesLoader').style.display = 'block';
+      
       // تحميل القصص من Backendless
       Backendless.Data.of(STORIES_TABLE).find()
         .then(stories => {
@@ -865,8 +1075,13 @@
           });
           
           renderStoryGroups();
+          // إخفاء أيقونة التحميل بعد الانتهاء
+          document.getElementById('storiesLoader').style.display = 'none';
         })
-        .catch(err => console.error("Error loading stories:", err));
+        .catch(err => {
+          console.error("Error loading stories:", err);
+          document.getElementById('storiesLoader').style.display = 'none';
+        });
     }
 
     // عرض القصص في شريط القصص
@@ -881,14 +1096,42 @@
           storyDiv.classList.add('multiple');
         }
         storyDiv.dataset.userId = group.userId;
+        
+        // حاوية الصورة مع مؤشر التحميل
+        const imgContainer = document.createElement('div');
+        imgContainer.classList.add('story-img-container');
+        
+        const imgLoader = document.createElement('div');
+        imgLoader.classList.add('story-img-loader');
+        imgLoader.innerHTML = '<div class="loader"></div>';
+        imgContainer.appendChild(imgLoader);
+        
         const img = document.createElement('img');
         img.classList.add('story-img');
         img.src = latestStory.photoURL || currentUser.photoURL;
+        img.onload = () => {
+          imgLoader.style.display = 'none';
+        };
+        img.onerror = () => {
+          imgLoader.style.display = 'none';
+          img.src = "https://www.gravatar.com/avatar/?d=mp";
+        };
+        imgContainer.appendChild(img);
+        
         const nameDiv = document.createElement('div');
         nameDiv.classList.add('story-name');
         nameDiv.textContent = latestStory.userName;
-        storyDiv.appendChild(img);
+        
+        // إضافة وقت النشر النسبي
+        const timeDiv = document.createElement('div');
+        timeDiv.classList.add('story-time-preview');
+        if(latestStory.timestamp) {
+          timeDiv.textContent = getRelativeTime(new Date(latestStory.timestamp));
+        }
+        
+        storyDiv.appendChild(imgContainer);
         storyDiv.appendChild(nameDiv);
+        storyDiv.appendChild(timeDiv);
         storyDiv.addEventListener('click', () => {
           currentGroupIndex = storyGroups.findIndex(g => g.userId === group.userId);
           currentStoryIndex = 0;
@@ -906,6 +1149,13 @@
       let story = group.stories[storyIndex];
       const storyView = document.getElementById('storyView');
       storyView.innerHTML = "";
+      
+      // إظهار مؤشر التحميل
+      const storyLoader = document.createElement('div');
+      storyLoader.id = "storyViewLoader";
+      storyLoader.className = "story-view-loader";
+      storyLoader.innerHTML = '<div class="loader large"></div>';
+      storyView.appendChild(storyLoader);
       
       // إخفاء زر الرجوع وزر نشر الصورة
       document.querySelector('.nav-buttons').style.display = 'none';
@@ -938,16 +1188,44 @@
         storyView.appendChild(actionBar);
       }
       
-      // إنشاء بطاقة لعرض نص القصة بشكل احترافي
+      // إنشاء بطاقة لعرض نص القصة بشكل احترافي مع خلفية عشوائية
       if(story.type === 'text') {
+        // إذا كانت القصة نصية، نستخدم الخلفية العشوائية
+        storyView.style.backgroundImage = `url('${story.backgroundUrl}')`;
+        storyView.style.backgroundSize = 'cover';
+        
         const textCard = document.createElement('div');
         textCard.className = "story-text-card";
-        textCard.innerHTML = `<h2>${story.userName}</h2><p>${story.text}</p>`;
+        textCard.style.backgroundColor = "rgba(255, 255, 255, 0.8)";
+        textCard.style.padding = "25px";
+        textCard.style.borderRadius = "15px";
+        textCard.style.boxShadow = "0 4px 15px rgba(0,0,0,0.2)";
+        textCard.style.maxWidth = "85%";
+        textCard.innerHTML = `<h2 style="font-size: 1.8rem; margin-bottom: 15px;">${story.userName}</h2><p style="font-size: 1.3rem; line-height: 1.6;">${story.text}</p>`;
         storyView.appendChild(textCard);
+        
+        // إخفاء مؤشر التحميل بعد تحميل الخلفية
+        const bgImg = new Image();
+        bgImg.src = story.backgroundUrl;
+        bgImg.onload = () => {
+          document.getElementById('storyViewLoader').style.display = 'none';
+        };
+        bgImg.onerror = () => {
+          document.getElementById('storyViewLoader').style.display = 'none';
+        };
       }
       else if(story.type === 'image') {
-        storyView.style.backgroundImage = `url('${story.imageUrl}')`;
-        storyView.style.backgroundSize = 'cover';
+        const bgImg = new Image();
+        bgImg.src = story.imageUrl;
+        bgImg.onload = () => {
+          storyView.style.backgroundImage = `url('${story.imageUrl}')`;
+          storyView.style.backgroundSize = 'cover';
+          document.getElementById('storyViewLoader').style.display = 'none';
+        };
+        bgImg.onerror = () => {
+          document.getElementById('storyViewLoader').style.display = 'none';
+          storyView.innerHTML = '<p style="color:white;font-size:1.5rem">حدث خطأ في تحميل الصورة</p>';
+        };
       }
       
       // حساب الوقت النسبي لعرضه
@@ -1037,6 +1315,9 @@
 
     // تحميل الحسابات المقترحة مع زر متابعة/إلغاء متابعة
     function loadSuggestedAccounts() {
+      // إظهار أيقونة التحميل
+      document.getElementById('accountsLoader').style.display = 'block';
+      
       db.collection("users").get().then(snapshot => {
         const grid = document.getElementById("accountsGrid");
         grid.innerHTML = "";
@@ -1045,10 +1326,45 @@
           user.id = doc.id;
           if(!user.followers) user.followers = [];
           if(!user.followersCount) user.followersCount = 0;
+          
+          // تخزين المستخدم في الكاش
+          usersCache[user.id] = user;
+          
           const card = document.createElement("div");
           card.classList.add("account-card");
+          
+          // حاوية الصورة مع مؤشر التحميل
+          const imgContainer = document.createElement('div');
+          imgContainer.style.position = 'relative';
+          imgContainer.style.width = '100px';
+          imgContainer.style.height = '100px';
+          imgContainer.style.margin = '0 auto';
+          
+          const imgLoader = document.createElement('div');
+          imgLoader.style.position = 'absolute';
+          imgLoader.style.top = '0';
+          imgLoader.style.left = '0';
+          imgLoader.style.width = '100%';
+          imgLoader.style.height = '100%';
+          imgLoader.style.display = 'flex';
+          imgLoader.style.alignItems = 'center';
+          imgLoader.style.justifyContent = 'center';
+          imgLoader.style.backgroundColor = 'rgba(255,255,255,0.7)';
+          imgLoader.style.borderRadius = '50%';
+          imgLoader.innerHTML = '<div class="loader"></div>';
+          imgContainer.appendChild(imgLoader);
+          
           const img = document.createElement("img");
           img.src = user.photoURL || "https://www.gravatar.com/avatar/?d=mp";
+          img.onload = () => {
+            imgLoader.style.display = 'none';
+          };
+          img.onerror = () => {
+            imgLoader.style.display = 'none';
+            img.src = "https://www.gravatar.com/avatar/?d=mp";
+          };
+          imgContainer.appendChild(img);
+          
           const nameDiv = document.createElement("div");
           nameDiv.classList.add("account-name");
           nameDiv.textContent = user.name || "مستخدم";
@@ -1087,15 +1403,21 @@
               });
             }
           });
-          card.appendChild(img);
+          card.appendChild(imgContainer);
           card.appendChild(nameDiv);
           card.appendChild(follCount);
+          card.appendChild(followBtn);
           card.addEventListener("click", () => {
             showUserInfo(user);
           });
           grid.appendChild(card);
         });
-      }).catch(err => console.error("Error loading suggested accounts:", err));
+        // إخفاء أيقونة التحميل بعد الانتهاء
+        document.getElementById('accountsLoader').style.display = 'none';
+      }).catch(err => {
+        console.error("Error loading suggested accounts:", err);
+        document.getElementById('accountsLoader').style.display = 'none';
+      });
     }
 
     // عرض معلومات المستخدم في مودال
@@ -1160,12 +1482,46 @@
           stories.forEach(story => {
             const storyCard = document.createElement("div");
             storyCard.classList.add("story-card", "published");
+            
+            // إضافة مؤشر التحميل
+            const loader = document.createElement('div');
+            loader.className = "story-card-loader";
+            loader.innerHTML = '<div class="loader"></div>';
+            storyCard.appendChild(loader);
+            
             if(story.type === 'image') {
-              storyCard.style.backgroundImage = `url('${story.imageUrl}')`;
+              const img = new Image();
+              img.src = story.imageUrl;
+              img.onload = () => {
+                storyCard.style.backgroundImage = `url('${story.imageUrl}')`;
+                loader.style.display = 'none';
+              };
+              img.onerror = () => {
+                loader.style.display = 'none';
+                storyCard.innerHTML = '<div style="padding:10px;text-align:center">خطأ في تحميل الصورة</div>';
+              };
             } else {
-              storyCard.style.backgroundColor = '#f0f0f0';
-              storyCard.innerHTML = `<div style="padding:10px;text-align:center">${story.text}</div>`;
+              const img = new Image();
+              img.src = story.backgroundUrl;
+              img.onload = () => {
+                storyCard.style.backgroundImage = `url('${story.backgroundUrl}')`;
+                storyCard.innerHTML = `<div style="padding:10px;text-align:center;color:white;font-weight:bold;text-shadow: 1px 1px 3px rgba(0,0,0,0.8);">${story.text}</div>`;
+                loader.style.display = 'none';
+              };
+              img.onerror = () => {
+                loader.style.display = 'none';
+                storyCard.innerHTML = `<div style="padding:10px;text-align:center;color:black;font-weight:bold;">${story.text}</div>`;
+              };
             }
+            
+            // إضافة وقت النشر النسبي
+            const timeDiv = document.createElement('div');
+            timeDiv.className = "story-time-preview";
+            if(story.timestamp) {
+              timeDiv.textContent = getRelativeTime(new Date(story.timestamp));
+            }
+            storyCard.appendChild(timeDiv);
+            
             storiesContainer.appendChild(storyCard);
           });
         })
@@ -1244,7 +1600,16 @@
         alert('يرجى إدخال نص القصة');
         return;
       }
-      const randomBg = "https://picsum.photos/seed/" + Math.floor(Math.random()*1000) + "/600/800";
+      
+      // توليد خلفية عشوائية باستخدم Unsplash API
+      const randomBg = `https://source.unsplash.com/random/600x800?${Math.floor(Math.random()*1000)}`;
+      
+      // إظهار مؤشر التحميل
+      const postBtn = document.getElementById('postTextStoryBtn');
+      const originalText = postBtn.innerHTML;
+      postBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> جاري النشر...';
+      postBtn.disabled = true;
+      
       Backendless.Data.of(STORIES_TABLE).save({
         type: 'text',
         text: text,
@@ -1257,7 +1622,17 @@
         document.getElementById('addStoryModal').style.display = 'none';
         document.getElementById('storyText').value = '';
         loadStories();
-      }).catch(err => console.error("Error posting text story:", err));
+        
+        // إعادة تعيين الزر
+        postBtn.innerHTML = originalText;
+        postBtn.disabled = false;
+      }).catch(err => {
+        console.error("Error posting text story:", err);
+        
+        // إعادة تعيين الزر في حالة الخطأ
+        postBtn.innerHTML = originalText;
+        postBtn.disabled = false;
+      });
     });
 
     // دالة جديدة لنشر الصورة في جدول المنشورات (Apl)
@@ -1277,6 +1652,7 @@
           imageUrl: fileURL.fileURL,
           userId: currentUser.id,
           userName: currentUser.name,
+          userPhotoURL: currentUser.photoURL,
           timestamp: new Date().getTime()
         });
         
@@ -1426,7 +1802,7 @@
     function showStoryViews(story) {
       const modal = document.getElementById('storyViewsModal');
       const viewsList = document.getElementById('viewsList');
-      viewsList.innerHTML = "جار التحميل...";
+      viewsList.innerHTML = '<div class="loader large"></div>';
       modal.style.display = 'flex';
       
       if(!story.views || story.views.length === 0) {
@@ -1434,18 +1810,51 @@
         return;
       }
       
-      // في بيئة حقيقية، سنقوم بجلب بيانات المستخدمين من Firebase
-      // لكن هنا سنعرض فقط معرفات المستخدمين لأغراض العرض
+      // جلب بيانات المستخدمين من Firebase
       viewsList.innerHTML = "";
+      let loadedCount = 0;
+      const totalViews = story.views.length;
+      
       story.views.forEach(userId => {
+        // إذا كان المستخدم في الكاش، نستخدم البيانات المخزنة
+        if(usersCache[userId]) {
+          const user = usersCache[userId];
+          createViewerElement(user);
+          loadedCount++;
+        } else {
+          // جلب بيانات المستخدم من Firebase
+          db.collection("users").doc(userId).get().then(doc => {
+            if(doc.exists) {
+              const user = doc.data();
+              usersCache[userId] = user;
+              createViewerElement(user);
+            } else {
+              createViewerElement({id: userId, name: "مستخدم غير معروف", photoURL: "https://www.gravatar.com/avatar/?d=mp"});
+            }
+            loadedCount++;
+            if(loadedCount === totalViews) {
+              // إخفاء أيقونة التحميل بعد تحميل جميع المشاهدات
+              document.querySelector('#viewsList .loader')?.remove();
+            }
+          }).catch(() => {
+            createViewerElement({id: userId, name: "مستخدم غير معروف", photoURL: "https://www.gravatar.com/avatar/?d=mp"});
+            loadedCount++;
+            if(loadedCount === totalViews) {
+              document.querySelector('#viewsList .loader')?.remove();
+            }
+          });
+        }
+      });
+      
+      function createViewerElement(user) {
         let userDiv = document.createElement("div");
         userDiv.className = "viewer";
-        userDiv.style.display = "flex";
-        userDiv.style.alignItems = "center";
-        userDiv.style.marginBottom = "10px";
-        userDiv.innerHTML = `<img src="https://www.gravatar.com/avatar/?d=mp" style="width:40px; height:40px; border-radius:50%; margin-right:10px;"> المستخدم (${userId})`;
+        userDiv.innerHTML = `
+          <img src="${user.photoURL || "https://www.gravatar.com/avatar/?d=mp"}" alt="صورة المستخدم">
+          <span class="viewer-name">${user.name || "مستخدم"}</span>
+        `;
         viewsList.appendChild(userDiv);
-      });
+      }
     }
 
     document.getElementById('closeViewsModal').addEventListener('click', () => {
@@ -1455,6 +1864,9 @@
     // وظائف معرض الصور باستخدام Backendless
     async function loadGalleryImages() {
       try {
+        // إظهار أيقونة التحميل
+        document.getElementById('galleryLoader').style.display = 'block';
+        
         const queryBuilder = Backendless.DataQueryBuilder.create().setSortBy('timestamp DESC');
         const records = await Backendless.Data.of(POSTS_TABLE).find(queryBuilder);
         const gallery = document.getElementById('gallery');
@@ -1464,29 +1876,77 @@
           const post = document.createElement("div");
           post.className = "post";
           
+          // رأس المنشور مع صورة المستخدم واسمه
+          const postHeader = document.createElement('div');
+          postHeader.className = 'post-header';
+          
+          const userImg = document.createElement('img');
+          userImg.src = record.userPhotoURL || currentUser.photoURL || "https://www.gravatar.com/avatar/?d=mp";
+          userImg.addEventListener('click', () => {
+            const user = {
+              id: record.userId,
+              name: record.userName,
+              photoURL: record.userPhotoURL || "https://www.gravatar.com/avatar/?d=mp"
+            };
+            showUserInfo(user);
+          });
+          
+          const userNameSpan = document.createElement('span');
+          userNameSpan.className = 'user-name';
+          userNameSpan.textContent = record.userName || "مستخدم";
+          
+          postHeader.appendChild(userImg);
+          postHeader.appendChild(userNameSpan);
+          post.appendChild(postHeader);
+          
+          // حاوية الصورة مع مؤشر التحميل
+          const imgContainer = document.createElement('div');
+          imgContainer.className = "post-img-container";
+          
+          const loader = document.createElement('div');
+          loader.className = "post-loader";
+          loader.innerHTML = '<div class="loader"></div>';
+          imgContainer.appendChild(loader);
+          
           const img = document.createElement("img");
+          img.className = "post-image";
           img.src = record.imageUrl;
+          img.onload = () => {
+            loader.style.display = 'none';
+          };
+          img.onerror = () => {
+            loader.style.display = 'none';
+            img.src = "https://via.placeholder.com/200x200?text=خطأ+في+الصورة";
+          };
+          imgContainer.appendChild(img);
           
-          const userName = document.createElement("div");
-          userName.className = "user-name";
-          userName.textContent = record.userName || "مستخدم";
+          post.appendChild(imgContainer);
           
-          post.appendChild(img);
-          post.appendChild(userName);
+          // إضافة وقت النشر النسبي
+          const timeDiv = document.createElement('div');
+          timeDiv.className = "post-time";
+          if(record.timestamp) {
+            timeDiv.textContent = getRelativeTime(new Date(record.timestamp));
+          }
+          post.appendChild(timeDiv);
           
           // إضافة زر حذف إذا كان المستخدم الحالي هو صاحب الصورة
           if (currentUser && record.userId === currentUser.id) {
             const deleteBtn = document.createElement("button");
             deleteBtn.className = "delete-btn";
-            deleteBtn.textContent = "حذف";
+            deleteBtn.textContent = "حذف المنشور";
             deleteBtn.onclick = () => deleteImage(record.objectId);
             post.appendChild(deleteBtn);
           }
           
           gallery.appendChild(post);
         });
+        
+        // إخفاء أيقونة التحميل بعد الانتهاء
+        document.getElementById('galleryLoader').style.display = 'none';
       } catch (error) {
         console.error("خطأ في التحميل:", error);
+        document.getElementById('galleryLoader').style.display = 'none';
       }
     }
     
@@ -1515,6 +1975,14 @@
       document.getElementById('postsTab').classList.remove('active');
       document.getElementById('suggestedContent').classList.add('active');
       document.getElementById('postsContent').classList.remove('active');
+    });
+    
+    // حل مشكلة أيقونة الكاميرا
+    window.addEventListener('load', () => {
+      const cameraIcon = document.querySelector('#floatingAddImageBtn .fa-camera');
+      if (!cameraIcon || getComputedStyle(cameraIcon).display === 'none') {
+        document.querySelector('#floatingAddImageBtn .icon-fallback').style.display = 'block';
+      }
     });
   </script>
 </body>
