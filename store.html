@@ -26,6 +26,7 @@
       --text-color: #333;
       --header-bg: linear-gradient(45deg, #00c6ff, #0072ff);
       --tab-inactive: #e9ecef;
+      --like-color: #ff0000;
     }
     body.dark-mode {
       --bg-color: #181818;
@@ -159,6 +160,13 @@
       font-size: 1rem;
       cursor: pointer;
       z-index: 10;
+    }
+    .like-btn i {
+      margin-left: 5px;
+      color: #fff; /* لون الأيقونة أبيض في الحالة العادية */
+    }
+    .like-btn.liked i {
+      color: var(--like-color); /* عند الإعجاب يصبح أحمر */
     }
     .suggested-accounts-container {
       margin-top: 10px;
@@ -561,19 +569,36 @@
       align-items: center;
       justify-content: center;
     }
-    .gallery .post .delete-btn {
-      background: #dc3545;
-      color: white;
-      border: none;
-      padding: ;adding: 10px;
-      width: 100%;
-      cursor: pointer;
-      font-weight: bold;
-      font-size: 1rem;
-      transition: background 0.3s;
+    .gallery .post .post-actions {
+      display: flex;
+      justify-content: space-around;
+      padding: 10px;
+      background: #f9f9f9;
+      border-top: 1px solid #eee;
     }
-    .gallery .post .delete-btn:hover {
-      background: #b02a37;
+    .gallery .post .post-actions button {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 1.2rem;
+      padding: 5px;
+      transition: transform 0.2s;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .gallery .post .post-actions button:hover {
+      transform: scale(1.1);
+      background: rgba(0,0,0,0.05);
+    }
+    .gallery .post .edit-btn {
+      color: var(--primary-color);
+    }
+    .gallery .post .delete-btn {
+      color: var(--danger-color);
     }
     
     /* تبويبات الصفحة الرئيسية */
@@ -762,7 +787,7 @@
     
     .story-time-preview {
       position: absolute;
-      bottom: 95px;
+      bottom: -25px;
       left: 5px;
       color: #fff;
       background: rgba(0, 0, 0, 0.5);
@@ -770,6 +795,170 @@
       border-radius: 10px;
       font-size: 0.7rem;
       z-index: 10;
+    }
+    
+    /* زر لايك للمنشورات */
+    .post-likes {
+      display: flex;
+      align-items: center;
+      padding: 10px;
+      background: #f9f9f9;
+      border-top: 1px solid #eee;
+    }
+    
+    .like-btn-post {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 1.2rem;
+      padding: 5px;
+      transition: transform 0.2s;
+    }
+    
+    .like-btn-post:hover {
+      transform: scale(1.1);
+    }
+    
+    .like-btn-post .fa-heart {
+      color: #ccc;
+      transition: color 0.3s;
+    }
+    
+    .like-btn-post.liked .fa-heart {
+      color: var(--like-color);
+      animation: pulse 0.5s;
+    }
+    
+    .likes-count {
+      margin-right: 5px;
+      font-size: 0.9rem;
+      color: #666;
+    }
+    
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.2); }
+      100% { transform: scale(1); }
+    }
+    
+    /* زر "عرض المزيد" */
+    .load-more-btn {
+      display: block;
+      margin: 20px auto;
+      padding: 10px 20px;
+      background: var(--primary-color);
+      color: white;
+      border: none;
+      border-radius: 30px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: background 0.3s;
+    }
+    
+    .load-more-btn:hover {
+      background: var(--primary-dark);
+    }
+    
+    /* عنوان المنشور */
+    .post-title {
+      padding: 10px;
+      font-size: 0.9rem;
+      color: #333;
+      text-align: center;
+      border-top: 1px solid #eee;
+      min-height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    /* ملف المستخدم الشخصي - التصميم الجديد */
+    .profile-posts-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 20px;
+    }
+    
+    .profile-post {
+      position: relative;
+      aspect-ratio: 1/1;
+      overflow: hidden;
+      cursor: pointer;
+    }
+    
+    .profile-post img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s;
+    }
+    
+    .profile-post:hover img {
+      transform: scale(1.05);
+    }
+    
+    .profile-post-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    
+    .profile-post:hover .profile-post-overlay {
+      opacity: 1;
+    }
+    
+    .profile-post-overlay span {
+      margin: 0 5px;
+      font-size: 1.2rem;
+    }
+    
+    /* حقل عنوان المنشور في النافذة المنبثقة */
+    .post-title-input {
+      width: 100%;
+      padding: 10px;
+      margin: 15px 0;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-family: 'Tajawal', sans-serif;
+      font-size: 1rem;
+      display: none;
+    }
+    
+    /* مودال عرض المنشور كاملاً */
+    #postModal .modal-content {
+      max-width: 600px;
+      max-height: 90vh;
+      overflow: auto;
+      padding: 20px;
+    }
+    #postModalContent .post {
+      margin-top: 40px;
+    }
+    #postModalContent .post-image {
+      width: 100%;
+      border-radius: 8px;
+      margin: 10px 0;
+    }
+    #postModalContent .post-actions {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-top: 15px;
+    }
+    #postModalContent .post-actions button {
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-size: 1rem;
     }
     
     @media (max-width: 600px) {
@@ -801,6 +990,13 @@
       #fabContainerForImage {
         bottom: 125px;
         right: 20px;
+      }
+      .profile-posts-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      #postModal .modal-content {
+        width: 95%;
+        max-height: 85vh;
       }
     }
   </style>
@@ -838,6 +1034,7 @@
         <div class="gallery" id="gallery">
           <div class="loader large" id="galleryLoader"></div>
         </div>
+        <button id="loadMoreBtn" class="load-more-btn" style="display: none;">عرض المزيد</button>
       </div>
     </div>
     
@@ -890,6 +1087,9 @@
           <i class="fa-solid fa-image"></i> اختر صورة
         </label>
         <input type="file" id="storyImageInput" accept="image/*" style="display: none;" />
+        
+        <!-- حقل إدخال عنوان المنشور -->
+        <input type="text" id="postTitleInput" class="post-title-input" placeholder="أدخل عنوان المنشور (اختياري)">
         
         <div class="image-preview-container" id="imagePreviewContainer">
           <img id="imagePreview" class="image-preview" src="" alt="معاينة الصورة">
@@ -944,9 +1144,10 @@
           <!-- تفاصيل الحساب -->
         </div>
       </div>
-      <!-- قصص المستخدم تظهر في الأسفل -->
-      <div id="userStoriesContainer">
-        <!-- سيتم تحميل قصص المستخدم هنا -->
+      <!-- منشورات المستخدم تظهر في الأسفل -->
+      <h3 style="text-align: center; margin-top: 20px;">منشورات المستخدم</h3>
+      <div id="userPostsContainer" class="profile-posts-grid">
+        <!-- سيتم تحميل منشورات المستخدم هنا -->
       </div>
     </div>
   </div>
@@ -961,6 +1162,18 @@
       <button id="closeViewsModal" class="btn-danger">
         <i class="fa-solid fa-xmark"></i> إغلاق
       </button>
+    </div>
+  </div>
+  
+  <!-- مودال عرض المنشور كاملاً -->
+  <div class="modal-overlay" id="postModal">
+    <div class="modal-content">
+      <button id="closePostModal" class="btn-danger" style="position:absolute; top:10px; right:10px;">
+        <i class="fa-solid fa-xmark"></i> إغلاق
+      </button>
+      <div id="postModalContent">
+        <!-- محتوى المنشور الكامل سيتم تحميله هنا -->
+      </div>
     </div>
   </div>
 
@@ -1016,6 +1229,9 @@
     let currentStoryIndex = 0;
     let uploadType = 'story'; // القيمة الافتراضية: قصة
     let usersCache = {}; // كاش لتخزين بيانات المستخدمين
+    let currentPostsPage = 1; // الصفحة الحالية للمنشورات
+    const postsPerPage = 10; // عدد المنشورات في كل صفحة
+    let currentEditingPostId = null; // المنشور الحالي الذي يتم تعديله
 
     auth.onAuthStateChanged(user => {
       if(user) {
@@ -1254,7 +1470,8 @@
       let likeBtn = document.createElement('div');
       likeBtn.className = "like-btn";
       if(story.likes && story.likes.includes(currentUser.id)) {
-         likeBtn.innerHTML = '<i class="fa-solid fa-heart" style="color: red;"></i> ' + currentLikes + ' لايك';
+         likeBtn.innerHTML = '<i class="fa-solid fa-heart"></i> ' + currentLikes + ' لايك';
+         likeBtn.classList.add('liked');
       } else {
          likeBtn.innerHTML = '<i class="fa-regular fa-heart"></i> ' + currentLikes + ' لايك';
       }
@@ -1269,6 +1486,7 @@
                 story.likes = story.likes.filter(id => id !== currentUser.id);
                 currentLikes = story.likes.length;
                 likeBtn.innerHTML = '<i class="fa-regular fa-heart"></i> ' + currentLikes + ' لايك';
+                likeBtn.classList.remove('liked');
               });
           } else {
               // إضافة إعجاب
@@ -1279,7 +1497,8 @@
                 likes: story.likes
               }).then(() => {
                 currentLikes = story.likes.length;
-                likeBtn.innerHTML = '<i class="fa-solid fa-heart" style="color: red;"></i> ' + currentLikes + ' لايك';
+                likeBtn.innerHTML = '<i class="fa-solid fa-heart"></i> ' + currentLikes + ' لايك';
+                likeBtn.classList.add('liked');
               });
           }
       });
@@ -1470,62 +1689,89 @@
         <p><strong>عدد المتابعين:</strong> ${user.followersCount || 0}</p>
       `;
       document.getElementById("profileModal").style.display = "flex";
-      loadUserStories(user.id);
+      loadUserPosts(user.id);
     }
 
-    // تحميل قصص المستخدم وعرضها في القسم السفلي
-    function loadUserStories(userId) {
-      const storiesContainer = document.getElementById("userStoriesContainer");
-      storiesContainer.innerHTML = "";
-      Backendless.Data.of(STORIES_TABLE).find({ where: `userId = '${userId}'` })
-        .then(stories => {
-          stories.forEach(story => {
-            const storyCard = document.createElement("div");
-            storyCard.classList.add("story-card", "published");
-            
-            // إضافة مؤشر التحميل
-            const loader = document.createElement('div');
-            loader.className = "story-card-loader";
-            loader.innerHTML = '<div class="loader"></div>';
-            storyCard.appendChild(loader);
-            
-            if(story.type === 'image') {
-              const img = new Image();
-              img.src = story.imageUrl;
-              img.onload = () => {
-                storyCard.style.backgroundImage = `url('${story.imageUrl}')`;
-                loader.style.display = 'none';
-              };
-              img.onerror = () => {
-                loader.style.display = 'none';
-                storyCard.innerHTML = '<div style="padding:10px;text-align:center">خطأ في تحميل الصورة</div>';
-              };
-            } else {
-              const img = new Image();
-              img.src = story.backgroundUrl;
-              img.onload = () => {
-                storyCard.style.backgroundImage = `url('${story.backgroundUrl}')`;
-                storyCard.innerHTML = `<div style="padding:10px;text-align:center;color:white;font-weight:bold;text-shadow: 1px 1px 3px rgba(0,0,0,0.8);">${story.text}</div>`;
-                loader.style.display = 'none';
-              };
-              img.onerror = () => {
-                loader.style.display = 'none';
-                storyCard.innerHTML = `<div style="padding:10px;text-align:center;color:black;font-weight:bold;">${story.text}</div>`;
-              };
-            }
-            
-            // إضافة وقت النشر النسبي
-            const timeDiv = document.createElement('div');
-            timeDiv.className = "story-time-preview";
-            if(story.timestamp) {
-              timeDiv.textContent = getRelativeTime(new Date(story.timestamp));
-            }
-            storyCard.appendChild(timeDiv);
-            
-            storiesContainer.appendChild(storyCard);
+    // تحميل منشورات المستخدم وعرضها في الشبكة
+    async function loadUserPosts(userId) {
+      const container = document.getElementById("userPostsContainer");
+      container.innerHTML = '<div class="loader large"></div>'; // إضافة أيقونة تحميل
+      
+      try {
+        const queryBuilder = Backendless.DataQueryBuilder.create()
+          .setWhereClause(`userId = '${userId}'`)
+          .setSortBy('timestamp DESC');
+          
+        const records = await Backendless.Data.of(POSTS_TABLE).find(queryBuilder);
+        container.innerHTML = "";
+        
+        records.forEach(record => {
+          const postDiv = document.createElement('div');
+          postDiv.className = 'profile-post';
+          
+          const img = document.createElement('img');
+          img.src = record.imageUrl;
+          img.alt = record.title || "منشور";
+          
+          const overlay = document.createElement('div');
+          overlay.className = 'profile-post-overlay';
+          overlay.innerHTML = `
+            <span><i class="fas fa-heart"></i> ${record.likes?.length || 0}</span>
+            <span><i class="fas fa-comment"></i> ${record.comments?.length || 0}</span>
+          `;
+          
+          postDiv.appendChild(img);
+          postDiv.appendChild(overlay);
+          
+          // حدث النقر لفتح المنشور كاملاً
+          postDiv.addEventListener('click', () => {
+            openPostModal(record);
           });
-        })
-        .catch(err => console.error("Error loading user stories:", err));
+          
+          container.appendChild(postDiv);
+        });
+      } catch (error) {
+        console.error("Error loading user posts:", error);
+        container.innerHTML = '<p>حدث خطأ في تحميل المنشورات</p>';
+      }
+    }
+
+    // فتح مودال لعرض المنشور كاملاً
+    function openPostModal(post) {
+      const modalContent = document.getElementById('postModalContent');
+      modalContent.innerHTML = `
+        <div class="post">
+          <div class="post-header">
+            <img src="${post.userPhotoURL || currentUser.photoURL || "https://www.gravatar.com/avatar/?d=mp"}" 
+                 alt="صورة المستخدم" 
+                 style="width:40px;height:40px;border-radius:50%;">
+            <span class="user-name">${post.userName || "مستخدم"}</span>
+          </div>
+          <img src="${post.imageUrl}" alt="صورة المنشور" class="post-image">
+          <div style="padding:10px;">
+            ${post.title ? `<h3>${post.title}</h3>` : ''}
+            <div class="post-likes">
+              <button class="like-btn-post ${post.likes && post.likes.includes(currentUser.id) ? 'liked' : ''}">
+                <i class="${post.likes && post.likes.includes(currentUser.id) ? 'fas' : 'far'} fa-heart"></i>
+              </button>
+              <span class="likes-count">${post.likes ? post.likes.length : 0} إعجابات</span>
+            </div>
+            <p>${post.description || ''}</p>
+          </div>
+          ${post.userId === currentUser.id ? `
+          <div class="post-actions">
+            <button class="edit-btn" onclick="editPost('${post.objectId}')">
+              <i class="fas fa-edit"></i>
+            </button>
+            <button class="delete-btn" onclick="deleteImage('${post.objectId}')">
+              <i class="fas fa-trash"></i>
+            </button>
+          </div>
+          ` : ''}
+        </div>
+      `;
+      
+      document.getElementById('postModal').style.display = 'flex';
     }
 
     document.getElementById("profileModal").addEventListener("click", (e) => {
@@ -1537,6 +1783,15 @@
     document.getElementById("closeProfileBtn").addEventListener("click", () => {
       document.getElementById("profileModal").style.display = "none";
       document.getElementById("fabContainer").style.display = "block";
+    });
+    
+    document.getElementById("closePostModal").addEventListener("click", () => {
+      document.getElementById("postModal").style.display = "none";
+    });
+    document.getElementById("postModal").addEventListener("click", (e) => {
+      if(e.target === document.getElementById("postModal")) {
+        document.getElementById("postModal").style.display = "none";
+      }
     });
 
     // التنقل بين القصص
@@ -1584,6 +1839,7 @@
       document.getElementById('imageStoryBtn').classList.remove('active');
       document.getElementById('textStoryContent').classList.add('active');
       document.getElementById('imageStoryContent').classList.remove('active');
+      document.getElementById('postTitleInput').style.display = 'none';
     });
     
     document.getElementById('imageStoryBtn').addEventListener('click', function() {
@@ -1591,6 +1847,13 @@
       document.getElementById('textStoryBtn').classList.remove('active');
       document.getElementById('imageStoryContent').classList.add('active');
       document.getElementById('textStoryContent').classList.remove('active');
+      
+      // إظهار حقل العنوان فقط لنشر المنشورات
+      if(uploadType === 'post') {
+        document.getElementById('postTitleInput').style.display = 'block';
+      } else {
+        document.getElementById('postTitleInput').style.display = 'none';
+      }
     });
     
     // نشر قصة نصية
@@ -1636,7 +1899,7 @@
     });
 
     // دالة جديدة لنشر الصورة في جدول المنشورات (Apl)
-    async function publishImageToPosts(file) {
+    async function publishImageToPosts(file, title) {
       try {
         // إظهار مؤشر التحميل
         const uploadBtn = document.getElementById('uploadImageBtn');
@@ -1653,7 +1916,8 @@
           userId: currentUser.id,
           userName: currentUser.name,
           userPhotoURL: currentUser.photoURL,
-          timestamp: new Date().getTime()
+          timestamp: new Date().getTime(),
+          title: title || ''
         });
         
         // إغلاق المودال وإعادة تعيين العناصر
@@ -1661,6 +1925,7 @@
         document.getElementById('imagePreviewContainer').style.display = 'none';
         document.getElementById('imagePreview').src = '';
         document.getElementById('storyImageInput').value = "";
+        document.getElementById('postTitleInput').value = "";
         
         // إعادة تعيين الزر
         uploadBtn.innerHTML = originalText;
@@ -1676,8 +1941,7 @@
         alert("حدث خطأ أثناء نشر الصورة في المنشورات");
         
         // إعادة تعيين الزر في حالة الخطأ
-        const uploadBtn = document.getElementById('uploadImageBtn');
-        uploadBtn.innerHTML = '<i class="fa-solid fa-cloud-upload-alt"></i> نشر الصورة';
+        uploadBtn.innerHTML = originalText;
         uploadBtn.disabled = false;
       }
     }
@@ -1686,6 +1950,7 @@
     document.getElementById('floatingAddImageBtn').addEventListener('click', () => {
       // تعيين نوع النشر إلى "منشور"
       uploadType = 'post';
+      document.getElementById('postTitleInput').style.display = 'block';
       document.getElementById('storyImageInput').click();
     });
 
@@ -1709,10 +1974,12 @@
             document.getElementById('modalTitle').textContent = 'نشر صورة في المنشورات';
             document.getElementById('uploadImageBtn').innerHTML = 
               '<i class="fa-solid fa-cloud-upload-alt"></i> نشر في المنشورات';
+            document.getElementById('postTitleInput').style.display = 'block';
           } else {
             document.getElementById('modalTitle').textContent = 'نشر قصة جديدة';
             document.getElementById('uploadImageBtn').innerHTML = 
               '<i class="fa-solid fa-cloud-upload-alt"></i> نشر الصورة في القصص';
+            document.getElementById('postTitleInput').style.display = 'none';
           }
         }
         
@@ -1724,6 +1991,7 @@
     document.getElementById('uploadImageBtn').addEventListener('click', async () => {
       const fileInput = document.getElementById("storyImageInput");
       const file = fileInput.files[0];
+      const title = document.getElementById("postTitleInput").value.trim();
       
       if (!file) {
         alert("الرجاء اختيار صورة أولاً");
@@ -1732,7 +2000,7 @@
       
       // اختيار الجدول المناسب حسب نوع النشر
       if (uploadType === 'post') {
-        await publishImageToPosts(file);
+        await publishImageToPosts(file, title);
       } else {
         // النشر في القصص (كما كان في الكود الأصلي)
         try {
@@ -1788,6 +2056,7 @@
       document.getElementById('modalTitle').textContent = 'نشر قصة جديدة';
       document.getElementById('uploadImageBtn').innerHTML = 
         '<i class="fa-solid fa-cloud-upload-alt"></i> نشر الصورة';
+      document.getElementById('postTitleInput').style.display = 'none';
     });
     
     // إغلاق مودال إضافة القصة
@@ -1796,6 +2065,7 @@
       document.getElementById('imagePreviewContainer').style.display = 'none';
       document.getElementById('imagePreview').src = '';
       document.getElementById('storyImageInput').value = '';
+      document.getElementById('postTitleInput').value = '';
     });
 
     // دالة عرض مشاهدات القصة في مودال منفصل
@@ -1862,15 +2132,27 @@
     });
     
     // وظائف معرض الصور باستخدام Backendless
-    async function loadGalleryImages() {
+    async function loadGalleryImages(page = currentPostsPage) {
       try {
         // إظهار أيقونة التحميل
         document.getElementById('galleryLoader').style.display = 'block';
         
-        const queryBuilder = Backendless.DataQueryBuilder.create().setSortBy('timestamp DESC');
+        const queryBuilder = Backendless.DataQueryBuilder.create()
+          .setSortBy('timestamp DESC')
+          .setPageSize(postsPerPage)
+          .setOffset((page-1)*postsPerPage);
+          
         const records = await Backendless.Data.of(POSTS_TABLE).find(queryBuilder);
         const gallery = document.getElementById('gallery');
-        gallery.innerHTML = "";
+        
+        // إذا كانت الصفحة الأولى، نمسح المعرض الحالي
+        if (page === 1) {
+          gallery.innerHTML = "";
+        } else {
+          // نزيل زر "عرض المزيد" السابق إذا كان موجودًا
+          const oldButton = gallery.querySelector('.load-more-btn');
+          if (oldButton) oldButton.remove();
+        }
         
         records.forEach(record => {
           const post = document.createElement("div");
@@ -1930,13 +2212,87 @@
           }
           post.appendChild(timeDiv);
           
-          // إضافة زر حذف إذا كان المستخدم الحالي هو صاحب الصورة
+          // إضافة عنوان المنشور
+          if (record.title) {
+            const titleDiv = document.createElement('div');
+            titleDiv.className = 'post-title';
+            titleDiv.textContent = record.title;
+            post.appendChild(titleDiv);
+          }
+          
+          // إضافة زر اللايك وعدده
+          const likesDiv = document.createElement('div');
+          likesDiv.className = 'post-likes';
+          
+          const likeBtn = document.createElement('button');
+          likeBtn.className = 'like-btn-post';
+          if (record.likes && record.likes.includes(currentUser.id)) {
+            likeBtn.classList.add('liked');
+          }
+          
+          const heartIcon = document.createElement('i');
+          heartIcon.className = record.likes && record.likes.includes(currentUser.id) ? 
+            'fas fa-heart' : 'far fa-heart';
+          likeBtn.appendChild(heartIcon);
+          
+          const likesCount = document.createElement('span');
+          likesCount.className = 'likes-count';
+          likesCount.textContent = record.likes ? record.likes.length : 0;
+          
+          likesDiv.appendChild(likeBtn);
+          likesDiv.appendChild(likesCount);
+          post.appendChild(likesDiv);
+          
+          // إضافة حدث النقر على زر اللايك
+          likeBtn.addEventListener('click', async () => {
+            try {
+              let updatedLikes = [...(record.likes || [])];
+              if (updatedLikes.includes(currentUser.id)) {
+                updatedLikes = updatedLikes.filter(id => id !== currentUser.id);
+                heartIcon.className = 'far fa-heart';
+                likeBtn.classList.remove('liked');
+              } else {
+                updatedLikes.push(currentUser.id);
+                heartIcon.className = 'fas fa-heart';
+                likeBtn.classList.add('liked');
+              }
+              
+              // تحديث المنشور في الخلفية
+              await Backendless.Data.of(POSTS_TABLE).save({
+                objectId: record.objectId,
+                likes: updatedLikes
+              });
+              
+              // تحديث العدد في الواجهة
+              likesCount.textContent = updatedLikes.length;
+              record.likes = updatedLikes; // تحديث السجل المحلي
+            } catch (error) {
+              console.error('Error updating like:', error);
+            }
+          });
+          
+          // إضافة أيقونات التعديل والحذف إذا كان المستخدم الحالي هو صاحب الصورة
           if (currentUser && record.userId === currentUser.id) {
-            const deleteBtn = document.createElement("button");
-            deleteBtn.className = "delete-btn";
-            deleteBtn.textContent = "حذف المنشور";
-            deleteBtn.onclick = () => deleteImage(record.objectId);
-            post.appendChild(deleteBtn);
+            const actionsDiv = document.createElement('div');
+            actionsDiv.className = 'post-actions';
+            
+            const editBtn = document.createElement('button');
+            editBtn.className = 'edit-btn';
+            editBtn.innerHTML = '<i class="fas fa-edit"></i>';
+            editBtn.addEventListener('click', () => {
+              editPost(record.objectId);
+            });
+            
+            const deleteBtn = document.createElement('button');
+            deleteBtn.className = 'delete-btn';
+            deleteBtn.innerHTML = '<i class="fas fa-trash"></i>';
+            deleteBtn.addEventListener('click', () => {
+              deleteImage(record.objectId);
+            });
+            
+            actionsDiv.appendChild(editBtn);
+            actionsDiv.appendChild(deleteBtn);
+            post.appendChild(actionsDiv);
           }
           
           gallery.appendChild(post);
@@ -1944,6 +2300,18 @@
         
         // إخفاء أيقونة التحميل بعد الانتهاء
         document.getElementById('galleryLoader').style.display = 'none';
+        
+        // إظهار زر "عرض المزيد" إذا كان هناك المزيد من المنشورات
+        if (records.length === postsPerPage) {
+          const loadMoreBtn = document.getElementById('loadMoreBtn');
+          loadMoreBtn.style.display = 'block';
+          loadMoreBtn.onclick = () => {
+            currentPostsPage++;
+            loadGalleryImages(currentPostsPage);
+          };
+        } else {
+          document.getElementById('loadMoreBtn').style.display = 'none';
+        }
       } catch (error) {
         console.error("خطأ في التحميل:", error);
         document.getElementById('galleryLoader').style.display = 'none';
@@ -1955,12 +2323,101 @@
         try {
           await Backendless.Data.of(POSTS_TABLE).remove(objectId);
           loadGalleryImages();
+          // إغلاق مودال المنشور الكامل إذا كان مفتوحاً
+          document.getElementById('postModal').style.display = 'none';
         } catch (error) {
           console.error("خطأ في الحذف:", error);
           alert("حدث خطأ أثناء حذف الصورة");
         }
       }
     }
+    
+    // دالة تعديل المنشور
+    async function editPost(postId) {
+      try {
+        // جلب بيانات المنشور
+        const post = await Backendless.Data.of(POSTS_TABLE).findById(postId);
+        if (!post) {
+          alert("لم يتم العثور على المنشور");
+          return;
+        }
+        
+        // تخزين معرف المنشور الحالي
+        currentEditingPostId = postId;
+        
+        // إعداد النموذج للتعديل
+        document.getElementById('modalTitle').textContent = 'تعديل المنشور';
+        document.getElementById('postTitleInput').value = post.title || '';
+        document.getElementById('postTitleInput').style.display = 'block';
+        
+        // إظهار معاينة الصورة
+        document.getElementById('imagePreview').src = post.imageUrl;
+        document.getElementById('imagePreviewContainer').style.display = 'block';
+        
+        // تغيير نص زر النشر
+        document.getElementById('uploadImageBtn').innerHTML = 
+          '<i class="fa-solid fa-save"></i> حفظ التعديلات';
+        
+        // فتح مودال النشر
+        document.getElementById('addStoryModal').style.display = 'flex';
+        document.getElementById('imageStoryBtn').click();
+        
+      } catch (error) {
+        console.error('خطأ في تحميل المنشور للتعديل:', error);
+        alert('حدث خطأ أثناء تحميل المنشور للتعديل');
+      }
+    }
+    
+    // حدث النقر على زر النشر في وضع التعديل
+    document.getElementById('uploadImageBtn').addEventListener('click', async function() {
+      if (!currentEditingPostId) return;
+      
+      const title = document.getElementById("postTitleInput").value.trim();
+      
+      try {
+        // إظهار مؤشر التحميل
+        const uploadBtn = document.getElementById('uploadImageBtn');
+        const originalText = uploadBtn.innerHTML;
+        uploadBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> جاري الحفظ...';
+        uploadBtn.disabled = true;
+        
+        // تحديث بيانات المنشور
+        await Backendless.Data.of(POSTS_TABLE).save({
+          objectId: currentEditingPostId,
+          title: title
+        });
+        
+        // إغلاق المودال وإعادة تعيين العناصر
+        document.getElementById('addStoryModal').style.display = 'none';
+        document.getElementById('imagePreviewContainer').style.display = 'none';
+        document.getElementById('imagePreview').src = '';
+        document.getElementById('storyImageInput').value = "";
+        document.getElementById('postTitleInput').value = "";
+        
+        // إعادة تعيين الزر
+        uploadBtn.innerHTML = originalText;
+        uploadBtn.disabled = false;
+        
+        // إعادة تحميل معرض الصور
+        loadGalleryImages();
+        
+        // إغلاق مودال المنشور الكامل إذا كان مفتوحاً
+        document.getElementById('postModal').style.display = 'none';
+        
+        // إظهار رسالة نجاح
+        alert('تم تحديث المنشور بنجاح!');
+        
+        // إعادة تعيين معرف المنشور
+        currentEditingPostId = null;
+      } catch (error) {
+        console.error('خطأ في تحديث المنشور:', error);
+        alert('حدث خطأ أثناء تحديث المنشور');
+        
+        // إعادة تعيين الزر في حالة الخطأ
+        document.getElementById('uploadImageBtn').innerHTML = originalText;
+        document.getElementById('uploadImageBtn').disabled = false;
+      }
+    });
     
     // أحداث التبديل بين التبويبات
     document.getElementById('postsTab').addEventListener('click', function() {
