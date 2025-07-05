@@ -2,8 +2,8 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>تطبيق القصص والمنشورات</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>تطبيق البث المباشر</title>
   <!-- ربط خطوط تاجوال -->
   <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
   <!-- أيقونات Font Awesome -->
@@ -14,8 +14,7 @@
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-  <!-- مكتبة Backendless لنشر الصور -->
-  <script src="https://cdn.jsdelivr.net/npm/backendless@7.0.5/dist/backendless.min.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
   <style>
     :root {
       --primary-color: #0072ff;
@@ -27,6 +26,8 @@
       --header-bg: linear-gradient(45deg, #00c6ff, #0072ff);
       --tab-inactive: #e9ecef;
       --like-color: #ff0000;
+      --edit-color: #28a745; /* أخضر */
+      --delete-color: #dc3545; /* أحمر */
     }
     body.dark-mode {
       --bg-color: #181818;
@@ -34,7 +35,15 @@
       --header-bg: linear-gradient(45deg, #333, #111);
       --tab-inactive: #2d2d2d;
     }
-    * { box-sizing: border-box; }
+    * { 
+      box-sizing: border-box; 
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      -khtml-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+    }
     body {
       margin: 0;
       font-family: 'Tajawal', sans-serif;
@@ -42,6 +51,7 @@
       color: var(--text-color);
       direction: rtl;
       transition: background 0.3s, color 0.3s;
+      touch-action: pan-y;
     }
     header {
       background: var(--header-bg);
@@ -50,12 +60,23 @@
       color: #fff;
       position: relative;
       box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
-    header h1 { margin: 0; font-size: 2.2rem; }
+    .header-content {
+      flex-grow: 1;
+      position: relative;
+    }
+    header h1 { 
+      margin: 0; 
+      font-size: 1.8rem;
+      text-align: center;
+    }
     .nav-buttons {
       position: absolute;
       top: 0px;
-      left: 0px;
+      right: 0px;
       z-index: 10000;
     }
     .nav-buttons button {
@@ -63,180 +84,332 @@
       border: none;
       cursor: pointer;
       outline: none;
-    }
-    .nav-buttons button span {
-      font-size: 1.2rem;
+      padding: 8px 12px;
+      font-size: 1rem;
+      color: white;
       font-weight: bold;
-      color: red;
-      border: 0px solid black;
-      padding: 5px 0px;
-      border-radius: 1px;
+      border-radius: 4px;
+      background: rgba(0,0,0,0.2);
     }
-    .nav-buttons button:hover span {
-      color: #cc0000;
+    .profile-actions {
+      position: absolute;
+      top: 0px;
+      left: 0px;
+      z-index: 10000;
+    }
+    .profile-actions button {
+      background: none;
+      border: none;
+      cursor: pointer;
+      outline: none;
+      padding: 8px 12px;
+      font-size: 1rem;
+      color: white;
+      font-weight: bold;
+      border-radius: 4px;
+      background: rgba(0,0,0,0.2);
     }
     .container {
       max-width: 1200px;
       margin: 0 auto;
       padding: 15px;
     }
-    .stories-container {
-      display: flex;
-      overflow-x: auto;
-      background: #fff;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      padding: 10px;
+    
+    /* منطقة البث المباشر */
+    .live-container {
       margin-top: 20px;
-      min-height: 140px;
-    }
-    .story {
-      margin: 10px;
-      text-align: center;
-      cursor: pointer;
-      flex-shrink: 0;
+      background: #fff;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
       position: relative;
-      width: 90px;
     }
-    .story-img-container {
-      position: relative;
-      width: 80px;
-      height: 80px;
-      margin: 0 auto;
+    
+    .live-header {
+      display: flex;
+      align-items: center;
+      padding: 15px;
+      background: #f8f9fa;
+      border-bottom: 1px solid #eee;
     }
-    .story-img {
-      width: 80px;
-      height: 80px;
+    
+    .live-header img {
+      width: 50px;
+      height: 50px;
       border-radius: 50%;
-      border: 3px solid var(--primary-color);
-      object-fit: cover;
-      transition: transform 0.3s, border-color 0.3s;
+      border: 2px solid var(--primary-color);
+      margin-left: 15px;
     }
-    .story-img-loader {
+    
+    .live-info {
+      flex: 1;
+    }
+    
+    .live-info h3 {
+      margin: 0;
+      font-size: 1.3rem;
+    }
+    
+    .live-info p {
+      margin: 5px 0 0;
+      color: #666;
+      font-size: 0.9rem;
+    }
+    
+    .live-badge {
+      background: var(--danger-color);
+      color: white;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: bold;
+    }
+    
+    .video-container {
+      position: relative;
+      width: 100%;
+      padding-top: 56.25%; /* 16:9 Aspect Ratio */
+      background: #000;
+    }
+    
+    .video-container video {
       position: absolute;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(255,255,255,0.7);
+      object-fit: cover;
+    }
+    
+    .live-controls {
+      position: absolute;
+      bottom: 15px;
+      left: 0;
+      right: 0;
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      z-index: 100;
+    }
+    
+    .control-btn {
+      width: 50px;
+      height: 50px;
       border-radius: 50%;
+      background: rgba(0,0,0,0.5);
+      color: white;
       display: flex;
       align-items: center;
       justify-content: center;
+      font-size: 1.2rem;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s;
     }
-    .story.multiple .story-img { border: 3px solid #FF1493; }
-    .story:hover .story-img {
+    
+    .control-btn:hover {
+      background: rgba(0,0,0,0.7);
       transform: scale(1.1);
-      border-color: #00c6ff;
     }
-    .story-name {
+    
+    .end-btn {
+      background: var(--danger-color);
+    }
+    
+    .viewers-count {
+      position: absolute;
+      top: 15px;
+      left: 15px;
+      background: rgba(0,0,0,0.5);
+      color: white;
+      padding: 5px 15px;
+      border-radius: 20px;
       font-size: 0.9rem;
-      margin-top: 8px;
-      color: #555;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
+      z-index: 100;
     }
-    .view-count {
-      position: absolute;
-      bottom: 20px;
-      right: 20px;
-      background: rgba(0,0,0,0.5);
-      color: #fff;
-      padding: 5px 10px;
-      border-radius: 20px;
-      font-size: 1rem;
-      cursor: pointer;
-      z-index: 10;
-    }
-    .like-btn {
-      position: absolute;
-      bottom: 20px;
-      left: 20px;
-      background: rgba(0,0,0,0.5);
-      color: #fff;
-      padding: 5px 10px;
-      border-radius: 20px;
-      font-size: 1rem;
-      cursor: pointer;
-      z-index: 10;
-    }
-    .like-btn i {
-      margin-left: 5px;
-      color: #fff; /* لون الأيقونة أبيض في الحالة العادية */
-    }
-    .like-btn.liked i {
-      color: var(--like-color); /* عند الإعجاب يصبح أحمر */
-    }
-    .suggested-accounts-container {
-      margin-top: 10px;
-      padding: 20px;
+    
+    .live-chat-container {
+      padding: 15px;
       background: #fff;
-      border: 1px solid #ddd;
-      border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      border-top: 1px solid #eee;
+      max-height: 300px;
+      overflow-y: auto;
     }
-    .suggested-accounts-container h2 {
-      text-align: center;
-      margin-bottom: 15px;
-      color: var(--primary-color);
-      font-size: 1.8rem;
-    }
-    .accounts-grid {
+    
+    .chat-header {
       display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 20px;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
     }
-    .account-card {
-      width: 160px;
-      text-align: center;
-      cursor: pointer;
-      position: relative;
-      border: 1px solid #ddd;
-      border-radius: 10px;
-      padding: 10px;
-      background: #fff;
-      transition: transform 0.3s, box-shadow 0.3s;
-    }
-    .account-card:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-    }
-    .account-card img {
-      width: 100px;
-      height: 100px;
-      border-radius: 50%;
-      border: 3px solid var(--primary-color);
-      object-fit: cover;
-      transition: transform 0.3s;
-    }
-    .account-card img:hover { transform: scale(1.1); }
-    .account-card .account-name {
-      margin-top: 8px;
+    
+    .chat-header h4 {
+      margin: 0;
       font-size: 1.1rem;
-      color: #333;
-      font-weight: 600;
     }
-    .account-card .followers-count {
-      font-size: 0.85rem;
-      margin: 5px 0;
-      color: #777;
+    
+    .chat-messages {
+      min-height: 150px;
+      max-height: 250px;
+      overflow-y: auto;
+      padding: 10px 0;
     }
-    .follow-btn {
-      margin-top: 8px;
-      padding: 5px 10px;
+    
+    .message {
+      margin-bottom: 15px;
+      padding: 10px;
+      border-radius: 10px;
+      background: #f8f9fa;
+    }
+    
+    .message-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 5px;
+    }
+    
+    .message-header img {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      margin-left: 10px;
+    }
+    
+    .message-header span {
+      font-weight: bold;
+      font-size: 0.9rem;
+    }
+    
+    .message-content {
+      font-size: 0.95rem;
+      padding: 0 10px;
+    }
+    
+    .chat-input {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    
+    .chat-input input {
+      flex: 1;
+      padding: 10px 15px;
+      border: 1px solid #ddd;
+      border-radius: 20px;
+      font-family: 'Tajawal', sans-serif;
+      font-size: 0.95rem;
+    }
+    
+    .chat-input button {
       background: var(--primary-color);
       border: none;
-      color: #fff;
-      border-radius: 5px;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 20px;
       cursor: pointer;
+      font-size: 0.95rem;
       transition: background 0.3s;
-      font-size: 0.9rem;
     }
-    .follow-btn:hover {
+    
+    .chat-input button:hover {
       background: var(--primary-dark);
     }
+    
+    /* قائمة البثوث المباشرة */
+    .live-streams-container {
+      margin-top: 20px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;
+    }
+    
+    .stream-card {
+      background: #fff;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      transition: transform 0.3s, box-shadow 0.3s;
+      cursor: pointer;
+    }
+    
+    .stream-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+    }
+    
+    .stream-thumbnail {
+      position: relative;
+      height: 160px;
+      background: #000;
+      overflow: hidden;
+    }
+    
+    .stream-thumbnail img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0.9;
+      transition: transform 0.3s;
+    }
+    
+    .stream-card:hover .stream-thumbnail img {
+      transform: scale(1.05);
+    }
+    
+    .live-indicator {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: var(--danger-color);
+      color: white;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: bold;
+      z-index: 10;
+    }
+    
+    .viewers-count-small {
+      position: absolute;
+      bottom: 10px;
+      left: 10px;
+      background: rgba(0,0,0,0.5);
+      color: white;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      z-index: 10;
+    }
+    
+    .stream-info {
+      padding: 15px;
+    }
+    
+    .stream-info-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    
+    .stream-info-header img {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      margin-left: 10px;
+    }
+    
+    .stream-title {
+      font-weight: bold;
+      font-size: 1.1rem;
+      margin-bottom: 5px;
+    }
+    
+    .stream-category {
+      color: #666;
+      font-size: 0.9rem;
+    }
+    
+    /* زر بدء البث المباشر */
     #fabContainer {
       position: fixed;
       bottom: 30px;
@@ -245,13 +418,14 @@
       z-index: 1001;
       transition: opacity 0.3s;
     }
+    
     .fab {
       width: 70px;
       height: 70px;
       border-radius: 50%;
-      background-color: var(--primary-color);
+      background-color: var(--danger-color);
       color: #fff;
-      font-size: 2.5rem;
+      font-size: 1.8rem;
       border: none;
       box-shadow: 0 3px 8px rgba(0,0,0,0.3);
       cursor: pointer;
@@ -261,344 +435,13 @@
       justify-content: center;
       transition: background 0.3s;
     }
-    .fab:hover { background-color: var(--primary-dark); }
+    
+    .fab:hover { background-color: #c82333; }
     .fab-label {
       margin-top: 10px;
-      color: var(--primary-color);
-      font-weight: bold;
-      font-size: 1rem;
-    }
-    .modal-overlay {
-      display: none;
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(0,0,0,0.85);
-      justify-content: center;
-      align-items: center;
-      z-index: 1000;
-    }
-    .modal-content {
-      background: #fff;
-      padding: 25px;
-      border-radius: 10px;
-      max-width: 500px;
-      width: 90%;
-      text-align: center;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-      position: relative;
-      transition: all 0.3s;
-    }
-    .modal-content h2 {
-      margin-top: 0;
-      color: var(--primary-color);
-      font-size: 1.8rem;
-    }
-    textarea {
-      width: 100%;
-      padding: 12px;
-      margin: 15px 0;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      resize: vertical;
-      font-family: 'Tajawal', sans-serif;
-      font-size: 1rem;
-    }
-    button {
-      padding: 10px 20px;
-      background: var(--primary-color);
-      border: none;
-      color: #fff;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 1rem;
-      margin: 5px;
-      transition: background 0.3s;
-    }
-    button:hover { background: var(--primary-dark); }
-    .btn-danger {
-      background: var(--danger-color);
-    }
-    .btn-danger:hover { background: #b02a37; }
-    .publish-btn {
-      background: var(--secondary-color);
-      border: none;
-      color: #fff;
-      padding: 10px 15px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 0.9rem;
-      transition: background 0.3s;
-      margin-left: 10px;
-    }
-    .publish-btn:hover { background: #218838; }
-    .story-view {
-      width: 100vw;
-      height: 100vh;
-      background-size: cover;
-      background-position: center;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      position: relative;
-      color: #fff;
-      padding: 20px;
-      box-sizing: border-box;
-    }
-    .story-view-loader {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0,0,0,0.7);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 100;
-    }
-    .action-bar {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      z-index: 1002;
-      display: flex;
-      gap: 15px;
-    }
-    .nav-btn {
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-      font-size: 2rem;
-      color: #fff;
-      background: rgba(0,0,0,0.4);
-      border: none;
-      border-radius: 50%;
-      padding: 10px;
-      cursor: pointer;
-      z-index: 1001;
-    }
-    .nav-btn.prev { right: 20px; }
-    .nav-btn.next { left: 20px; }
-    .exit-btn {
-      position: absolute;
-      top: 20px;
-      left: 20px;
-      font-size: 1.5rem;
-      background: rgba(0,0,0,0.5);
-      border: none;
-      color: #fff;
-      padding: 5px 10px;
-      cursor: pointer;
-      border-radius: 8px;
-      z-index: 1002;
-    }
-    #userInfoModal img {
-      width: 100px;
-      height: 100px;
-      border-radius: 50%;
-      border: 3px solid var(--primary-color);
-      object-fit: cover;
-      margin-bottom: 15px;
-      cursor: pointer;
-    }
-    #profileModal .modal-content {
-      width: 100vw;
-      height: 100vh;
-      border-radius: 0;
-      padding: 20px;
-      position: relative;
-      overflow: hidden;
-    }
-    #profileModal .profile-header {
-      display: flex;
-      align-items: center;
-      gap: 20px;
-      border-bottom: 1px solid #ddd;
-      padding-bottom: 15px;
-      margin-bottom: 15px;
-    }
-    #profileModal .profile-header img {
-      width: 120px;
-      height: 120px;
-      border-radius: 50%;
-      border: 3px solid var(--primary-color);
-      object-fit: cover;
-    }
-    #profileModal .profile-header .profile-info {
-      text-align: left;
-    }
-    #profileModal .profile-header .profile-info p {
-      margin: 5px 0;
-      font-size: 1rem;
-    }
-    #userStoriesContainer {
-      position: absolute;
-      bottom: 0;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 100%;
-      height: 40%;
-      overflow-y: auto;
-      background: rgba(255,255,255,0.95);
-      padding: 10px;
-      box-sizing: border-box;
-    }
-    .story-card {
-      width: 100%;
-      min-height: 120px;
-      border: 2px solid red;
-      border-radius: 8px;
-      overflow: hidden;
-      background-size: cover;
-      background-position: center;
-      margin-bottom: 10px;
-      position: relative;
-    }
-    .story-card-loader {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(255,255,255,0.7);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .story-time {
-      position: absolute;
-      top: 0px;
-      left: 0px;
-      color: #fff;
-      background: rgba(0, 0, 0, 0.5);
-      padding: 5px 10px;
-      border-radius: 5px;
-      font-size: 0.9rem;
-      z-index: 1002;
-    }
-    .story-text-card {
-      background: rgba(255, 255, 255, 0.9);
-      color: #333;
-      padding: 15px;
-      border-radius: 10px;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-      max-width: 80%;
-      margin: 20px auto;
-      text-align: center;
-      font-family: 'Tajawal', sans-serif;
-      position: relative;
-      z-index: 10;
-    }
-    .story-text-card h2 {
-      margin: 0;
-      font-size: 1.5rem;
-      color: var(--primary-color);
-    }
-    .story-text-card p {
-      margin-top: 10px;
-      font-size: 1.1rem;
-      line-height: 1.5;
-    }
-    
-    /* منطقة معرض الصور (المنشورات) */
-    .gallery-container {
-      margin-top: 10px;
-      padding: 20px;
-      background: #fff;
-      border: 1px solid #ddd;
-      border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
-    .gallery {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: 15px;
-      margin-top: 20px;
-    }
-    .gallery .post {
-      background: white;
-      border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      overflow: hidden;
-      position: relative;
-      min-height: 300px;
-    }
-    .post-header {
-      display: flex;
-      align-items: center;
-      padding: 10px;
-      border-bottom: 1px solid #eee;
-    }
-    .post-header img {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      border: 2px solid var(--primary-color);
-      object-fit: cover;
-      margin-left: 10px;
-      cursor: pointer;
-      transition: transform 0.3s;
-    }
-    .post-header img:hover {
-      transform: scale(1.1);
-    }
-    .post-header .user-name {
-      font-weight: bold;
-      font-size: 0.95rem;
-    }
-    .gallery .post .post-img-container {
-      position: relative;
-      height: 200px;
-      overflow: hidden;
-    }
-    .gallery .post img.post-image {
-      width: 100%;
-      height: 200px;
-      object-fit: cover;
-    }
-    .gallery .post .post-loader {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(255,255,255,0.8);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .gallery .post .post-actions {
-      display: flex;
-      justify-content: space-around;
-      padding: 10px;
-      background: #f9f9f9;
-      border-top: 1px solid #eee;
-    }
-    .gallery .post .post-actions button {
-      background: none;
-      border: none;
-      cursor: pointer;
-      font-size: 1.2rem;
-      padding: 5px;
-      transition: transform 0.2s;
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .gallery .post .post-actions button:hover {
-      transform: scale(1.1);
-      background: rgba(0,0,0,0.05);
-    }
-    .gallery .post .edit-btn {
-      color: var(--primary-color);
-    }
-    .gallery .post .delete-btn {
       color: var(--danger-color);
+      font-weight: bold;
+      font-size: 1rem;
     }
     
     /* تبويبات الصفحة الرئيسية */
@@ -633,89 +476,68 @@
       display: block;
     }
     
-    /* تصميم جديد لخيارات القصة */
-    .story-type-selector {
-      display: flex;
+    /* مودال بدء البث المباشر */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.85);
       justify-content: center;
-      gap: 15px;
-      margin-bottom: 20px;
+      align-items: center;
+      z-index: 1000;
     }
     
-    .story-type-btn {
-      padding: 12px 24px;
-      background: #e9ecef;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 1.1rem;
-      font-weight: bold;
+    .modal-content {
+      background: #fff;
+      padding: 25px;
+      border-radius: 10px;
+      max-width: 500px;
+      width: 90%;
+      text-align: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      position: relative;
       transition: all 0.3s;
     }
     
-    .story-type-btn.active {
-      background: var(--primary-color);
-      color: white;
+    .modal-content h2 {
+      margin-top: 0;
+      color: var(--primary-color);
+      font-size: 1.8rem;
     }
     
-    .story-type-content {
-      display: none;
+    input, textarea {
+      width: 100%;
+      padding: 12px;
+      margin: 15px 0;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      resize: vertical;
+      font-family: 'Tajawal', sans-serif;
+      font-size: 1rem;
     }
     
-    .story-type-content.active {
-      display: block;
-    }
-    
-    /* تصميم جديد لمعاينة الصورة */
-    .image-preview-container {
-      display: none;
-      margin: 20px 0;
-      text-align: center;
-    }
-    
-    .image-preview {
-      max-width: 100%;
-      max-height: 300px;
-      border-radius: 10px;
-      border: 2px dashed #ddd;
-      margin: 10px auto;
-      display: block;
-    }
-    
-    .upload-btn {
-      background: #4CAF50;
-      color: white;
+    button {
       padding: 10px 20px;
+      background: var(--primary-color);
       border: none;
-      border-radius: 5px;
+      color: #fff;
+      border-radius: 8px;
       cursor: pointer;
       font-size: 1rem;
-      margin-top: 10px;
-    }
-    
-    .upload-btn:hover {
-      background: #45a049;
-    }
-    
-    .file-upload-label {
-      display: inline-block;
-      padding: 10px 20px;
-      background: var(--primary-color);
-      color: white;
-      border-radius: 5px;
-      cursor: pointer;
+      margin: 5px;
       transition: background 0.3s;
-      margin: 10px 0;
     }
     
-    .file-upload-label:hover {
-      background: var(--primary-dark);
+    button:hover { background: var(--primary-dark); }
+    
+    .btn-danger {
+      background: var(--danger-color);
     }
     
-    .file-upload-label i {
-      margin-left: 8px;
-    }
+    .btn-danger:hover { background: #b02a37; }
     
-    /* أيقونة التحميل الاحترافية */
+    /* أيقونة التحميل */
     .loader {
       display: inline-block;
       width: 30px;
@@ -737,455 +559,345 @@
       100% { transform: rotate(360deg); }
     }
     
-    /* مشاهدات القصة */
-    .viewer {
-      display: flex;
-      align-items: center;
-      padding: 10px;
-      border-bottom: 1px solid #eee;
-    }
-    .viewer img {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      margin-left: 10px;
-    }
-    .viewer-name {
-      font-weight: bold;
-    }
-    
-    /* التعديلات الجديدة لحل المشكلات */
-    
-    /* تحسين أيقونة زر نشر الصورة */
-    .fab .icon-fallback {
-      display: none;
-      font-size: 1.5rem;
-      font-weight: bold;
-    }
-    
-    /* تحسين موضع زر نشر الصورة */
-    #fabContainerForImage {
-      position: fixed;
-      bottom: 120px;
-      right: 30px;
-      text-align: center;
-      z-index: 1001;
-    }
-    
-    /* تصميم وقت النشر */
-    .post-time {
-      position: absolute;
-      top: 10px;
-      right: 230px;
-      color: #fff;
-      background: rgba(0, 0, 0, 0.5);
-      padding: 3px 8px;
-      border-radius: 10px;
-      font-size: 0.8rem;
-      z-index: 10;
-    }
-    
-    .story-time-preview {
-      position: absolute;
-      bottom: -25px;
-      left: 5px;
-      color: #fff;
-      background: rgba(0, 0, 0, 0.5);
-      padding: 3px 8px;
-      border-radius: 10px;
-      font-size: 0.7rem;
-      z-index: 10;
-    }
-    
-    /* زر لايك للمنشورات */
-    .post-likes {
-      display: flex;
-      align-items: center;
-      padding: 10px;
-      background: #f9f9f9;
-      border-top: 1px solid #eee;
-    }
-    
-    .like-btn-post {
+    /* زر التعديل والحذف الجديد */
+    .text-btn {
       background: none;
       border: none;
       cursor: pointer;
-      font-size: 1.2rem;
-      padding: 5px;
-      transition: transform 0.2s;
-    }
-    
-    .like-btn-post:hover {
-      transform: scale(1.1);
-    }
-    
-    .like-btn-post .fa-heart {
-      color: #ccc;
-      transition: color 0.3s;
-    }
-    
-    .like-btn-post.liked .fa-heart {
-      color: var(--like-color);
-      animation: pulse 0.5s;
-    }
-    
-    .likes-count {
-      margin-right: 5px;
-      font-size: 0.9rem;
-      color: #666;
-    }
-    
-    @keyframes pulse {
-      0% { transform: scale(1); }
-      50% { transform: scale(1.2); }
-      100% { transform: scale(1); }
-    }
-    
-    /* زر "عرض المزيد" */
-    .load-more-btn {
-      display: block;
-      margin: 20px auto;
-      padding: 10px 20px;
-      background: var(--primary-color);
-      color: white;
-      border: none;
-      border-radius: 30px;
-      cursor: pointer;
       font-size: 1rem;
+      padding: 5px 10px;
+      border-radius: 4px;
       transition: background 0.3s;
+      margin: 0 2px;
+      font-weight: bold;
     }
     
-    .load-more-btn:hover {
-      background: var(--primary-dark);
-    }
-    
-    /* عنوان المنشور */
-    .post-title {
-      padding: 10px;
-      font-size: 0.9rem;
-      color: #333;
-      text-align: center;
-      border-top: 1px solid #eee;
-      min-height: 50px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    
-    /* ملف المستخدم الشخصي - التصميم الجديد */
-    .profile-posts-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-      margin-top: 20px;
-    }
-    
-    .profile-post {
-      position: relative;
-      aspect-ratio: 1/1;
-      overflow: hidden;
-      cursor: pointer;
-    }
-    
-    .profile-post img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      transition: transform 0.3s;
-    }
-    
-    .profile-post:hover img {
-      transform: scale(1.05);
-    }
-    
-    .profile-post-overlay {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0,0,0,0.4);
-      display: flex;
-      align-items: center;
-      justify-content: center;
+    /* زر التعديل - أخضر */
+    .edit-text-btn {
+      background: #28a745; /* أخضر */
       color: white;
-      opacity: 0;
-      transition: opacity 0.3s;
     }
     
-    .profile-post:hover .profile-post-overlay {
-      opacity: 1;
+    /* زر الحذف - أحمر */
+    .delete-text-btn {
+      background: #dc3545; /* أحمر */
+      color: white;
     }
     
-    .profile-post-overlay span {
-      margin: 0 5px;
-      font-size: 1.2rem;
+    .edit-text-btn:hover {
+      background: #218838;
     }
     
-    /* حقل عنوان المنشور في النافذة المنبثقة */
-    .post-title-input {
-      width: 100%;
-      padding: 10px;
-      margin: 15px 0;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      font-family: 'Tajawal', sans-serif;
-      font-size: 1rem;
-      display: none;
-    }
-    
-    /* مودال عرض المنشور كاملاً */
-    #postModal .modal-content {
-      max-width: 600px;
-      max-height: 90vh;
-      overflow: auto;
-      padding: 20px;
-    }
-    #postModalContent .post {
-      margin-top: 40px;
-    }
-    #postModalContent .post-image {
-      width: 100%;
-      border-radius: 8px;
-      margin: 10px 0;
-    }
-    #postModalContent .post-actions {
-      display: flex;
-      justify-content: center;
-      gap: 15px;
-      margin-top: 15px;
-    }
-    #postModalContent .post-actions button {
-      padding: 10px 20px;
-      border-radius: 8px;
-      font-size: 1rem;
+    .delete-text-btn:hover {
+      background: #bd2130;
     }
     
     @media (max-width: 600px) {
       header h1 { font-size: 1.5rem; }
-      .fab { width: 60px; height: 60px; font-size: 2rem; }
+      .fab { width: 60px; height: 60px; font-size: 1.5rem; }
       .fab-label { font-size: 0.9rem; }
-      .gallery {
-        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-      }
-      .tab {
-        padding: 10px 15px;
-        font-size: 1rem;
-      }
-      .story-type-btn {
-        padding: 10px 15px;
-        font-size: 1rem;
-      }
-      .story {
-        width: 80px;
-      }
-      .story-img-container {
-        width: 70px;
-        height: 70px;
-      }
-      .story-img {
-        width: 70px;
-        height: 70px;
-      }
-      #fabContainerForImage {
-        bottom: 125px;
-        right: 20px;
-      }
-      .profile-posts-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
-      #postModal .modal-content {
-        width: 95%;
-        max-height: 85vh;
-      }
+      .tabs-container { flex-wrap: wrap; }
+      .tab { padding: 8px 15px; font-size: 0.9rem; margin: 5px; }
+      .live-streams-container { grid-template-columns: 1fr; }
+      .control-btn { width: 40px; height: 40px; font-size: 1rem; }
+      .video-container { padding-top: 75%; } /* 4:3 for mobile */
     }
   </style>
 </head>
 <body>
-  <!-- رأس الموقع مع زر رجوع كنص ظاهر فوق باقي العناصر -->
   <header>
-    <div class="nav-buttons">
-      <button id="backBtn" title="رجوع">
-        <span>رجوع</span>
-      </button>
-    </div>
-    <div class="container">
-      <h1>قصصي - ستوري</h1>
+    <div class="header-content">
+      <div class="nav-buttons">
+        <button id="backBtn" title="رجوع">
+          <span>رجوع</span>
+        </button>
+      </div>
+      <h1>البث المباشر</h1>
+      <div class="profile-actions">
+        <button id="editProfileBtn" class="edit-profile-btn">
+          <i class="fas fa-user"></i>
+          الملف الشخصي
+        </button>
+      </div>
     </div>
   </header>
 
   <div class="container">
-    <!-- منطقة عرض القصص مع أيقونة التحميل -->
-    <div class="stories-container" id="storiesContainer">
-      <div class="loader large" id="storiesLoader"></div>
-      <!-- سيتم تحميل القصص هنا -->
-    </div>
-    
     <!-- تبويبات الصفحة الرئيسية -->
     <div class="tabs-container">
-      <button id="postsTab" class="tab active">منشورات</button>
-      <button id="suggestedTab" class="tab">حسابات مقترحة</button>
+      <button id="liveTab" class="tab active">بث مباشر</button>
+      <button id="streamsTab" class="tab">البثوث الحية</button>
     </div>
     
     <!-- محتوى التبويبات -->
-    <div id="postsContent" class="tab-content active">
-      <!-- معرض الصور (المنشورات) مع أيقونة التحميل -->
-      <div class="gallery-container">
-        <div class="gallery" id="gallery">
-          <div class="loader large" id="galleryLoader"></div>
+    <div id="liveContent" class="tab-content active">
+      <!-- منطقة البث المباشر -->
+      <div class="live-container" id="activeLiveContainer" style="display: none;">
+        <div class="live-header">
+          <img id="broadcasterImg" src="" alt="صورة المذيع">
+          <div class="live-info">
+            <h3 id="broadcasterName"></h3>
+            <p id="streamTitle"></p>
+          </div>
+          <div class="live-badge">مباشر</div>
         </div>
-        <button id="loadMoreBtn" class="load-more-btn" style="display: none;">عرض المزيد</button>
+        
+        <div class="video-container">
+          <video id="liveVideo" autoplay playsinline></video>
+          <div class="viewers-count">
+            <i class="fas fa-eye"></i> <span id="viewersCount">0</span> مشاهدين
+          </div>
+          <div class="live-controls">
+            <button id="toggleMic" class="control-btn">
+              <i class="fas fa-microphone"></i>
+            </button>
+            <button id="toggleCam" class="control-btn">
+              <i class="fas fa-video"></i>
+            </button>
+            <button id="endLive" class="control-btn end-btn">
+              <i class="fas fa-phone-slash"></i>
+            </button>
+          </div>
+        </div>
+        
+        <div class="live-chat-container">
+          <div class="chat-header">
+            <h4>محادثة البث</h4>
+          </div>
+          <div class="chat-messages" id="chatMessages">
+            <!-- سيتم تحميل الرسائل هنا -->
+          </div>
+          <div class="chat-input">
+            <input type="text" id="chatInput" placeholder="اكتب رسالة...">
+            <button id="sendChatBtn">إرسال</button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- رسالة عندما لا يكون هناك بث نشط -->
+      <div id="noLiveMessage" style="text-align: center; padding: 40px 20px; background: #fff; border-radius: 12px; margin-top: 20px;">
+        <i class="fas fa-video-slash" style="font-size: 3rem; color: #ccc; margin-bottom: 20px;"></i>
+        <h3>لا يوجد بث مباشر نشط حاليًا</h3>
+        <p>يمكنك بدء بث مباشر أو تصفح البثوث الحية من التبويب الآخر</p>
+        <button id="startLiveBtn" style="margin-top: 20px; padding: 12px 30px; font-size: 1.1rem;">بدء بث مباشر</button>
       </div>
     </div>
     
-    <div id="suggestedContent" class="tab-content">
-      <!-- قسم الحسابات المقترحة مع أيقونة التحميل -->
-      <div class="suggested-accounts-container">
-        <h2>حسابات مقترحة</h2>
-        <div class="loader large" id="accountsLoader"></div>
-        <div class="accounts-grid" id="accountsGrid">
-          <!-- سيتم تحميل حسابات المستخدمين هنا -->
-        </div>
+    <div id="streamsContent" class="tab-content">
+      <!-- قسم البثوث الحية -->
+      <div class="live-streams-container" id="liveStreamsContainer">
+        <div class="loader large" style="grid-column: 1 / -1; margin: 40px auto;"></div>
       </div>
     </div>
   </div>
 
-  <!-- زر نشر القصة العائم -->
+  <!-- زر بدء البث المباشر العائم -->
   <div id="fabContainer">
-    <button class="fab" id="floatingAddStoryBtn">+</button>
-    <div class="fab-label">نشر قصه جديده</div>
-  </div>
-  
-  <!-- زر نشر الصورة العائم مع أيقونة احترافية -->
-  <div id="fabContainerForImage">
-    <button class="fab" id="floatingAddImageBtn" style="background-color: #4CAF50;">
-      <i class="fas fa-camera" style="font-size: 1.8rem;"></i>
-      <span class="icon-fallback">صورة</span>
+    <button class="fab" id="floatingStartLiveBtn">
+      <i class="fas fa-video"></i>
     </button>
-    <div class="fab-label">نشر صورة</div>
+    <div class="fab-label">بدء بث</div>
   </div>
   
-  <!-- مودال إضافة القصة مع خيارات النوع -->
-  <div class="modal-overlay" id="addStoryModal">
+  <!-- مودال بدء البث المباشر -->
+  <div class="modal-overlay" id="startLiveModal">
     <div class="modal-content">
-      <h2 id="modalTitle">نشر قصة جديدة</h2>
+      <h2>بدء بث مباشر جديد</h2>
       
-      <div class="story-type-selector">
-        <button id="textStoryBtn" class="story-type-btn active">نص</button>
-        <button id="imageStoryBtn" class="story-type-btn">صورة</button>
-      </div>
+      <input type="text" id="streamTitleInput" placeholder="عنوان البث المباشر">
+      <input type="text" id="streamCategory" placeholder="فئة البث (اختياري)">
+      <textarea id="streamDescription" rows="3" placeholder="وصف البث (اختياري)"></textarea>
       
-      <div id="textStoryContent" class="story-type-content active">
-        <textarea id="storyText" rows="4" placeholder="أدخل نص القصة..."></textarea>
-        <br>
-        <button id="postTextStoryBtn"><i class="fa-solid fa-paper-plane"></i> نشر نص</button>
-      </div>
-      
-      <div id="imageStoryContent" class="story-type-content">
-        <!-- تم تحديث هذا القسم لتحسين اختيار الصور -->
-        <label for="storyImageInput" class="file-upload-label">
-          <i class="fa-solid fa-image"></i> اختر صورة
-        </label>
-        <input type="file" id="storyImageInput" accept="image/*" style="display: none;" />
-        
-        <!-- حقل إدخال عنوان المنشور -->
-        <input type="text" id="postTitleInput" class="post-title-input" placeholder="أدخل عنوان المنشور (اختياري)">
-        
-        <div class="image-preview-container" id="imagePreviewContainer">
-          <img id="imagePreview" class="image-preview" src="" alt="معاينة الصورة">
-          <br>
-          <button id="uploadImageBtn" class="upload-btn">
-            <i class="fa-solid fa-cloud-upload-alt"></i> نشر الصورة
-          </button>
-        </div>
-      </div>
-      
-      <button id="closeAddStoryBtn" class="btn-danger">
-        <i class="fa-solid fa-xmark"></i> إغلاق
-      </button>
-    </div>
-  </div>
-
-  <!-- مودال عرض القصة -->
-  <div class="modal-overlay" id="viewStoryModal">
-    <div class="story-view" id="storyView">
-      <div class="story-view-loader" id="storyViewLoader">
-        <div class="loader large"></div>
-      </div>
-      <!-- سيتم تحميل محتوى عرض القصة هنا -->
-    </div>
-    <button class="nav-btn prev" id="prevStory">&#10094;</button>
-    <button class="nav-btn next" id="nextStory">&#10095;</button>
-    <button class="exit-btn" id="exitBtn">X</button>
-  </div>
-
-  <!-- مودال معلومات المستخدم -->
-  <div class="modal-overlay" id="userInfoModal">
-    <div class="modal-content" id="userInfoContent">
-      <h2>معلومات المستخدم</h2>
-      <div id="userInfoDetails">
-        <!-- تفاصيل المستخدم -->
-      </div>
-      <button id="closeUserInfoBtn" class="btn-danger">
-        <i class="fa-solid fa-xmark"></i> إغلاق
-      </button>
-    </div>
-  </div>
-
-  <!-- مودال الملف الشخصي (يشبه إنستغرام) -->
-  <div class="modal-overlay" id="profileModal">
-    <div class="modal-content">
-      <button id="closeProfileBtn" class="btn-danger" style="position:absolute; top:10px; right:10px;">
-        <i class="fa-solid fa-xmark"></i> إغلاق
-      </button>
-      <div class="profile-header">
-        <img id="profilePic" src="" alt="صورة المستخدم">
-        <div class="profile-info" id="profileInfo">
-          <!-- تفاصيل الحساب -->
-        </div>
-      </div>
-      <!-- منشورات المستخدم تظهر في الأسفل -->
-      <h3 style="text-align: center; margin-top: 20px;">منشورات المستخدم</h3>
-      <div id="userPostsContainer" class="profile-posts-grid">
-        <!-- سيتم تحميل منشورات المستخدم هنا -->
+      <div style="display: flex; justify-content: center; gap: 15px; margin-top: 20px;">
+        <button id="confirmStartLiveBtn" style="background: var(--danger-color);">
+          <i class="fas fa-play-circle"></i> بدء البث
+        </button>
+        <button id="cancelStartLiveBtn" class="btn-danger">
+          <i class="fas fa-times"></i> إلغاء
+        </button>
       </div>
     </div>
   </div>
 
-  <!-- مودال عرض مشاهدات القصة -->
-  <div class="modal-overlay" id="storyViewsModal">
+  <!-- مودال تعديل الملف الشخصي -->
+  <div class="modal-overlay" id="editProfileModal">
     <div class="modal-content">
-      <h2>مشاهدات القصة</h2>
-      <div id="viewsList">
-        <!-- سيتم تحميل قائمة المشاهدين هنا -->
+      <h2>تعديل الملف الشخصي</h2>
+      <div style="text-align: center; margin: 20px 0;">
+        <img id="editProfilePic" src="" alt="صورة الملف" 
+             style="width: 120px; height: 120px; border-radius: 50%; border: 3px solid var(--primary-color); object-fit: cover; cursor: pointer;">
+        <input type="file" id="editProfileImageInput" accept="image/*" style="display: none;">
       </div>
-      <button id="closeViewsModal" class="btn-danger">
-        <i class="fa-solid fa-xmark"></i> إغلاق
-      </button>
-    </div>
-  </div>
-  
-  <!-- مودال عرض المنشور كاملاً -->
-  <div class="modal-overlay" id="postModal">
-    <div class="modal-content">
-      <button id="closePostModal" class="btn-danger" style="position:absolute; top:10px; right:10px;">
-        <i class="fa-solid fa-xmark"></i> إغلاق
-      </button>
-      <div id="postModalContent">
-        <!-- محتوى المنشور الكامل سيتم تحميله هنا -->
+      <div style="margin: 15px 0;">
+        <label>الاسم:</label>
+        <input type="text" id="editProfileName" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 8px; margin-top: 5px;">
+      </div>
+      <div style="margin: 15px 0;">
+        <label>الوصف:</label>
+        <textarea id="editProfileDescription" rows="3" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 8px; margin-top: 5px; resize: vertical;"></textarea>
+      </div>
+      <div style="margin: 15px 0;">
+        <label>اسم المستخدم:</label>
+        <input type="text" id="editProfileUsername" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 8px; margin-top: 5px;">
+      </div>
+      <div style="display: flex; justify-content: center; gap: 10px; margin-top: 20px;">
+        <button id="saveProfileBtn" style="background: var(--primary-color);">حفظ التعديلات</button>
+        <button id="cancelEditProfileBtn" class="btn-danger">إلغاء</button>
       </div>
     </div>
   </div>
 
   <script>
-    // تهيئة Backendless لنشر الصور
-    const APP_ID = "1A59C778-783C-4A9B-8167-648ECCFDF394";
-    const API_KEY = "BBEAFC43-F642-44A3-B89A-245CA24C6D87";
-    const STORIES_TABLE = "lpa"; // جدول القصص
-    const POSTS_TABLE = "Apl";   // جدول المنشورات
-    Backendless.initApp(APP_ID, API_KEY);
+    // تهيئة Firebase
+    const firebaseConfig = {
+      apiKey: "AIzaSyBwwrBtf6AtW7R36FX4j2GQZVEdJldFq7o",
+      authDomain: "you-unblock.firebaseapp.com",
+      projectId: "you-unblock",
+      storageBucket: "you-unblock.appspot.com",
+      messagingSenderId: "306278978440",
+      appId: "1:306278978440:web:4ca87c3856e107a30be03d",
+      databaseURL: "https://you-unblock-default-rtdb.firebaseio.com/"
+    };
+    
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+    const realtimeDb = firebase.database();
 
-    // دالة لحساب الوقت النسبي (مثلاً "قبل 5 دقيقة")
+    let currentUser = null;
+    let localStream = null;
+    let peerConnection = null;
+    let currentLiveStreamId = null;
+    let isBroadcasting = false;
+    let isWatching = false;
+    let mediaConstraints = {
+      video: {
+        width: { ideal: 1280 },
+        height: { ideal: 720 }
+      },
+      audio: true
+    };
+    
+    // متغيرات حالة البث
+    let micEnabled = true;
+    let camEnabled = true;
+
+    // منع التكبير/التصغير والنسخ
+    document.addEventListener('contextmenu', event => event.preventDefault());
+    document.addEventListener('dblclick', event => event.preventDefault(), { passive: false });
+    
+    auth.onAuthStateChanged(user => {
+      if(user) {
+        currentUser = {
+          id: user.uid,
+          name: user.displayName || "مستخدم",
+          photoURL: user.photoURL || "https://www.gravatar.com/avatar/?d=mp",
+          username: ""
+        };
+        
+        // جلب معلومات إضافية للمستخدم
+        db.collection("users").doc(user.uid).get().then(doc => {
+          if (doc.exists) {
+            const userData = doc.data();
+            currentUser.description = userData.description || "";
+            currentUser.username = userData.username || "";
+          }
+          loadLiveStreams();
+          checkActiveLiveStream();
+        }).catch(() => {
+          loadLiveStreams();
+          checkActiveLiveStream();
+        });
+      } else {
+        window.location.href = 'login.html';
+      }
+    });
+
+    // حدث زر الرجوع
+    document.getElementById("backBtn").addEventListener("click", () => {
+      window.location.href = "chat.html";
+    });
+    
+    // أحداث التبديل بين التبويبات
+    document.getElementById('liveTab').addEventListener('click', function() {
+      this.classList.add('active');
+      document.getElementById('streamsTab').classList.remove('active');
+      document.getElementById('liveContent').classList.add('active');
+      document.getElementById('streamsContent').classList.remove('active');
+    });
+    
+    document.getElementById('streamsTab').addEventListener('click', function() {
+      this.classList.add('active');
+      document.getElementById('liveTab').classList.remove('active');
+      document.getElementById('streamsContent').classList.add('active');
+      document.getElementById('liveContent').classList.remove('active');
+      loadLiveStreams();
+    });
+    
+    // تحميل البثوث الحية
+    function loadLiveStreams() {
+      const container = document.getElementById('liveStreamsContainer');
+      container.innerHTML = '<div class="loader large" style="grid-column: 1 / -1; margin: 40px auto;"></div>';
+      
+      // جلب البثوث النشطة فقط
+      db.collection("liveStreams")
+        .where("isActive", "==", true)
+        .get()
+        .then(snapshot => {
+          container.innerHTML = '';
+          
+          if (snapshot.empty) {
+            container.innerHTML = `
+              <div style="grid-column: 1 / -1; text-align: center; padding: 40px 20px;">
+                <i class="fas fa-video-slash" style="font-size: 3rem; color: #ccc; margin-bottom: 20px;"></i>
+                <h3>لا توجد بثوث مباشرة حالياً</h3>
+                <p>كن أول من يبدأ بثاً مباشراً!</p>
+              </div>
+            `;
+            return;
+          }
+          
+          snapshot.forEach(doc => {
+            const stream = doc.data();
+            const streamCard = document.createElement('div');
+            streamCard.className = 'stream-card';
+            streamCard.dataset.id = doc.id;
+            
+            streamCard.innerHTML = `
+              <div class="stream-thumbnail">
+                <img src="${stream.thumbnail || 'https://via.placeholder.com/300x200?text=Live+Stream'}" alt="صورة البث">
+                <div class="live-indicator">مباشر</div>
+                <div class="viewers-count-small">
+                  <i class="fas fa-eye"></i> ${stream.viewers || 0}
+                </div>
+              </div>
+              <div class="stream-info">
+                <div class="stream-title">${stream.title || 'بث مباشر'}</div>
+                <div class="stream-category">${stream.category || 'عام'}</div>
+                <div class="stream-info-header">
+                  <img src="${stream.broadcasterPhotoURL || 'https://www.gravatar.com/avatar/?d=mp'}" alt="صورة المذيع">
+                  <div>
+                    <div>${stream.broadcasterName || 'مستخدم'}</div>
+                    <small>${getRelativeTime(new Date(stream.startedAt))}</small>
+                  </div>
+                </div>
+              </div>
+            `;
+            
+            streamCard.addEventListener('click', () => {
+              joinLiveStream(doc.id);
+            });
+            
+            container.appendChild(streamCard);
+          });
+        })
+        .catch(error => {
+          console.error("Error loading live streams:", error);
+          container.innerHTML = '<p>حدث خطأ أثناء تحميل البثوث المباشرة</p>';
+        });
+    }
+    
+    // دالة لحساب الوقت النسبي
     function getRelativeTime(date) {
       const now = new Date();
       const diffInSeconds = Math.floor((now - date) / 1000);
@@ -1209,1236 +921,402 @@
         return months === 1 ? "قبل شهر" : `قبل ${months} أشهر`;
       }
     }
-
-    // تهيئة Firebase
-    const firebaseConfig = {
-      apiKey: "AIzaSyBwwrBtf6AtW7R36FX4j2GQZVEdJldFq7o",
-      authDomain: "you-unblock.firebaseapp.com",
-      projectId: "you-unblock",
-      storageBucket: "you-unblock.appspot.com",
-      messagingSenderId: "306278978440",
-      appId: "1:306278978440:web:4ca87c3856e107a30be03d"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const db = firebase.firestore();
-
-    let currentUser = null;
-    let storyGroups = [];
-    let currentGroupIndex = 0;
-    let currentStoryIndex = 0;
-    let uploadType = 'story'; // القيمة الافتراضية: قصة
-    let usersCache = {}; // كاش لتخزين بيانات المستخدمين
-    let currentPostsPage = 1; // الصفحة الحالية للمنشورات
-    const postsPerPage = 10; // عدد المنشورات في كل صفحة
-    let currentEditingPostId = null; // المنشور الحالي الذي يتم تعديله
-
-    auth.onAuthStateChanged(user => {
-      if(user) {
-        currentUser = {
-          id: user.uid,
-          name: user.displayName || "مستخدم",
-          photoURL: user.photoURL || "https://www.gravatar.com/avatar/?d=mp"
-        };
-        loadStories();
-        loadSuggestedAccounts();
-        loadGalleryImages();
-      } else {
-        window.location.href = 'login.html';
-      }
-    });
-
-    // حدث زر الرجوع
-    document.getElementById("backBtn").addEventListener("click", () => {
-      window.location.href = "chat.html";
-    });
-
-    // تحميل القصص وتجميعها حسب userId
-    function loadStories() {
-      // إظهار أيقونة التحميل
-      document.getElementById('storiesLoader').style.display = 'block';
-      
-      // تحميل القصص من Backendless
-      Backendless.Data.of(STORIES_TABLE).find()
-        .then(stories => {
-          // معالجة القصص المحملة
-          let groups = {};
-          stories.forEach(story => {
-            // التحقق من صلاحية القصة (أقل من 24 ساعة)
-            const storyTime = new Date(story.timestamp);
-            const now = new Date();
-            if(now - storyTime > 24 * 60 * 60 * 1000) {
-              // حذف القصة المنتهية الصلاحية
-              Backendless.Data.of(STORIES_TABLE).remove(story.objectId);
-              return;
-            }
-            
-            if(!groups[story.userId]) {
-              groups[story.userId] = [];
-            }
-            groups[story.userId].push(story);
-          });
-          
-          // تحويل إلى مصفوفة وترتيب حسب الوقت
-          storyGroups = [];
-          for(let userId in groups) {
-            groups[userId].sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
-            storyGroups.push({ userId: userId, stories: groups[userId] });
-          }
-          storyGroups.sort((a, b) => {
-            return new Date(b.stories[b.stories.length - 1].timestamp) - 
-                   new Date(a.stories[a.stories.length - 1].timestamp);
-          });
-          
-          renderStoryGroups();
-          // إخفاء أيقونة التحميل بعد الانتهاء
-          document.getElementById('storiesLoader').style.display = 'none';
-        })
-        .catch(err => {
-          console.error("Error loading stories:", err);
-          document.getElementById('storiesLoader').style.display = 'none';
-        });
-    }
-
-    // عرض القصص في شريط القصص
-    function renderStoryGroups() {
-      const container = document.getElementById('storiesContainer');
-      container.innerHTML = "";
-      storyGroups.forEach(group => {
-        const latestStory = group.stories[group.stories.length - 1];
-        const storyDiv = document.createElement('div');
-        storyDiv.classList.add('story');
-        if(group.stories.length > 1) {
-          storyDiv.classList.add('multiple');
-        }
-        storyDiv.dataset.userId = group.userId;
-        
-        // حاوية الصورة مع مؤشر التحميل
-        const imgContainer = document.createElement('div');
-        imgContainer.classList.add('story-img-container');
-        
-        const imgLoader = document.createElement('div');
-        imgLoader.classList.add('story-img-loader');
-        imgLoader.innerHTML = '<div class="loader"></div>';
-        imgContainer.appendChild(imgLoader);
-        
-        const img = document.createElement('img');
-        img.classList.add('story-img');
-        img.src = latestStory.photoURL || currentUser.photoURL;
-        img.onload = () => {
-          imgLoader.style.display = 'none';
-        };
-        img.onerror = () => {
-          imgLoader.style.display = 'none';
-          img.src = "https://www.gravatar.com/avatar/?d=mp";
-        };
-        imgContainer.appendChild(img);
-        
-        const nameDiv = document.createElement('div');
-        nameDiv.classList.add('story-name');
-        nameDiv.textContent = latestStory.userName;
-        
-        // إضافة وقت النشر النسبي
-        const timeDiv = document.createElement('div');
-        timeDiv.classList.add('story-time-preview');
-        if(latestStory.timestamp) {
-          timeDiv.textContent = getRelativeTime(new Date(latestStory.timestamp));
-        }
-        
-        storyDiv.appendChild(imgContainer);
-        storyDiv.appendChild(nameDiv);
-        storyDiv.appendChild(timeDiv);
-        storyDiv.addEventListener('click', () => {
-          currentGroupIndex = storyGroups.findIndex(g => g.userId === group.userId);
-          currentStoryIndex = 0;
-          showGroupedStory(currentGroupIndex, currentStoryIndex);
-        });
-        container.appendChild(storyDiv);
-      });
-    }
-
-    // عرض قصة معينة من مجموعة
-    function showGroupedStory(groupIndex, storyIndex) {
-      if(groupIndex < 0 || groupIndex >= storyGroups.length) return;
-      let group = storyGroups[groupIndex];
-      if(storyIndex < 0 || storyIndex >= group.stories.length) return;
-      let story = group.stories[storyIndex];
-      const storyView = document.getElementById('storyView');
-      storyView.innerHTML = "";
-      
-      // إظهار مؤشر التحميل
-      const storyLoader = document.createElement('div');
-      storyLoader.id = "storyViewLoader";
-      storyLoader.className = "story-view-loader";
-      storyLoader.innerHTML = '<div class="loader large"></div>';
-      storyView.appendChild(storyLoader);
-      
-      // إخفاء زر الرجوع وزر نشر الصورة
-      document.querySelector('.nav-buttons').style.display = 'none';
-      document.getElementById('fabContainerForImage').style.display = 'none';
-      
-      // شريط الإجراءات إذا كانت القصة للمستخدم الحالي
-      if(story.userId === currentUser.id) {
-        const actionBar = document.createElement('div');
-        actionBar.className = "action-bar";
-        const deleteBtn = document.createElement('button');
-        deleteBtn.className = "btn-danger";
-        deleteBtn.innerHTML = '<i class="fa-solid fa-trash"></i> حذف القصة';
-        deleteBtn.addEventListener('click', (e) => {
-          e.stopPropagation();
-          if(confirm("هل أنت متأكد من حذف القصة؟")) {
-            deleteStory(story.objectId);
-          }
-        });
-        const publishNewBtn = document.createElement('button');
-        publishNewBtn.className = "publish-btn";
-        publishNewBtn.innerHTML = '<i class="fa-solid fa-plus-circle"></i> نشر قصة جديدة';
-        publishNewBtn.addEventListener('click', (e) => {
-          e.stopPropagation();
-          document.getElementById('viewStoryModal').style.display = 'none';
-          document.getElementById('addStoryModal').style.display = 'flex';
-          document.getElementById('fabContainer').style.display = 'block';
-        });
-        actionBar.appendChild(deleteBtn);
-        actionBar.appendChild(publishNewBtn);
-        storyView.appendChild(actionBar);
-      }
-      
-      // إنشاء بطاقة لعرض نص القصة بشكل احترافي مع خلفية عشوائية
-      if(story.type === 'text') {
-        // إذا كانت القصة نصية، نستخدم الخلفية العشوائية
-        storyView.style.backgroundImage = `url('${story.backgroundUrl}')`;
-        storyView.style.backgroundSize = 'cover';
-        
-        const textCard = document.createElement('div');
-        textCard.className = "story-text-card";
-        textCard.style.backgroundColor = "rgba(255, 255, 255, 0.8)";
-        textCard.style.padding = "25px";
-        textCard.style.borderRadius = "15px";
-        textCard.style.boxShadow = "0 4px 15px rgba(0,0,0,0.2)";
-        textCard.style.maxWidth = "85%";
-        textCard.innerHTML = `<h2 style="font-size: 1.8rem; margin-bottom: 15px;">${story.userName}</h2><p style="font-size: 1.3rem; line-height: 1.6;">${story.text}</p>`;
-        storyView.appendChild(textCard);
-        
-        // إخفاء مؤشر التحميل بعد تحميل الخلفية
-        const bgImg = new Image();
-        bgImg.src = story.backgroundUrl;
-        bgImg.onload = () => {
-          document.getElementById('storyViewLoader').style.display = 'none';
-        };
-        bgImg.onerror = () => {
-          document.getElementById('storyViewLoader').style.display = 'none';
-        };
-      }
-      else if(story.type === 'image') {
-        const bgImg = new Image();
-        bgImg.src = story.imageUrl;
-        bgImg.onload = () => {
-          storyView.style.backgroundImage = `url('${story.imageUrl}')`;
-          storyView.style.backgroundSize = 'cover';
-          document.getElementById('storyViewLoader').style.display = 'none';
-        };
-        bgImg.onerror = () => {
-          document.getElementById('storyViewLoader').style.display = 'none';
-          storyView.innerHTML = '<p style="color:white;font-size:1.5rem">حدث خطأ في تحميل الصورة</p>';
-        };
-      }
-      
-      // حساب الوقت النسبي لعرضه
-      let relativeTime = "";
-      if(story.timestamp) {
-        relativeTime = getRelativeTime(new Date(story.timestamp));
-      }
-      const timeDiv = document.createElement('div');
-      timeDiv.className = "story-time";
-      timeDiv.textContent = relativeTime;
-      storyView.appendChild(timeDiv);
-      
-      // إنشاء أيقونة وعدد المشاهدات
-      let currentViews = (story.views && story.views.length) ? story.views.length : 0;
-      let viewCountDiv = document.createElement('div');
-      viewCountDiv.className = "view-count";
-      viewCountDiv.innerHTML = '<i class="fa-solid fa-eye"></i> ' + currentViews + ' مشاهدات';
-      viewCountDiv.addEventListener('click', (e) => {
-        e.stopPropagation();
-        showStoryViews(story);
-      });
-      storyView.appendChild(viewCountDiv);
-      
-      // إنشاء زر اللايك وعرض عدد اللايكات
-      let currentLikes = (story.likes && story.likes.length) ? story.likes.length : 0;
-      let likeBtn = document.createElement('div');
-      likeBtn.className = "like-btn";
-      if(story.likes && story.likes.includes(currentUser.id)) {
-         likeBtn.innerHTML = '<i class="fa-solid fa-heart"></i> ' + currentLikes + ' لايك';
-         likeBtn.classList.add('liked');
-      } else {
-         likeBtn.innerHTML = '<i class="fa-regular fa-heart"></i> ' + currentLikes + ' لايك';
-      }
-      likeBtn.addEventListener('click', (e) => {
-          e.stopPropagation();
-          if(story.likes && story.likes.includes(currentUser.id)) {
-              // إزالة الإعجاب
-              Backendless.Data.of(STORIES_TABLE).save({
-                objectId: story.objectId,
-                likes: story.likes.filter(id => id !== currentUser.id)
-              }).then(() => {
-                story.likes = story.likes.filter(id => id !== currentUser.id);
-                currentLikes = story.likes.length;
-                likeBtn.innerHTML = '<i class="fa-regular fa-heart"></i> ' + currentLikes + ' لايك';
-                likeBtn.classList.remove('liked');
-              });
+    
+    // التحقق من وجود بث نشط
+    function checkActiveLiveStream() {
+      db.collection("liveStreams")
+        .where("isActive", "==", true)
+        .limit(1)
+        .get()
+        .then(snapshot => {
+          if (!snapshot.empty) {
+            const stream = snapshot.docs[0].data();
+            joinLiveStream(snapshot.docs[0].id);
           } else {
-              // إضافة إعجاب
-              if(!story.likes) story.likes = [];
-              story.likes.push(currentUser.id);
-              Backendless.Data.of(STORIES_TABLE).save({
-                objectId: story.objectId,
-                likes: story.likes
-              }).then(() => {
-                currentLikes = story.likes.length;
-                likeBtn.innerHTML = '<i class="fa-solid fa-heart"></i> ' + currentLikes + ' لايك';
-                likeBtn.classList.add('liked');
-              });
+            document.getElementById('noLiveMessage').style.display = 'block';
+            document.getElementById('activeLiveContainer').style.display = 'none';
           }
-      });
-      storyView.appendChild(likeBtn);
-      
-      document.getElementById('viewStoryModal').style.display = 'flex';
-      document.getElementById('fabContainer').style.display = 'none';
-      
-      // تسجيل المشاهدة
-      if(!story.views || !story.views.includes(currentUser.id)) {
-        if(!story.views) story.views = [];
-        story.views.push(currentUser.id);
-        Backendless.Data.of(STORIES_TABLE).save({
-          objectId: story.objectId,
-          views: story.views
-        }).then(() => {
-          viewCountDiv.innerHTML = '<i class="fa-solid fa-eye"></i> ' + story.views.length + ' مشاهدات';
         });
-      }
     }
-
-    // دالة حذف القصة
-    function deleteStory(storyId) {
-      Backendless.Data.of(STORIES_TABLE).remove(storyId)
-        .then(() => {
-          document.getElementById('viewStoryModal').style.display = 'none';
-          document.getElementById('fabContainer').style.display = 'block';
-          document.querySelector('.nav-buttons').style.display = 'block';
-          loadStories();
-        })
-        .catch(err => console.error("Error deleting story:", err));
-    }
-
-    // تحميل الحسابات المقترحة مع زر متابعة/إلغاء متابعة
-    function loadSuggestedAccounts() {
-      // إظهار أيقونة التحميل
-      document.getElementById('accountsLoader').style.display = 'block';
+    
+    // الانضمام إلى بث مباشر
+    function joinLiveStream(streamId) {
+      document.getElementById('liveTab').click();
+      document.getElementById('noLiveMessage').style.display = 'none';
+      document.getElementById('activeLiveContainer').style.display = 'block';
       
-      db.collection("users").get().then(snapshot => {
-        const grid = document.getElementById("accountsGrid");
-        grid.innerHTML = "";
-        snapshot.forEach(doc => {
-          let user = doc.data();
-          user.id = doc.id;
-          if(!user.followers) user.followers = [];
-          if(!user.followersCount) user.followersCount = 0;
-          
-          // تخزين المستخدم في الكاش
-          usersCache[user.id] = user;
-          
-          const card = document.createElement("div");
-          card.classList.add("account-card");
-          
-          // حاوية الصورة مع مؤشر التحميل
-          const imgContainer = document.createElement('div');
-          imgContainer.style.position = 'relative';
-          imgContainer.style.width = '100px';
-          imgContainer.style.height = '100px';
-          imgContainer.style.margin = '0 auto';
-          
-          const imgLoader = document.createElement('div');
-          imgLoader.style.position = 'absolute';
-          imgLoader.style.top = '0';
-          imgLoader.style.left = '0';
-          imgLoader.style.width = '100%';
-          imgLoader.style.height = '100%';
-          imgLoader.style.display = 'flex';
-          imgLoader.style.alignItems = 'center';
-          imgLoader.style.justifyContent = 'center';
-          imgLoader.style.backgroundColor = 'rgba(255,255,255,0.7)';
-          imgLoader.style.borderRadius = '50%';
-          imgLoader.innerHTML = '<div class="loader"></div>';
-          imgContainer.appendChild(imgLoader);
-          
-          const img = document.createElement("img");
-          img.src = user.photoURL || "https://www.gravatar.com/avatar/?d=mp";
-          img.onload = () => {
-            imgLoader.style.display = 'none';
-          };
-          img.onerror = () => {
-            imgLoader.style.display = 'none';
-            img.src = "https://www.gravatar.com/avatar/?d=mp";
-          };
-          imgContainer.appendChild(img);
-          
-          const nameDiv = document.createElement("div");
-          nameDiv.classList.add("account-name");
-          nameDiv.textContent = user.name || "مستخدم";
-          const follCount = document.createElement("p");
-          follCount.classList.add("followers-count");
-          follCount.textContent = user.followersCount + " متابع";
-          const followBtn = document.createElement("button");
-          followBtn.classList.add("follow-btn");
-          if(user.followers.includes(currentUser.id)) {
-            followBtn.textContent = "تم متابعه";
-          } else {
-            followBtn.textContent = "متابعة";
-          }
-          followBtn.addEventListener("click", (e) => {
-            e.stopPropagation();
-            let isFollowing = user.followers.includes(currentUser.id);
-            if(!isFollowing) {
-              db.collection("users").doc(user.id).update({
-                followers: firebase.firestore.FieldValue.arrayUnion(currentUser.id),
-                followersCount: firebase.firestore.FieldValue.increment(1)
-              }).then(() => {
-                followBtn.textContent = "تم متابعه";
-                user.followers.push(currentUser.id);
-                user.followersCount++;
-                follCount.textContent = user.followersCount + " متابع";
-              });
-            } else {
-              db.collection("users").doc(user.id).update({
-                followers: firebase.firestore.FieldValue.arrayRemove(currentUser.id),
-                followersCount: firebase.firestore.FieldValue.increment(-1)
-              }).then(() => {
-                followBtn.textContent = "متابعة";
-                user.followers = user.followers.filter(id => id !== currentUser.id);
-                user.followersCount--;
-                follCount.textContent = user.followersCount + " متابع";
-              });
+      db.collection("liveStreams").doc(streamId).get().then(doc => {
+        if (!doc.exists) return;
+        
+        const stream = doc.data();
+        document.getElementById('broadcasterName').textContent = stream.broadcasterName;
+        document.getElementById('streamTitle').textContent = stream.title;
+        document.getElementById('broadcasterImg').src = stream.broadcasterPhotoURL || 'https://www.gravatar.com/avatar/?d=mp';
+        document.getElementById('viewersCount').textContent = stream.viewers || 0;
+        
+        // تحديث عدد المشاهدين
+        db.collection("liveStreams").doc(streamId).update({
+          viewers: firebase.firestore.FieldValue.increment(1)
+        });
+        
+        // جلب الرسائل
+        loadChatMessages(streamId);
+        
+        // إعداد المشاهدة
+        setupViewing(streamId);
+      });
+    }
+    
+    // إعداد المشاهدة (محاكاة)
+    function setupViewing(streamId) {
+      isWatching = true;
+      currentLiveStreamId = streamId;
+      
+      // استخدام فيديو تجريبي للبث
+      const liveVideo = document.getElementById('liveVideo');
+      liveVideo.src = "https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4";
+      liveVideo.play();
+    }
+    
+    // تحميل رسائل الدردشة
+    function loadChatMessages(streamId) {
+      const messagesContainer = document.getElementById('chatMessages');
+      messagesContainer.innerHTML = '';
+      
+      db.collection("liveStreams").doc(streamId).collection("chat")
+        .orderBy("timestamp", "asc")
+        .onSnapshot(snapshot => {
+          snapshot.docChanges().forEach(change => {
+            if (change.type === "added") {
+              const msg = change.doc.data();
+              addMessageToChat(msg);
             }
           });
-          card.appendChild(imgContainer);
-          card.appendChild(nameDiv);
-          card.appendChild(follCount);
-          card.appendChild(followBtn);
-          card.addEventListener("click", () => {
-            showUserInfo(user);
-          });
-          grid.appendChild(card);
         });
-        // إخفاء أيقونة التحميل بعد الانتهاء
-        document.getElementById('accountsLoader').style.display = 'none';
-      }).catch(err => {
-        console.error("Error loading suggested accounts:", err);
-        document.getElementById('accountsLoader').style.display = 'none';
-      });
     }
-
-    // عرض معلومات المستخدم في مودال
-    function showUserInfo(user) {
-      let joinDate = "غير متوفر";
-      if(user.createdAt) {
-        joinDate = new Date(user.createdAt).toLocaleDateString("ar-EG", {year:"numeric", month:"long", day:"numeric"});
-      }
-      const followersCount = user.followersCount || 0;
-      const detailsDiv = document.getElementById("userInfoDetails");
-      detailsDiv.innerHTML = `
-        <img id="userProfilePic" src="${user.photoURL || "https://www.gravatar.com/avatar/?d=mp"}" alt="صورة المستخدم">
-        <p><strong>الاسم:</strong> ${user.name || "غير معروف"}</p>
-        <p><strong>اسم المستخدم:</strong> ${user.username || "غير متوفر"}</p>
-        <p><strong>الوصف:</strong> ${user.description || "لا يوجد وصف."}</p>
-        <p><strong>عدد المتابعين:</strong> ${followersCount}</p>
-        <p><strong>تاريخ الانضمام:</strong> ${joinDate}</p>
-      `;
-      document.getElementById("userProfilePic").addEventListener("click", () => {
-        document.getElementById("fabContainer").style.display = "none";
-        openUserProfile(user);
-      });
-      document.getElementById("userInfoModal").style.display = "flex";
-      document.getElementById("fabContainer").style.display = "none";
-    }
-
-    document.getElementById("closeUserInfoBtn").addEventListener("click", () => {
-      document.getElementById("userInfoModal").style.display = "none";
-      document.getElementById("fabContainer").style.display = "block";
-    });
-    document.getElementById("userInfoModal").addEventListener("click", (e) => {
-      if(e.target === document.getElementById("userInfoModal")) {
-        document.getElementById("userInfoModal").style.display = "none";
-        document.getElementById("fabContainer").style.display = "block";
-      }
-    });
-
-    // فتح شاشة الملف الشخصي (شاشة كاملة)
-    function openUserProfile(user) {
-      let joinDate = "غير متوفر";
-      if(user.createdAt) {
-        joinDate = new Date(user.createdAt).toLocaleDateString("ar-EG", {year:"numeric", month:"long", day:"numeric"});
-      }
-      document.getElementById("profilePic").src = user.photoURL || "https://www.gravatar.com/avatar/?d=mp";
-      document.getElementById("profileInfo").innerHTML = `
-        <p><strong>الاسم:</strong> ${user.name || "غير معروف"}</p>
-        <p><strong>اسم المستخدم:</strong> ${user.username || "غير متوفر"}</p>
-        <p><strong>الوصف:</strong> ${user.description || "لا يوجد وصف."}</p>
-        <p><strong>تاريخ الانضمام:</strong> ${joinDate}</p>
-        <p><strong>عدد المتابعين:</strong> ${user.followersCount || 0}</p>
-      `;
-      document.getElementById("profileModal").style.display = "flex";
-      loadUserPosts(user.id);
-    }
-
-    // تحميل منشورات المستخدم وعرضها في الشبكة
-    async function loadUserPosts(userId) {
-      const container = document.getElementById("userPostsContainer");
-      container.innerHTML = '<div class="loader large"></div>'; // إضافة أيقونة تحميل
+    
+    // إضافة رسالة إلى الدردشة
+    function addMessageToChat(msg) {
+      const messagesContainer = document.getElementById('chatMessages');
+      const messageElement = document.createElement('div');
+      messageElement.className = 'message';
       
-      try {
-        const queryBuilder = Backendless.DataQueryBuilder.create()
-          .setWhereClause(`userId = '${userId}'`)
-          .setSortBy('timestamp DESC');
-          
-        const records = await Backendless.Data.of(POSTS_TABLE).find(queryBuilder);
-        container.innerHTML = "";
-        
-        records.forEach(record => {
-          const postDiv = document.createElement('div');
-          postDiv.className = 'profile-post';
-          
-          const img = document.createElement('img');
-          img.src = record.imageUrl;
-          img.alt = record.title || "منشور";
-          
-          const overlay = document.createElement('div');
-          overlay.className = 'profile-post-overlay';
-          overlay.innerHTML = `
-            <span><i class="fas fa-heart"></i> ${record.likes?.length || 0}</span>
-            <span><i class="fas fa-comment"></i> ${record.comments?.length || 0}</span>
-          `;
-          
-          postDiv.appendChild(img);
-          postDiv.appendChild(overlay);
-          
-          // حدث النقر لفتح المنشور كاملاً
-          postDiv.addEventListener('click', () => {
-            openPostModal(record);
-          });
-          
-          container.appendChild(postDiv);
-        });
-      } catch (error) {
-        console.error("Error loading user posts:", error);
-        container.innerHTML = '<p>حدث خطأ في تحميل المنشورات</p>';
-      }
-    }
-
-    // فتح مودال لعرض المنشور كاملاً
-    function openPostModal(post) {
-      const modalContent = document.getElementById('postModalContent');
-      modalContent.innerHTML = `
-        <div class="post">
-          <div class="post-header">
-            <img src="${post.userPhotoURL || currentUser.photoURL || "https://www.gravatar.com/avatar/?d=mp"}" 
-                 alt="صورة المستخدم" 
-                 style="width:40px;height:40px;border-radius:50%;">
-            <span class="user-name">${post.userName || "مستخدم"}</span>
-          </div>
-          <img src="${post.imageUrl}" alt="صورة المنشور" class="post-image">
-          <div style="padding:10px;">
-            ${post.title ? `<h3>${post.title}</h3>` : ''}
-            <div class="post-likes">
-              <button class="like-btn-post ${post.likes && post.likes.includes(currentUser.id) ? 'liked' : ''}">
-                <i class="${post.likes && post.likes.includes(currentUser.id) ? 'fas' : 'far'} fa-heart"></i>
-              </button>
-              <span class="likes-count">${post.likes ? post.likes.length : 0} إعجابات</span>
-            </div>
-            <p>${post.description || ''}</p>
-          </div>
-          ${post.userId === currentUser.id ? `
-          <div class="post-actions">
-            <button class="edit-btn" onclick="editPost('${post.objectId}')">
-              <i class="fas fa-edit"></i>
-            </button>
-            <button class="delete-btn" onclick="deleteImage('${post.objectId}')">
-              <i class="fas fa-trash"></i>
-            </button>
-          </div>
-          ` : ''}
+      messageElement.innerHTML = `
+        <div class="message-header">
+          <img src="${msg.userPhotoURL || 'https://www.gravatar.com/avatar/?d=mp'}" alt="صورة المستخدم">
+          <span>${msg.userName}</span>
         </div>
+        <div class="message-content">${msg.text}</div>
       `;
       
-      document.getElementById('postModal').style.display = 'flex';
+      messagesContainer.appendChild(messageElement);
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
     }
-
-    document.getElementById("profileModal").addEventListener("click", (e) => {
-      if(e.target === document.getElementById("profileModal")) {
-        document.getElementById("profileModal").style.display = "none";
-        document.getElementById("fabContainer").style.display = "block";
-      }
-    });
-    document.getElementById("closeProfileBtn").addEventListener("click", () => {
-      document.getElementById("profileModal").style.display = "none";
-      document.getElementById("fabContainer").style.display = "block";
-    });
     
-    document.getElementById("closePostModal").addEventListener("click", () => {
-      document.getElementById("postModal").style.display = "none";
-    });
-    document.getElementById("postModal").addEventListener("click", (e) => {
-      if(e.target === document.getElementById("postModal")) {
-        document.getElementById("postModal").style.display = "none";
-      }
-    });
-
-    // التنقل بين القصص
-    document.getElementById('prevStory').addEventListener('click', (e) => {
-      e.stopPropagation();
-      if(currentStoryIndex > 0) {
-        currentStoryIndex--;
-        showGroupedStory(currentGroupIndex, currentStoryIndex);
-      } else if(currentGroupIndex > 0) {
-        currentGroupIndex--;
-        currentStoryIndex = storyGroups[currentGroupIndex].stories.length - 1;
-        showGroupedStory(currentGroupIndex, currentStoryIndex);
-      }
-    });
-    document.getElementById('nextStory').addEventListener('click', (e) => {
-      e.stopPropagation();
-      let group = storyGroups[currentGroupIndex];
-      if(currentStoryIndex < group.stories.length - 1) {
-        currentStoryIndex++;
-        showGroupedStory(currentGroupIndex, currentStoryIndex);
-      } else if(currentGroupIndex < storyGroups.length - 1) {
-        currentGroupIndex++;
-        currentStoryIndex = 0;
-        showGroupedStory(currentGroupIndex, currentStoryIndex);
-      }
-    });
-    document.getElementById('exitBtn').addEventListener('click', () => {
-      document.getElementById('viewStoryModal').style.display = 'none';
-      document.getElementById('fabContainer').style.display = 'block';
-      document.getElementById('fabContainerForImage').style.display = 'block';
-      document.querySelector('.nav-buttons').style.display = 'block';
-    });
-    document.getElementById('viewStoryModal').addEventListener('click', (e) => {
-      if(e.target === document.getElementById('viewStoryModal')) {
-        document.getElementById('viewStoryModal').style.display = 'none';
-        document.getElementById('fabContainer').style.display = 'block';
-        document.getElementById('fabContainerForImage').style.display = 'block';
-        document.querySelector('.nav-buttons').style.display = 'block';
-      }
-    });
-    
-    // التبديل بين خيارات القصة (نص/صورة)
-    document.getElementById('textStoryBtn').addEventListener('click', function() {
-      this.classList.add('active');
-      document.getElementById('imageStoryBtn').classList.remove('active');
-      document.getElementById('textStoryContent').classList.add('active');
-      document.getElementById('imageStoryContent').classList.remove('active');
-      document.getElementById('postTitleInput').style.display = 'none';
-    });
-    
-    document.getElementById('imageStoryBtn').addEventListener('click', function() {
-      this.classList.add('active');
-      document.getElementById('textStoryBtn').classList.remove('active');
-      document.getElementById('imageStoryContent').classList.add('active');
-      document.getElementById('textStoryContent').classList.remove('active');
+    // إرسال رسالة دردشة
+    document.getElementById('sendChatBtn').addEventListener('click', () => {
+      const message = document.getElementById('chatInput').value.trim();
+      if (!message || !currentLiveStreamId) return;
       
-      // إظهار حقل العنوان فقط لنشر المنشورات
-      if(uploadType === 'post') {
-        document.getElementById('postTitleInput').style.display = 'block';
-      } else {
-        document.getElementById('postTitleInput').style.display = 'none';
-      }
-    });
-    
-    // نشر قصة نصية
-    document.getElementById('postTextStoryBtn').addEventListener('click', () => {
-      const text = document.getElementById('storyText').value.trim();
-      if(!text) {
-        alert('يرجى إدخال نص القصة');
-        return;
-      }
-      
-      // توليد خلفية عشوائية باستخدم Unsplash API
-      const randomBg = `https://source.unsplash.com/random/600x800?${Math.floor(Math.random()*1000)}`;
-      
-      // إظهار مؤشر التحميل
-      const postBtn = document.getElementById('postTextStoryBtn');
-      const originalText = postBtn.innerHTML;
-      postBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> جاري النشر...';
-      postBtn.disabled = true;
-      
-      Backendless.Data.of(STORIES_TABLE).save({
-        type: 'text',
-        text: text,
+      db.collection("liveStreams").doc(currentLiveStreamId).collection("chat").add({
         userId: currentUser.id,
         userName: currentUser.name,
-        photoURL: currentUser.photoURL,
-        timestamp: new Date().getTime(),
-        backgroundUrl: randomBg
-      }).then(() => {
-        document.getElementById('addStoryModal').style.display = 'none';
-        document.getElementById('storyText').value = '';
-        loadStories();
-        
-        // إعادة تعيين الزر
-        postBtn.innerHTML = originalText;
-        postBtn.disabled = false;
-      }).catch(err => {
-        console.error("Error posting text story:", err);
-        
-        // إعادة تعيين الزر في حالة الخطأ
-        postBtn.innerHTML = originalText;
-        postBtn.disabled = false;
+        userPhotoURL: currentUser.photoURL,
+        text: message,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
       });
+      
+      document.getElementById('chatInput').value = '';
     });
-
-    // دالة جديدة لنشر الصورة في جدول المنشورات (Apl)
-    async function publishImageToPosts(file, title) {
+    
+    // السماح بإرسال الرسالة بالضغط على Enter
+    document.getElementById('chatInput').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        document.getElementById('sendChatBtn').click();
+      }
+    });
+    
+    // بدء بث مباشر
+    document.getElementById('startLiveBtn').addEventListener('click', showStartLiveModal);
+    document.getElementById('floatingStartLiveBtn').addEventListener('click', showStartLiveModal);
+    
+    function showStartLiveModal() {
+      document.getElementById('startLiveModal').style.display = 'flex';
+    }
+    
+    document.getElementById('confirmStartLiveBtn').addEventListener('click', startLiveBroadcast);
+    
+    async function startLiveBroadcast() {
+      const title = document.getElementById('streamTitleInput').value.trim() || "بث مباشر";
+      const category = document.getElementById('streamCategory').value.trim() || "عام";
+      const description = document.getElementById('streamDescription').value.trim() || "";
+      
+      if (!title) {
+        alert("الرجاء إدخال عنوان للبث");
+        return;
+      }
+      
       try {
-        // إظهار مؤشر التحميل
-        const uploadBtn = document.getElementById('uploadImageBtn');
-        const originalText = uploadBtn.innerHTML;
-        uploadBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> جاري النشر...';
-        uploadBtn.disabled = true;
+        // الحصول على إذن الكاميرا والميكروفون
+        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+          localStream = await navigator.mediaDevices.getUserMedia(mediaConstraints);
+        } else {
+          throw new Error("المتصفح لا يدعم الكاميرا والميكروفون");
+        }
         
-        // تحميل الصورة إلى Backendless
-        const fileURL = await Backendless.Files.upload(file, "post_images", true);
-        
-        // حفظ البيانات في جدول المنشورات (Apl)
-        await Backendless.Data.of(POSTS_TABLE).save({
-          imageUrl: fileURL.fileURL,
-          userId: currentUser.id,
-          userName: currentUser.name,
-          userPhotoURL: currentUser.photoURL,
-          timestamp: new Date().getTime(),
-          title: title || ''
+        // إنشاء بث جديد في قاعدة البيانات
+        const liveStreamRef = await db.collection("liveStreams").add({
+          broadcasterId: currentUser.id,
+          broadcasterName: currentUser.name,
+          broadcasterPhotoURL: currentUser.photoURL,
+          title: title,
+          category: category,
+          description: description,
+          startedAt: firebase.firestore.FieldValue.serverTimestamp(),
+          viewers: 0,
+          isActive: true
         });
         
-        // إغلاق المودال وإعادة تعيين العناصر
-        document.getElementById('addStoryModal').style.display = 'none';
-        document.getElementById('imagePreviewContainer').style.display = 'none';
-        document.getElementById('imagePreview').src = '';
-        document.getElementById('storyImageInput').value = "";
-        document.getElementById('postTitleInput').value = "";
+        currentLiveStreamId = liveStreamRef.id;
+        isBroadcasting = true;
         
-        // إعادة تعيين الزر
-        uploadBtn.innerHTML = originalText;
-        uploadBtn.disabled = false;
+        // عرض البث في الواجهة
+        document.getElementById('noLiveMessage').style.display = 'none';
+        document.getElementById('activeLiveContainer').style.display = 'block';
+        document.getElementById('broadcasterName').textContent = currentUser.name;
+        document.getElementById('streamTitle').textContent = title;
+        document.getElementById('broadcasterImg').src = currentUser.photoURL || 'https://www.gravatar.com/avatar/?d=mp';
+        document.getElementById('viewersCount').textContent = '0';
         
-        // إعادة تحميل معرض الصور
-        loadGalleryImages();
+        // عرض الفيديو المحلي
+        const liveVideo = document.getElementById('liveVideo');
+        if (localStream) {
+          liveVideo.srcObject = localStream;
+        } else {
+          // استخدام فيديو تجريبي إذا لم يتوفر بث حقيقي
+          liveVideo.src = "https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4";
+          liveVideo.play();
+        }
         
-        // إظهار رسالة نجاح
-        alert('تم نشر الصورة في المنشورات بنجاح!');
+        // إخفاء المودال
+        document.getElementById('startLiveModal').style.display = 'none';
+        
+        // تحديث واجهة المستخدم
+        document.getElementById('liveTab').click();
+        
+        // إعداد خادم الإشارة البسيط
+        setupSignaling();
+        
       } catch (error) {
-        console.error("خطأ في نشر الصورة في المنشورات:", error);
-        alert("حدث خطأ أثناء نشر الصورة في المنشورات");
+        console.error("Error starting live broadcast:", error);
+        alert("فشل في بدء البث المباشر: " + error.message);
         
-        // إعادة تعيين الزر في حالة الخطأ
-        uploadBtn.innerHTML = originalText;
-        uploadBtn.disabled = false;
+        // استخدام فيديو تجريبي في حالة الخطأ
+        const liveVideo = document.getElementById('liveVideo');
+        liveVideo.src = "https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4";
+        liveVideo.play();
       }
     }
-
-    // فتح متصفح الملفات عند الضغط على زر الصورة العائم
-    document.getElementById('floatingAddImageBtn').addEventListener('click', () => {
-      // تعيين نوع النشر إلى "منشور"
-      uploadType = 'post';
-      document.getElementById('postTitleInput').style.display = 'block';
-      document.getElementById('storyImageInput').click();
+    
+    // إعداد خادم الإشارة البسيط
+    function setupSignaling() {
+      if (!currentLiveStreamId) return;
+      
+      // إنشاء اتصال WebRTC
+      const configuration = {
+        iceServers: [
+          { urls: 'stun:stun.l.google.com:19302' },
+          { urls: 'stun:stun1.l.google.com:19302' }
+        ]
+      };
+      
+      peerConnection = new RTCPeerConnection(configuration);
+      
+      // إضافة تدفق الوسائط المحلي
+      if (localStream) {
+        localStream.getTracks().forEach(track => {
+          peerConnection.addTrack(track, localStream);
+        });
+      }
+      
+      // معالجة مرشحات ICE
+      peerConnection.onicecandidate = event => {
+        if (event.candidate) {
+          // إرسال مرشح ICE إلى المشاهدين عبر Firebase
+          realtimeDb.ref(`liveStreams/${currentLiveStreamId}/candidates`).push({
+            candidate: event.candidate,
+            from: currentUser.id
+          });
+        }
+      };
+      
+      // إنشاء عرض SDP
+      peerConnection.createOffer()
+        .then(offer => peerConnection.setLocalDescription(offer))
+        .then(() => {
+          // حفظ العرض في قاعدة البيانات
+          realtimeDb.ref(`liveStreams/${currentLiveStreamId}/offer`).set({
+            sdp: peerConnection.localDescription.sdp,
+            type: peerConnection.localDescription.type
+          });
+        });
+    }
+    
+    // إيقاف البث المباشر
+    document.getElementById('endLive').addEventListener('click', endLiveBroadcast);
+    
+    function endLiveBroadcast() {
+      if (!currentLiveStreamId) return;
+      
+      if (confirm("هل أنت متأكد من إيقاف البث المباشر؟")) {
+        // تحديث حالة البث في قاعدة البيانات
+        db.collection("liveStreams").doc(currentLiveStreamId).update({
+          isActive: false,
+          endedAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        
+        // إيقاف الفيديو
+        const liveVideo = document.getElementById('liveVideo');
+        liveVideo.srcObject = null;
+        liveVideo.src = '';
+        
+        // إغلاق التدفق المحلي
+        if (localStream) {
+          localStream.getTracks().forEach(track => track.stop());
+          localStream = null;
+        }
+        
+        // إغلاق اتصال WebRTC
+        if (peerConnection) {
+          peerConnection.close();
+          peerConnection = null;
+        }
+        
+        // إعادة تعيين الحالة
+        isBroadcasting = false;
+        currentLiveStreamId = null;
+        
+        // تحديث الواجهة
+        document.getElementById('activeLiveContainer').style.display = 'none';
+        document.getElementById('noLiveMessage').style.display = 'block';
+        
+        // إعادة تحميل البثوث الحية
+        loadLiveStreams();
+      }
+    }
+    
+    // تبديل الميكروفون
+    document.getElementById('toggleMic').addEventListener('click', () => {
+      if (!localStream) return;
+      
+      const audioTracks = localStream.getAudioTracks();
+      if (audioTracks.length > 0) {
+        micEnabled = !micEnabled;
+        audioTracks[0].enabled = micEnabled;
+        document.getElementById('toggleMic').innerHTML = micEnabled ? 
+          '<i class="fas fa-microphone"></i>' : 
+          '<i class="fas fa-microphone-slash"></i>';
+      }
     });
-
-    // معاينة الصورة عند اختيارها
-    document.getElementById('storyImageInput').addEventListener('change', function() {
-      if (this.files && this.files[0]) {
+    
+    // تبديل الكاميرا
+    document.getElementById('toggleCam').addEventListener('click', () => {
+      if (!localStream) return;
+      
+      const videoTracks = localStream.getVideoTracks();
+      if (videoTracks.length > 0) {
+        camEnabled = !camEnabled;
+        videoTracks[0].enabled = camEnabled;
+        document.getElementById('toggleCam').innerHTML = camEnabled ? 
+          '<i class="fas fa-video"></i>' : 
+          '<i class="fas fa-video-slash"></i>';
+      }
+    });
+    
+    // أحداث إغلاق المودالات
+    document.getElementById('cancelStartLiveBtn').addEventListener('click', () => {
+      document.getElementById('startLiveModal').style.display = 'none';
+    });
+    
+    document.getElementById('cancelEditProfileBtn').addEventListener('click', () => {
+      document.getElementById('editProfileModal').style.display = 'none';
+    });
+    
+    document.querySelectorAll('.modal-overlay').forEach(modal => {
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+          modal.style.display = 'none';
+        }
+      });
+    });
+    
+    // أحداث تعديل الملف الشخصي
+    document.getElementById('editProfileBtn').addEventListener('click', function() {
+      // تعبئة البيانات الحالية في المودال
+      document.getElementById('editProfilePic').src = currentUser.photoURL || "https://www.gravatar.com/avatar/?d=mp";
+      document.getElementById('editProfileName').value = currentUser.name || "";
+      document.getElementById('editProfileDescription').value = currentUser.description || "";
+      document.getElementById('editProfileUsername').value = currentUser.username || "";
+      
+      document.getElementById('editProfileModal').style.display = 'flex';
+    });
+    
+    document.getElementById('editProfileImageInput').addEventListener('change', function(e) {
+      if (e.target.files && e.target.files[0]) {
         const reader = new FileReader();
-        
-        reader.onload = function(e) {
-          document.getElementById('imagePreview').src = e.target.result;
-          document.getElementById('imagePreviewContainer').style.display = 'block';
-          
-          // عرض المودال إذا لم يكن مفتوحاً
-          if (document.getElementById('addStoryModal').style.display !== 'flex') {
-            document.getElementById('addStoryModal').style.display = 'flex';
-            document.getElementById('imageStoryBtn').click();
-          }
-          
-          // تعديل النصوص حسب نوع النشر
-          if (uploadType === 'post') {
-            document.getElementById('modalTitle').textContent = 'نشر صورة في المنشورات';
-            document.getElementById('uploadImageBtn').innerHTML = 
-              '<i class="fa-solid fa-cloud-upload-alt"></i> نشر في المنشورات';
-            document.getElementById('postTitleInput').style.display = 'block';
-          } else {
-            document.getElementById('modalTitle').textContent = 'نشر قصة جديدة';
-            document.getElementById('uploadImageBtn').innerHTML = 
-              '<i class="fa-solid fa-cloud-upload-alt"></i> نشر الصورة في القصص';
-            document.getElementById('postTitleInput').style.display = 'none';
-          }
-        }
-        
-        reader.readAsDataURL(this.files[0]);
+        reader.onload = function(event) {
+          document.getElementById('editProfilePic').src = event.target.result;
+        };
+        reader.readAsDataURL(e.target.files[0]);
       }
     });
-
-    // حدث النقر على زر نشر الصورة
-    document.getElementById('uploadImageBtn').addEventListener('click', async () => {
-      const fileInput = document.getElementById("storyImageInput");
-      const file = fileInput.files[0];
-      const title = document.getElementById("postTitleInput").value.trim();
+    
+    document.getElementById('editProfilePic').addEventListener('click', function() {
+      document.getElementById('editProfileImageInput').click();
+    });
+    
+    document.getElementById('saveProfileBtn').addEventListener('click', async function() {
+      const name = document.getElementById('editProfileName').value.trim();
+      const description = document.getElementById('editProfileDescription').value.trim();
+      const username = document.getElementById('editProfileUsername').value.trim();
+      const fileInput = document.getElementById('editProfileImageInput');
       
-      if (!file) {
-        alert("الرجاء اختيار صورة أولاً");
+      if (!name) {
+        alert('يرجى إدخال الاسم');
         return;
       }
       
-      // اختيار الجدول المناسب حسب نوع النشر
-      if (uploadType === 'post') {
-        await publishImageToPosts(file, title);
-      } else {
-        // النشر في القصص (كما كان في الكود الأصلي)
-        try {
-          // إظهار مؤشر التحميل
-          document.getElementById('uploadImageBtn').innerHTML = 
-            '<i class="fa-solid fa-spinner fa-spin"></i> جاري النشر...';
-          document.getElementById('uploadImageBtn').disabled = true;
-          
-          const fileURL = await Backendless.Files.upload(file, "story_images", true);
-          await Backendless.Data.of(STORIES_TABLE).save({
-            type: 'image',
-            imageUrl: fileURL.fileURL,
-            userId: currentUser.id,
-            userName: currentUser.name,
-            photoURL: currentUser.photoURL,
-            timestamp: new Date().getTime()
-          });
-          
-          document.getElementById('addStoryModal').style.display = 'none';
-          document.getElementById('imagePreviewContainer').style.display = 'none';
-          document.getElementById('imagePreview').src = '';
-          fileInput.value = "";
-          
-          // إعادة تعيين الزر
-          document.getElementById('uploadImageBtn').innerHTML = 
-            '<i class="fa-solid fa-cloud-upload-alt"></i> نشر الصورة';
-          document.getElementById('uploadImageBtn').disabled = false;
-          
-          loadStories();
-        } catch (error) {
-          console.error("خطأ في نشر الصورة في القصص:", error);
-          alert("حدث خطأ أثناء نشر الصورة في القصص");
-          
-          // إعادة تعيين الزر في حالة الخطأ
-          document.getElementById('uploadImageBtn').innerHTML = 
-            '<i class="fa-solid fa-cloud-upload-alt"></i> نشر الصورة';
-          document.getElementById('uploadImageBtn').disabled = false;
-        }
-      }
-      
-      // إعادة تعيين نوع النشر إلى القيمة الافتراضية (قصة)
-      uploadType = 'story';
-    });
-
-    // فتح مودال إضافة القصة
-    document.getElementById('floatingAddStoryBtn').addEventListener('click', () => {
-      document.getElementById('addStoryModal').style.display = 'flex';
-      document.getElementById('storyText').value = '';
-      document.getElementById('textStoryBtn').classList.add('active');
-      document.getElementById('imageStoryBtn').classList.remove('active');
-      document.getElementById('textStoryContent').classList.add('active');
-      document.getElementById('imageStoryContent').classList.remove('active');
-      document.getElementById('modalTitle').textContent = 'نشر قصة جديدة';
-      document.getElementById('uploadImageBtn').innerHTML = 
-        '<i class="fa-solid fa-cloud-upload-alt"></i> نشر الصورة';
-      document.getElementById('postTitleInput').style.display = 'none';
-    });
-    
-    // إغلاق مودال إضافة القصة
-    document.getElementById('closeAddStoryBtn').addEventListener('click', () => {
-      document.getElementById('addStoryModal').style.display = 'none';
-      document.getElementById('imagePreviewContainer').style.display = 'none';
-      document.getElementById('imagePreview').src = '';
-      document.getElementById('storyImageInput').value = '';
-      document.getElementById('postTitleInput').value = '';
-    });
-
-    // دالة عرض مشاهدات القصة في مودال منفصل
-    function showStoryViews(story) {
-      const modal = document.getElementById('storyViewsModal');
-      const viewsList = document.getElementById('viewsList');
-      viewsList.innerHTML = '<div class="loader large"></div>';
-      modal.style.display = 'flex';
-      
-      if(!story.views || story.views.length === 0) {
-        viewsList.innerHTML = "<p>لا يوجد مشاهدات بعد.</p>";
-        return;
-      }
-      
-      // جلب بيانات المستخدمين من Firebase
-      viewsList.innerHTML = "";
-      let loadedCount = 0;
-      const totalViews = story.views.length;
-      
-      story.views.forEach(userId => {
-        // إذا كان المستخدم في الكاش، نستخدم البيانات المخزنة
-        if(usersCache[userId]) {
-          const user = usersCache[userId];
-          createViewerElement(user);
-          loadedCount++;
-        } else {
-          // جلب بيانات المستخدم من Firebase
-          db.collection("users").doc(userId).get().then(doc => {
-            if(doc.exists) {
-              const user = doc.data();
-              usersCache[userId] = user;
-              createViewerElement(user);
-            } else {
-              createViewerElement({id: userId, name: "مستخدم غير معروف", photoURL: "https://www.gravatar.com/avatar/?d=mp"});
-            }
-            loadedCount++;
-            if(loadedCount === totalViews) {
-              // إخفاء أيقونة التحميل بعد تحميل جميع المشاهدات
-              document.querySelector('#viewsList .loader')?.remove();
-            }
-          }).catch(() => {
-            createViewerElement({id: userId, name: "مستخدم غير معروف", photoURL: "https://www.gravatar.com/avatar/?d=mp"});
-            loadedCount++;
-            if(loadedCount === totalViews) {
-              document.querySelector('#viewsList .loader')?.remove();
-            }
-          });
-        }
-      });
-      
-      function createViewerElement(user) {
-        let userDiv = document.createElement("div");
-        userDiv.className = "viewer";
-        userDiv.innerHTML = `
-          <img src="${user.photoURL || "https://www.gravatar.com/avatar/?d=mp"}" alt="صورة المستخدم">
-          <span class="viewer-name">${user.name || "مستخدم"}</span>
-        `;
-        viewsList.appendChild(userDiv);
-      }
-    }
-
-    document.getElementById('closeViewsModal').addEventListener('click', () => {
-      document.getElementById('storyViewsModal').style.display = 'none';
-    });
-    
-    // وظائف معرض الصور باستخدام Backendless
-    async function loadGalleryImages(page = currentPostsPage) {
       try {
-        // إظهار أيقونة التحميل
-        document.getElementById('galleryLoader').style.display = 'block';
+        let newPhotoURL = currentUser.photoURL;
         
-        const queryBuilder = Backendless.DataQueryBuilder.create()
-          .setSortBy('timestamp DESC')
-          .setPageSize(postsPerPage)
-          .setOffset((page-1)*postsPerPage);
-          
-        const records = await Backendless.Data.of(POSTS_TABLE).find(queryBuilder);
-        const gallery = document.getElementById('gallery');
-        
-        // إذا كانت الصفحة الأولى، نمسح المعرض الحالي
-        if (page === 1) {
-          gallery.innerHTML = "";
-        } else {
-          // نزيل زر "عرض المزيد" السابق إذا كان موجودًا
-          const oldButton = gallery.querySelector('.load-more-btn');
-          if (oldButton) oldButton.remove();
-        }
-        
-        records.forEach(record => {
-          const post = document.createElement("div");
-          post.className = "post";
-          
-          // رأس المنشور مع صورة المستخدم واسمه
-          const postHeader = document.createElement('div');
-          postHeader.className = 'post-header';
-          
-          const userImg = document.createElement('img');
-          userImg.src = record.userPhotoURL || currentUser.photoURL || "https://www.gravatar.com/avatar/?d=mp";
-          userImg.addEventListener('click', () => {
-            const user = {
-              id: record.userId,
-              name: record.userName,
-              photoURL: record.userPhotoURL || "https://www.gravatar.com/avatar/?d=mp"
-            };
-            showUserInfo(user);
-          });
-          
-          const userNameSpan = document.createElement('span');
-          userNameSpan.className = 'user-name';
-          userNameSpan.textContent = record.userName || "مستخدم";
-          
-          postHeader.appendChild(userImg);
-          postHeader.appendChild(userNameSpan);
-          post.appendChild(postHeader);
-          
-          // حاوية الصورة مع مؤشر التحميل
-          const imgContainer = document.createElement('div');
-          imgContainer.className = "post-img-container";
-          
-          const loader = document.createElement('div');
-          loader.className = "post-loader";
-          loader.innerHTML = '<div class="loader"></div>';
-          imgContainer.appendChild(loader);
-          
-          const img = document.createElement("img");
-          img.className = "post-image";
-          img.src = record.imageUrl;
-          img.onload = () => {
-            loader.style.display = 'none';
-          };
-          img.onerror = () => {
-            loader.style.display = 'none';
-            img.src = "https://via.placeholder.com/200x200?text=خطأ+في+الصورة";
-          };
-          imgContainer.appendChild(img);
-          
-          post.appendChild(imgContainer);
-          
-          // إضافة وقت النشر النسبي
-          const timeDiv = document.createElement('div');
-          timeDiv.className = "post-time";
-          if(record.timestamp) {
-            timeDiv.textContent = getRelativeTime(new Date(record.timestamp));
-          }
-          post.appendChild(timeDiv);
-          
-          // إضافة عنوان المنشور
-          if (record.title) {
-            const titleDiv = document.createElement('div');
-            titleDiv.className = 'post-title';
-            titleDiv.textContent = record.title;
-            post.appendChild(titleDiv);
-          }
-          
-          // إضافة زر اللايك وعدده
-          const likesDiv = document.createElement('div');
-          likesDiv.className = 'post-likes';
-          
-          const likeBtn = document.createElement('button');
-          likeBtn.className = 'like-btn-post';
-          if (record.likes && record.likes.includes(currentUser.id)) {
-            likeBtn.classList.add('liked');
-          }
-          
-          const heartIcon = document.createElement('i');
-          heartIcon.className = record.likes && record.likes.includes(currentUser.id) ? 
-            'fas fa-heart' : 'far fa-heart';
-          likeBtn.appendChild(heartIcon);
-          
-          const likesCount = document.createElement('span');
-          likesCount.className = 'likes-count';
-          likesCount.textContent = record.likes ? record.likes.length : 0;
-          
-          likesDiv.appendChild(likeBtn);
-          likesDiv.appendChild(likesCount);
-          post.appendChild(likesDiv);
-          
-          // إضافة حدث النقر على زر اللايك
-          likeBtn.addEventListener('click', async () => {
-            try {
-              let updatedLikes = [...(record.likes || [])];
-              if (updatedLikes.includes(currentUser.id)) {
-                updatedLikes = updatedLikes.filter(id => id !== currentUser.id);
-                heartIcon.className = 'far fa-heart';
-                likeBtn.classList.remove('liked');
-              } else {
-                updatedLikes.push(currentUser.id);
-                heartIcon.className = 'fas fa-heart';
-                likeBtn.classList.add('liked');
-              }
-              
-              // تحديث المنشور في الخلفية
-              await Backendless.Data.of(POSTS_TABLE).save({
-                objectId: record.objectId,
-                likes: updatedLikes
-              });
-              
-              // تحديث العدد في الواجهة
-              likesCount.textContent = updatedLikes.length;
-              record.likes = updatedLikes; // تحديث السجل المحلي
-            } catch (error) {
-              console.error('Error updating like:', error);
-            }
-          });
-          
-          // إضافة أيقونات التعديل والحذف إذا كان المستخدم الحالي هو صاحب الصورة
-          if (currentUser && record.userId === currentUser.id) {
-            const actionsDiv = document.createElement('div');
-            actionsDiv.className = 'post-actions';
-            
-            const editBtn = document.createElement('button');
-            editBtn.className = 'edit-btn';
-            editBtn.innerHTML = '<i class="fas fa-edit"></i>';
-            editBtn.addEventListener('click', () => {
-              editPost(record.objectId);
-            });
-            
-            const deleteBtn = document.createElement('button');
-            deleteBtn.className = 'delete-btn';
-            deleteBtn.innerHTML = '<i class="fas fa-trash"></i>';
-            deleteBtn.addEventListener('click', () => {
-              deleteImage(record.objectId);
-            });
-            
-            actionsDiv.appendChild(editBtn);
-            actionsDiv.appendChild(deleteBtn);
-            post.appendChild(actionsDiv);
-          }
-          
-          gallery.appendChild(post);
+        // تحديث بيانات المستخدم في Firebase
+        await db.collection("users").doc(currentUser.id).update({
+          name: name,
+          description: description,
+          username: username,
+          photoURL: newPhotoURL
         });
         
-        // إخفاء أيقونة التحميل بعد الانتهاء
-        document.getElementById('galleryLoader').style.display = 'none';
+        // تحديث بيانات المستخدم الحالي
+        currentUser.name = name;
+        currentUser.description = description;
+        currentUser.username = username;
         
-        // إظهار زر "عرض المزيد" إذا كان هناك المزيد من المنشورات
-        if (records.length === postsPerPage) {
-          const loadMoreBtn = document.getElementById('loadMoreBtn');
-          loadMoreBtn.style.display = 'block';
-          loadMoreBtn.onclick = () => {
-            currentPostsPage++;
-            loadGalleryImages(currentPostsPage);
-          };
-        } else {
-          document.getElementById('loadMoreBtn').style.display = 'none';
-        }
-      } catch (error) {
-        console.error("خطأ في التحميل:", error);
-        document.getElementById('galleryLoader').style.display = 'none';
-      }
-    }
-    
-    async function deleteImage(objectId) {
-      if (confirm("هل أنت متأكد من حذف الصورة؟")) {
-        try {
-          await Backendless.Data.of(POSTS_TABLE).remove(objectId);
-          loadGalleryImages();
-          // إغلاق مودال المنشور الكامل إذا كان مفتوحاً
-          document.getElementById('postModal').style.display = 'none';
-        } catch (error) {
-          console.error("خطأ في الحذف:", error);
-          alert("حدث خطأ أثناء حذف الصورة");
-        }
-      }
-    }
-    
-    // دالة تعديل المنشور
-    async function editPost(postId) {
-      try {
-        // جلب بيانات المنشور
-        const post = await Backendless.Data.of(POSTS_TABLE).findById(postId);
-        if (!post) {
-          alert("لم يتم العثور على المنشور");
-          return;
-        }
-        
-        // تخزين معرف المنشور الحالي
-        currentEditingPostId = postId;
-        
-        // إعداد النموذج للتعديل
-        document.getElementById('modalTitle').textContent = 'تعديل المنشور';
-        document.getElementById('postTitleInput').value = post.title || '';
-        document.getElementById('postTitleInput').style.display = 'block';
-        
-        // إظهار معاينة الصورة
-        document.getElementById('imagePreview').src = post.imageUrl;
-        document.getElementById('imagePreviewContainer').style.display = 'block';
-        
-        // تغيير نص زر النشر
-        document.getElementById('uploadImageBtn').innerHTML = 
-          '<i class="fa-solid fa-save"></i> حفظ التعديلات';
-        
-        // فتح مودال النشر
-        document.getElementById('addStoryModal').style.display = 'flex';
-        document.getElementById('imageStoryBtn').click();
-        
-      } catch (error) {
-        console.error('خطأ في تحميل المنشور للتعديل:', error);
-        alert('حدث خطأ أثناء تحميل المنشور للتعديل');
-      }
-    }
-    
-    // حدث النقر على زر النشر في وضع التعديل
-    document.getElementById('uploadImageBtn').addEventListener('click', async function() {
-      if (!currentEditingPostId) return;
-      
-      const title = document.getElementById("postTitleInput").value.trim();
-      
-      try {
-        // إظهار مؤشر التحميل
-        const uploadBtn = document.getElementById('uploadImageBtn');
-        const originalText = uploadBtn.innerHTML;
-        uploadBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> جاري الحفظ...';
-        uploadBtn.disabled = true;
-        
-        // تحديث بيانات المنشور
-        await Backendless.Data.of(POSTS_TABLE).save({
-          objectId: currentEditingPostId,
-          title: title
+        // تحديث الصورة في الواجهة
+        document.querySelectorAll('.post-header img').forEach(img => {
+          if (img.src === currentUser.photoURL || img.src === document.getElementById('editProfilePic').src) {
+            img.src = newPhotoURL;
+          }
         });
         
-        // إغلاق المودال وإعادة تعيين العناصر
-        document.getElementById('addStoryModal').style.display = 'none';
-        document.getElementById('imagePreviewContainer').style.display = 'none';
-        document.getElementById('imagePreview').src = '';
-        document.getElementById('storyImageInput').value = "";
-        document.getElementById('postTitleInput').value = "";
-        
-        // إعادة تعيين الزر
-        uploadBtn.innerHTML = originalText;
-        uploadBtn.disabled = false;
-        
-        // إعادة تحميل معرض الصور
-        loadGalleryImages();
-        
-        // إغلاق مودال المنشور الكامل إذا كان مفتوحاً
-        document.getElementById('postModal').style.display = 'none';
+        // إغلاق المودال
+        document.getElementById('editProfileModal').style.display = 'none';
         
         // إظهار رسالة نجاح
-        alert('تم تحديث المنشور بنجاح!');
-        
-        // إعادة تعيين معرف المنشور
-        currentEditingPostId = null;
+        alert('تم تحديث الملف الشخصي بنجاح!');
       } catch (error) {
-        console.error('خطأ في تحديث المنشور:', error);
-        alert('حدث خطأ أثناء تحديث المنشور');
-        
-        // إعادة تعيين الزر في حالة الخطأ
-        document.getElementById('uploadImageBtn').innerHTML = originalText;
-        document.getElementById('uploadImageBtn').disabled = false;
-      }
-    });
-    
-    // أحداث التبديل بين التبويبات
-    document.getElementById('postsTab').addEventListener('click', function() {
-      this.classList.add('active');
-      document.getElementById('suggestedTab').classList.remove('active');
-      document.getElementById('postsContent').classList.add('active');
-      document.getElementById('suggestedContent').classList.remove('active');
-    });
-    
-    document.getElementById('suggestedTab').addEventListener('click', function() {
-      this.classList.add('active');
-      document.getElementById('postsTab').classList.remove('active');
-      document.getElementById('suggestedContent').classList.add('active');
-      document.getElementById('postsContent').classList.remove('active');
-    });
-    
-    // حل مشكلة أيقونة الكاميرا
-    window.addEventListener('load', () => {
-      const cameraIcon = document.querySelector('#floatingAddImageBtn .fa-camera');
-      if (!cameraIcon || getComputedStyle(cameraIcon).display === 'none') {
-        document.querySelector('#floatingAddImageBtn .icon-fallback').style.display = 'block';
+        console.error('خطأ في تحديث الملف الشخصي:', error);
+        alert('حدث خطأ أثناء تحديث الملف الشخصي');
       }
     });
   </script>
