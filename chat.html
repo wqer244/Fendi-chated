@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>تطبيق الدردشة مع الإيموجي وخيارات تعديل وحذف الرسائل</title>
-    <!--منع تكبير او تصغير في موقعي -->
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>تطبيق الدردشة مع مكالمات الفيديو</title>
+  <!--منع تكبير او تصغير في موقعي -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <!-- خطوط تاجوال وروبوت -->
   <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;500&display=swap" rel="stylesheet">
@@ -16,6 +16,8 @@
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
+  <!-- Agora SDK لمكالمات الفيديو -->
+  <script src="https://cdn.agora.io/sdk/release/AgoraRTCSDK-4.22.1.js"></script>
   <style>
     /* الإعدادات العامة والألوان */
     :root {
@@ -23,6 +25,10 @@
       --secondary-bg: #2f3136;
       --tertiary-bg: #202225;
       --accent-color: #7289da;
+      --video-call-color: #43b581;
+      --video-call-hover: #3a9e6f;
+      --danger-color: #f04747;
+      --danger-hover: #d83c3c;
     }
     body.dark-mode {
       --primary-bg: #18191a;
@@ -37,6 +43,7 @@
       color: #dcddde;
       font-family: 'Tajawal', sans-serif;
       direction: rtl;
+      overflow: hidden;
     }
     /* تخطيط التطبيق */
     .container {
@@ -737,12 +744,379 @@
       color: #555;
     }
     body {
-  user-select: none;
-  -webkit-user-select: none;
-  /* للمتصفحات القديمة */
-  -moz-user-select: none;
-  -ms-user-select: none;
-}
+      user-select: none;
+      -webkit-user-select: none;
+      /* للمتصفحات القديمة */
+      -moz-user-select: none;
+      -ms-user-select: none;
+    }
+    /* تنسيقات القراءات */
+    .seen-status {
+      position: absolute;
+      bottom: 5px;
+      left: 10px;
+      font-size: 12px;
+    }
+    
+    .seen-icon {
+      color: #888;
+      cursor: pointer;
+      transition: color 0.3s;
+    }
+    
+    .seen-icon.seen {
+      color: #ff4444;
+    }
+    
+    .seen-users-popup {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+      z-index: 9999;
+    }
+    
+    .seen-user {
+      display: flex;
+      align-items: center;
+      margin: 10px 0;
+    }
+    
+    .seen-user img {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      margin-left: 10px;
+    }
+    
+    /* زر إرفاق الصورة */
+    .attach-image-btn {
+      background: #4caf50;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      margin-left: 10px;
+      transition: transform 0.3s;
+    }
+    
+    .attach-image-btn:hover {
+      transform: scale(1.1);
+    }
+    
+    /* أيقونة التحميل */
+    .upload-indicator {
+      display: none;
+      margin-left: 10px;
+      font-size: 20px;
+      color: #7289da;
+    }
+    
+    /* الصور في الدردشة */
+    .thumbnail-image {
+      max-width: 200px;
+      max-height: 200px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: transform 0.2s;
+      object-fit: cover;
+      display: block;
+      margin-top: 5px;
+    }
+    
+    .thumbnail-image:hover {
+      transform: scale(1.03);
+    }
+    
+    .image-caption {
+      margin-top: 8px;
+      font-size: 15px;
+      color: #e0e0e0;
+      padding: 5px 0;
+      max-width: 200px;
+      word-break: break-word;
+    }
+    
+    /* نافذة عرض الصورة */
+    .image-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.9);
+      z-index: 4000;
+      text-align: center;
+      overflow: auto;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+    
+    .image-modal-content {
+      max-width: 100%;
+      max-height: 80vh;
+      margin: auto;
+      display: block;
+      border: 1px solid #444;
+      box-shadow: 0 0 30px rgba(0, 0, 0, 0.8);
+    }
+    
+    .full-image-caption {
+      color: white;
+      text-align: center;
+      padding: 15px;
+      font-size: 18px;
+      max-width: 80%;
+      margin: 0 auto;
+    }
+    
+    .close-image-modal {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      color: white;
+      font-size: 40px;
+      cursor: pointer;
+      opacity: 0.7;
+      transition: opacity 0.3s;
+      z-index: 4100;
+    }
+    
+    .close-image-modal:hover {
+      opacity: 1;
+    }
+    
+    /* نافذة إضافة نص للصورة */
+    .image-caption-popup {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      z-index: 4500;
+      width: 90%;
+      max-width: 400px;
+      display: none;
+    }
+    
+    .image-caption-popup textarea {
+      width: 100%;
+      height: 100px;
+      margin-bottom: 15px;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      resize: vertical;
+    }
+    
+    /* مؤشر التحميل */
+    .upload-indicator-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 5000;
+      display: none;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    .upload-spinner {
+      width: 80px;
+      height: 80px;
+      border: 8px solid #f3f3f3;
+      border-top: 8px solid #7289da;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    /* زر الحالة في الملف الشخصي */
+    .user-status-indicator {
+      font-size: 14px;
+      padding: 3px 8px;
+      border-radius: 10px;
+      display: inline-block;
+      margin-top: 5px;
+    }
+    
+    .status-online {
+      background-color: #4CAF50;
+      color: white;
+    }
+    
+    .status-offline {
+      background-color: #f44336;
+      color: white;
+    }
+    
+    .status-idle {
+      background-color: #FF9800;
+      color: white;
+    }
+    
+    /* أنماط مكالمات الفيديو */
+    #video-call-container {
+      display: none;
+      position: fixed;
+      bottom: 100px;
+      right: 20px;
+      width: 300px;
+      height: 200px;
+      background: black;
+      z-index: 1000;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+    
+    #video-grid {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-wrap: wrap;
+    }
+    
+    .video-player {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    
+    #video-controls {
+      position: absolute;
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 10px;
+    }
+    
+    .video-control-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0,0,0,0.5);
+      color: white;
+      border: none;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    
+    .video-control-btn:hover {
+      background: rgba(0,0,0,0.8);
+    }
+    
+    #end-call-btn {
+      background: var(--danger-color);
+    }
+    
+    #end-call-btn:hover {
+      background: var(--danger-hover);
+    }
+    
+    #start-video-call-btn {
+      position: fixed;
+      bottom: 100px;
+      right: 20px;
+      background: var(--video-call-color);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      display: none;
+      z-index: 1000;
+      font-size: 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      transition: transform 0.3s, background 0.3s;
+    }
+    
+    #start-video-call-btn:hover {
+      transform: scale(1.1);
+      background: var(--video-call-hover);
+    }
+    
+    #video-call-notification {
+      position: fixed;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,0.8);
+      color: white;
+      padding: 10px 20px;
+      border-radius: 20px;
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    #join-video-call-btn {
+      background: var(--video-call-color);
+      color: white;
+      border: none;
+      border-radius: 20px;
+      padding: 5px 15px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    
+    #join-video-call-btn:hover {
+      background: var(--video-call-hover);
+    }
+    
+    #leave-video-call-btn {
+      background: var(--danger-color);
+      color: white;
+      border: none;
+      border-radius: 20px;
+      padding: 5px 15px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    
+    #leave-video-call-btn:hover {
+      background: var(--danger-hover);
+    }
+    
+    .remote-player-container {
+      width: 100%;
+      height: 100%;
+    }
+    
+    .local-player-container {
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+      width: 120px;
+      height: 90px;
+      z-index: 1001;
+      border: 2px solid white;
+      border-radius: 5px;
+      overflow: hidden;
+    }
   </style>
 </head>
 <script>
@@ -770,6 +1144,36 @@
     <span>الرسائل الخاصة</span>
     <span id="private-badge" class="badge"></span>
   </button>
+  
+  <!-- زر بدء مكالمة فيديو (لصاحب المجموعة فقط) -->
+  <button id="start-video-call-btn" onclick="startVideoCall()">
+    <i class="fa-solid fa-video"></i>
+  </button>
+  
+  <!-- إشعار مكالمة الفيديو -->
+  <div id="video-call-notification">
+    <span id="call-notification-text">مكالمة فيديو نشطة في هذه المجموعة</span>
+    <button id="join-video-call-btn" onclick="joinVideoCall()">انضم الآن</button>
+    <button id="leave-video-call-btn" onclick="leaveVideoCall()">غادر</button>
+  </div>
+  
+  <!-- نافذة مكالمة الفيديو -->
+  <div id="video-call-container">
+    <div id="video-grid"></div>
+    <div id="video-controls">
+      <button class="video-control-btn" id="toggle-audio-btn" onclick="toggleAudio()">
+        <i class="fa-solid fa-microphone"></i>
+      </button>
+      <button class="video-control-btn" id="toggle-video-btn" onclick="toggleVideo()">
+        <i class="fa-solid fa-video"></i>
+      </button>
+      <button class="video-control-btn" id="end-call-btn" onclick="endVideoCall()">
+        <i class="fa-solid fa-phone-slash"></i>
+      </button>
+    </div>
+    <div class="local-player-container" id="local-player-container"></div>
+  </div>
+  
   <div class="container">
     <!-- الشريط الجانبي -->
     <div class="sidebar" id="sidebar">
@@ -792,7 +1196,13 @@
     <div class="chat-container">
       <div class="chat-area" id="messages"></div>
       <div class="message-input">
-        <!-- استخدم textarea للرسائل الطويلة -->
+        <button class="attach-image-btn" id="attach-image-btn">
+          <i class="fa-solid fa-camera"></i>
+        </button>
+        <input type="file" id="image-upload" accept="image/*" style="display: none;">
+        <div id="upload-indicator" class="upload-indicator">
+          <i class="fa-solid fa-spinner fa-spin"></i>
+        </div>
         <textarea id="message-input" placeholder="اكتب رسالة..." rows="3"></textarea>
         <button onclick="sendMessage()">إرسال</button>
       </div>
@@ -883,7 +1293,7 @@
   <div id="profile-modal">
     <div class="modal-content">
       <!-- عنصر الحالة هنا يُعرض الحالة الحقيقية -->
-      <p id="user-status" style="font-size:14px;"></p>
+      <p id="user-status" class="user-status-indicator"></p>
       <div id="profile-modal-body"></div>
       <button class="modal-close" onclick="closeProfileModal()">إغلاق</button>
     </div>
@@ -911,18 +1321,52 @@
       </div>
       <div class="chat-area" id="private-chat-area"></div>
       <div class="message-input">
-        <!-- استخدام textarea للرسائل الخاصة أيضًا -->
+        <button class="attach-image-btn" id="private-attach-image-btn">
+          <i class="fa-solid fa-camera"></i>
+        </button>
+        <input type="file" id="private-image-upload" accept="image/*" style="display: none;">
+        <div id="private-upload-indicator" class="upload-indicator">
+          <i class="fa-solid fa-spinner fa-spin"></i>
+        </div>
         <textarea id="private-message-input" placeholder="اكتب رسالة..." rows="3"></textarea>
         <button onclick="sendPrivateMessage()">إرسال</button>
       </div>
     </div>
   </div>
-  <!-- سكربت Firebase والمكتبات الأخرى مع إضافة ميزة الحالة ومعاينة الروابط -->
+  
+  <!-- نافذة عرض الصورة -->
+  <div class="image-modal" id="image-modal">
+    <span class="close-image-modal" id="close-image-modal">&times;</span>
+    <img class="image-modal-content" id="full-size-image" src="">
+    <div class="full-image-caption" id="full-image-caption"></div>
+  </div>
+  
+  <!-- نافذة إضافة نص للصورة -->
+  <div class="image-caption-popup" id="image-caption-popup">
+    <h3>أضف نصاً للصورة</h3>
+    <textarea id="image-caption-input" placeholder="اكتب وصفاً للصورة (اختياري)"></textarea>
+    <button onclick="sendImageWithCaption()">إرسال</button>
+    <button onclick="closeImageCaptionPopup()" style="background: #dc3545; margin-top: 10px;">إلغاء</button>
+  </div>
+  
+  <!-- مؤشر التحميل -->
+  <div class="upload-indicator-container" id="upload-indicator-container">
+    <div class="upload-spinner"></div>
+  </div>
+
+  <!-- سكربتات Firebase والمكتبات الأخرى -->
   <script>
     // صورة افتراضية
     const defaultProfileImage = "https://www.gravatar.com/avatar/?d=mp";
-    // مفتاح API الخاص بمعاينة الروابط (تم تحديثه إلى المفتاح الذي زودتني به)
+    // مفتاح API الخاص بمعاينة الروابط
     const LINK_PREVIEW_API_KEY = "951325d26926d6d2ea4d2ce782629764";
+    
+    // مفاتيح Backendless API
+    const BACKENDLESS_APP_ID = "1A59C778-783C-4A9B-8167-648ECCFDF394";
+    const BACKENDLESS_API_KEY = "BBEAFC43-F642-44A3-B89A-245CA24C6D87";
+    
+    // مفاتيح Agora (لأغراض التوضيح فقط - يجب استبدالها بمفاتيحك الخاصة)
+    const AGORA_APP_ID = "b1027c1d0ce24940bae3023bfe125370";
     
     let currentUser = null;
     let currentGroup = 'general';
@@ -931,11 +1375,22 @@
     let editingMessageId = null;
     let selectedBg = '';
     let selectedMessageForReaction = null;
+    let currentImageToSend = null;
+    let isPrivateImage = false;
     
     // المتغيرات الخاصة بالدردشة الخاصة
     let currentPrivateChatUser = null;
     let privateChatId = null;
     let editingPrivateMessageId = null;
+    
+    // متغيرات مكالمات الفيديو
+    let agoraClient = null;
+    let localStream = null;
+    let isVideoCallActive = false;
+    let isAudioMuted = false;
+    let isVideoMuted = false;
+    let isCallHost = false;
+    let currentChannelName = null;
     
     // تهيئة Firebase
     const firebaseConfig = {
@@ -956,7 +1411,8 @@
     function setUserStatusOnline() {
       if(currentUser && currentUser.id) {
         db.collection('users').doc(currentUser.id).update({
-          status: "online"
+          status: "online",
+          lastSeen: firebase.firestore.FieldValue.serverTimestamp()
         });
       }
     }
@@ -993,12 +1449,43 @@
           currentGroup = localStorage.getItem('lastGroup') || 'general';
           loadMessages();
           loadPrivateMessages();
+          initAgoraClient();
         });
         window.addEventListener("beforeunload", setUserStatusOffline);
       } else {
         window.location.href = 'login.html';
       }
     });
+    
+    /* ==========================
+       دالة لتنسيق الوقت المنقضي منذ آخر ظهور
+       ========================== */
+    function formatLastSeen(lastSeen) {
+      if (!lastSeen) return "قبل وقت طويل";
+      
+      const now = new Date();
+      const lastSeenDate = lastSeen.toDate();
+      const diffSeconds = Math.floor((now - lastSeenDate) / 1000);
+      
+      if (diffSeconds < 60) {
+        return "قبل ثوانٍ";
+      } else if (diffSeconds < 3600) {
+        const minutes = Math.floor(diffSeconds / 60);
+        return `قبل ${minutes} دقيقة`;
+      } else if (diffSeconds < 86400) {
+        const hours = Math.floor(diffSeconds / 3600);
+        return `قبل ${hours} ساعة`;
+      } else if (diffSeconds < 604800) {
+        const days = Math.floor(diffSeconds / 86400);
+        return `قبل ${days} يوم`;
+      } else if (diffSeconds < 2592000) {
+        const weeks = Math.floor(diffSeconds / 604800);
+        return `قبل ${weeks} أسبوع`;
+      } else {
+        const months = Math.floor(diffSeconds / 2592000);
+        return `قبل ${months} شهر`;
+      }
+    }
     
     /* ==========================
        عرض الحالة الحقيقية للمستخدم (زر الحالة)
@@ -1009,26 +1496,30 @@
         if (doc.exists) {
           const data = doc.data();
           const statusElement = document.getElementById("user-status");
+          
           if (data.status === "online") {
-            statusElement.innerText = "متصل";
-            statusElement.style.color = "green";
+            statusElement.innerText = "متصل الآن";
+            statusElement.className = "user-status-indicator status-online";
           } else {
-            statusElement.innerText = "غير متصل";
-            statusElement.style.color = "red";
+            const lastSeenText = formatLastSeen(data.lastSeen);
+            statusElement.innerText = lastSeenText;
+            statusElement.className = "user-status-indicator status-offline";
           }
         }
       });
     }
+    
     function updateChatUserStatus(userId) {
       const statusElement = document.getElementById("chat-user-status");
       db.collection("users").doc(userId).onSnapshot((doc) => {
         if (doc.exists) {
           const data = doc.data();
           if (data.status === "online") {
-            statusElement.innerText = "متصل";
+            statusElement.innerText = "متصل الآن";
             statusElement.style.color = "green";
           } else {
-            statusElement.innerText = "غير متصل";
+            const lastSeenText = formatLastSeen(data.lastSeen);
+            statusElement.innerText = lastSeenText;
             statusElement.style.color = "red";
           }
         }
@@ -1036,7 +1527,7 @@
     }
     
     /* ==========================
-       دوال تحميل المجموعات والرسائل والدردشات العامة مع دعم معاينة الروابط
+       دوال تحميل المجموعات والرسائل والدردشات العامة
        ========================== */
     function loadGroups() {
       db.collection('groups').orderBy('createdAt').onSnapshot(snapshot => {
@@ -1149,22 +1640,43 @@
     
             const bubbleDiv = document.createElement('div');
             bubbleDiv.className = 'message-bubble';
-            bubbleDiv.innerHTML = `<strong>${msg.senderName}:</strong> ${msg.text} <div class="message-time">${timeString}</div>`;
-    
-            // إذا كانت الرسالة تحتوي على معاينة رابط فقم بعرضها
-            if(msg.linkPreview) {
-              const previewLink = document.createElement('a');
-              previewLink.href = msg.linkPreview.url;
-              previewLink.target = "_blank";
-              previewLink.className = "link-preview";
-              previewLink.innerHTML = `
-                ${ msg.linkPreview.image ? `<img src="${msg.linkPreview.image}" alt="معاينة">` : '' }
-                <div class="preview-details">
-                  <h4>${msg.linkPreview.title || ''}</h4>
-                  <p>${msg.linkPreview.description || ''}</p>
-                </div>
-              `;
-              bubbleDiv.appendChild(previewLink);
+            
+            // التحقق مما إذا كانت الرسالة تحتوي على صورة
+            if (msg.isImage) {
+              bubbleDiv.innerHTML = `<strong>${msg.senderName}:</strong><br>`;
+              const imgElement = document.createElement('img');
+              imgElement.src = msg.imageUrl;
+              imgElement.className = 'thumbnail-image';
+              imgElement.onclick = () => openImageModal(msg.imageUrl, msg.text || '');
+              bubbleDiv.appendChild(imgElement);
+              
+              // إذا كان هناك نص، عرضه أسفل الصورة
+              if (msg.text) {
+                const captionDiv = document.createElement('div');
+                captionDiv.className = 'image-caption';
+                captionDiv.textContent = msg.text;
+                bubbleDiv.appendChild(captionDiv);
+              }
+              
+              bubbleDiv.innerHTML += `<div class="message-time">${timeString}</div>`;
+            } else {
+              bubbleDiv.innerHTML = `<strong>${msg.senderName}:</strong> ${msg.text} <div class="message-time">${timeString}</div>`;
+              
+              // إذا كانت الرسالة تحتوي على معاينة رابط فقم بعرضها
+              if(msg.linkPreview) {
+                const previewLink = document.createElement('a');
+                previewLink.href = msg.linkPreview.url;
+                previewLink.target = "_blank";
+                previewLink.className = "link-preview";
+                previewLink.innerHTML = `
+                  ${ msg.linkPreview.image ? `<img src="${msg.linkPreview.image}" alt="معاينة">` : '' }
+                  <div class="preview-details">
+                    <h4>${msg.linkPreview.title || ''}</h4>
+                    <p>${msg.linkPreview.description || ''}</p>
+                  </div>
+                `;
+                bubbleDiv.appendChild(previewLink);
+              }
             }
     
             messageDiv.appendChild(bubbleDiv);
@@ -1267,6 +1779,7 @@
         senderName: currentUser.name,
         senderPhoto: currentUser.photoURL || defaultProfileImage,
         timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        
       };
       const urls = extractURLs(text);
       if(urls && urls.length > 0) {
@@ -1293,6 +1806,7 @@
       localStorage.setItem('lastGroup', groupId);
       loadMessages();
       loadGroups();
+      checkGroupOwnerForCallButton();
     }
     
     function populateRoomsPopup() {
@@ -1746,7 +2260,29 @@
     
              const bubbleDiv = document.createElement('div');
              bubbleDiv.className = 'message-bubble';
-             bubbleDiv.innerHTML = `<strong>${msg.senderName}:</strong> ${msg.text} <div class="message-time">${timeString}</div>`;
+             
+             // التحقق مما إذا كانت الرسالة تحتوي على صورة
+             if (msg.isImage) {
+               bubbleDiv.innerHTML = `<strong>${msg.senderName}:</strong><br>`;
+               const imgElement = document.createElement('img');
+               imgElement.src = msg.imageUrl;
+               imgElement.className = 'thumbnail-image';
+               imgElement.onclick = () => openImageModal(msg.imageUrl, msg.text || '');
+               bubbleDiv.appendChild(imgElement);
+               
+               // إذا كان هناك نص، عرضه أسفل الصورة
+               if (msg.text) {
+                 const captionDiv = document.createElement('div');
+                 captionDiv.className = 'image-caption';
+                 captionDiv.textContent = msg.text;
+                 bubbleDiv.appendChild(captionDiv);
+               }
+               
+               bubbleDiv.innerHTML += `<div class="message-time">${timeString}</div>`;
+             } else {
+               bubbleDiv.innerHTML = `<strong>${msg.senderName}:</strong> ${msg.text} <div class="message-time">${timeString}</div>`;
+             }
+             
              messageDiv.appendChild(bubbleDiv);
     
              if(msg.senderId === currentUser.id) {
@@ -1918,6 +2454,19 @@
             <button onclick="openPrivateChat('${data.id}')" style="margin-top:20px;">رسالة خاصة</button>
             <button onclick="closeProfileModal()" style="margin-top:10px;background:#dc3545;">إغلاق</button>
           `;
+          // عرض حالة المستخدم
+          const statusElement = document.createElement('p');
+          statusElement.id = 'user-status';
+          statusElement.className = 'user-status-indicator';
+          if (data.status === "online") {
+            statusElement.innerText = "متصل الآن";
+            statusElement.className = "user-status-indicator status-online";
+          } else {
+            const lastSeenText = formatLastSeen(data.lastSeen);
+            statusElement.innerText = lastSeenText;
+            statusElement.className = "user-status-indicator status-offline";
+          }
+          modalBody.appendChild(statusElement);
         });
       }
       document.getElementById('profile-modal').style.display = 'block';
@@ -1933,24 +2482,88 @@
       modalBody.innerHTML = `
         <h2>تعديل الملف الشخصي</h2>
         <img src="${currentUser.photoURL || defaultProfileImage}" id="edit-profile-pic" style="width:120px;height:120px;border-radius:50%;object-fit:cover;margin:0 auto;display:block;">
+        <input type="file" id="edit-profile-photo-file" accept="image/*" style="display:none;">
+        <button id="upload-profile-photo-btn" style="margin-top:10px;background:#4CAF50;color:white;border:none;padding:8px;border-radius:5px;">اختر صورة</button>
         <input type="text" id="edit-profile-name" value="${currentUser.name}" placeholder="أدخل اسمك" style="width:100%;padding:10px;margin-top:15px;">
         <textarea id="edit-profile-description" placeholder="أدخل وصف حسابك" style="width:100%;padding:10px;margin-top:10px;">${currentUser.description || ''}</textarea>
-        <input type="text" id="edit-profile-photo" value="${currentUser.photoURL || ''}" placeholder="رابط صورة الملف الشخصي" style="width:100%;padding:10px;margin-top:10px;">
         <input type="text" id="edit-profile-username" value="${currentUser.username || ''}" placeholder="أدخل المعرف (username)" style="width:100%;padding:10px;margin-top:10px;">
         <button onclick="saveProfileEdit()" style="margin-top:15px;">حفظ التعديلات</button>
         <button onclick="showProfileModal(currentUser)" style="margin-top:10px;background:#dc3545;">إلغاء</button>
       `;
+
+      // إضافة حدث لزر اختيار الصورة
+      document.getElementById('upload-profile-photo-btn').addEventListener('click', function() {
+        document.getElementById('edit-profile-photo-file').click();
+      });
+
+      // عند اختيار صورة، نعرض معاينة
+      document.getElementById('edit-profile-photo-file').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = function(e) {
+            document.getElementById('edit-profile-pic').src = e.target.result;
+          };
+          reader.readAsDataURL(file);
+        }
+      });
     }
     
-    function saveProfileEdit() {
+    // دالة لرفع الصورة إلى Backendless
+    async function uploadProfileImageToBackendless(file) {
+      // عرض مؤشر التحميل
+      document.getElementById('upload-indicator-container').style.display = 'flex';
+      
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('fileName', file.name);
+      
+      try {
+        const response = await fetch(`https://api.backendless.com/${BACKENDLESS_APP_ID}/${BACKENDLESS_API_KEY}/files/${file.name}`, {
+          method: 'POST',
+          body: formData
+        });
+        
+        if (!response.ok) {
+          throw new Error('فشل رفع الصورة');
+        }
+        
+        const result = await response.json();
+        return result.fileURL;
+        
+      } catch (error) {
+        console.error('Error uploading image:', error);
+        alert('حدث خطأ أثناء رفع الصورة: ' + error.message);
+        return null;
+      } finally {
+        // إخفاء مؤشر التحميل
+        document.getElementById('upload-indicator-container').style.display = 'none';
+      }
+    }
+    
+    async function saveProfileEdit() {
       const newName = document.getElementById('edit-profile-name').value.trim();
       const newDesc = document.getElementById('edit-profile-description').value.trim();
-      const newPhoto = document.getElementById('edit-profile-photo').value.trim() || defaultProfileImage;
       const newUsername = document.getElementById('edit-profile-username').value.trim();
-      if(newName === '') {
+      const fileInput = document.getElementById('edit-profile-photo-file');
+      let newPhoto = currentUser.photoURL; // نستخدم الصورة الحالية افتراضيًا
+
+      if (newName === '') {
         alert("يرجى إدخال الاسم");
         return;
       }
+
+      // إذا كان هناك ملف محدد، نرفعه إلى Backendless
+      if (fileInput.files.length > 0) {
+        const file = fileInput.files[0];
+        const imageUrl = await uploadProfileImageToBackendless(file);
+        if (imageUrl) {
+          newPhoto = imageUrl;
+        } else {
+          alert("فشل رفع الصورة. سيتم الاحتفاظ بالصورة الحالية.");
+        }
+      }
+
       db.collection('users').doc(currentUser.id).update({
         name: newName,
         description: newDesc,
@@ -1972,6 +2585,425 @@
       document.getElementById('profile-modal').style.display = 'block';
     }
     
+    /* ==========================
+       ميزة مشاركة الصور مع النصوص
+       ========================== */
+    
+    // تهيئة زر إرفاق الصورة
+    document.getElementById('attach-image-btn').addEventListener('click', function() {
+      document.getElementById('image-upload').click();
+    });
+    
+    document.getElementById('image-upload').addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (file) {
+        currentImageToSend = file;
+        isPrivateImage = false;
+        document.getElementById('image-caption-input').value = "";
+        document.getElementById('image-caption-popup').style.display = 'block';
+      }
+    });
+    
+    // تهيئة زر إرفاق الصورة للدردشة الخاصة
+    document.getElementById('private-attach-image-btn').addEventListener('click', function() {
+      document.getElementById('private-image-upload').click();
+    });
+    
+    document.getElementById('private-image-upload').addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (file) {
+        currentImageToSend = file;
+        isPrivateImage = true;
+        document.getElementById('image-caption-input').value = "";
+        document.getElementById('image-caption-popup').style.display = 'block';
+      }
+    });
+    
+    // دالة لرفع الصورة إلى Backendless
+    async function uploadImageToBackendless(file) {
+      // عرض مؤشر التحميل
+      document.getElementById('upload-indicator-container').style.display = 'flex';
+      
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('fileName', file.name);
+      
+      try {
+        const response = await fetch(`https://api.backendless.com/${BACKENDLESS_APP_ID}/${BACKENDLESS_API_KEY}/files/${file.name}`, {
+          method: 'POST',
+          body: formData
+        });
+        
+        if (!response.ok) {
+          throw new Error('فشل رفع الصورة');
+        }
+        
+        const result = await response.json();
+        return result.fileURL;
+        
+      } catch (error) {
+        console.error('Error uploading image:', error);
+        alert('حدث خطأ أثناء رفع الصورة: ' + error.message);
+        return null;
+      } finally {
+        // إخفاء مؤشر التحميل
+        document.getElementById('upload-indicator-container').style.display = 'none';
+      }
+    }
+    
+    // إرسال صورة مع نص إلى المجموعة
+    async function sendGroupImageMessage(imageUrl, caption) {
+      const messageData = {
+        isImage: true,
+        imageUrl: imageUrl,
+        text: caption || '',
+        senderId: currentUser.id,
+        senderName: currentUser.name,
+        senderPhoto: currentUser.photoURL || defaultProfileImage,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+      };
+      
+      await db.collection('groups').doc(currentGroup).collection('messages').add(messageData);
+    }
+    
+    // إرسال صورة مع نص إلى الدردشة الخاصة
+    async function sendPrivateImageMessage(imageUrl, caption) {
+      if (!privateChatId) return;
+      
+      const messageData = {
+        isImage: true,
+        imageUrl: imageUrl,
+        text: caption || '',
+        senderId: currentUser.id,
+        senderName: currentUser.name,
+        senderPhoto: currentUser.photoURL || defaultProfileImage,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+        read: false,
+        chatParticipants: [currentUser.id, currentPrivateChatUser]
+      };
+      
+      await db.collection('private_chats').doc(privateChatId).set({
+        participants: [currentUser.id, currentPrivateChatUser]
+      }, { merge: true });
+      
+      await db.collection('private_chats').doc(privateChatId).collection('messages').add(messageData);
+    }
+    
+    // فتح الصورة في نافذة كاملة مع النص
+    function openImageModal(imageUrl, caption = '') {
+      const modal = document.getElementById('image-modal');
+      const fullSizeImage = document.getElementById('full-size-image');
+      const imageCaption = document.getElementById('full-image-caption');
+      fullSizeImage.src = imageUrl;
+      imageCaption.textContent = caption;
+      modal.style.display = 'block';
+    }
+    
+    // إغلاق نافذة الصورة
+    document.getElementById('close-image-modal').addEventListener('click', function() {
+      document.getElementById('image-modal').style.display = 'none';
+    });
+    
+    // إغلاق نافذة الصورة بالنقر خارجها
+    document.getElementById('image-modal').addEventListener('click', function(e) {
+      if (e.target === this) {
+        this.style.display = 'none';
+      }
+    });
+    
+    // إغلاق نافذة إضافة نص للصورة
+    function closeImageCaptionPopup() {
+      document.getElementById('image-caption-popup').style.display = 'none';
+      currentImageToSend = null;
+    }
+    
+    // إرسال الصورة مع النص
+    async function sendImageWithCaption() {
+      if (!currentImageToSend) return;
+      
+      const caption = document.getElementById('image-caption-input').value.trim();
+      const imageUrl = await uploadImageToBackendless(currentImageToSend);
+      
+      if (imageUrl) {
+        if (isPrivateImage) {
+          await sendPrivateImageMessage(imageUrl, caption);
+        } else {
+          await sendGroupImageMessage(imageUrl, caption);
+        }
+        closeImageCaptionPopup();
+      }
+    }
+    
+    /* ==========================
+       ميزة مكالمات الفيديو باستخدام Agora
+       ========================== */
+    
+    // تهيئة عميل Agora
+    function initAgoraClient() {
+      agoraClient = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
+      
+      // معالجة الأحداث
+      agoraClient.on("user-published", async (user, mediaType) => {
+        await agoraClient.subscribe(user, mediaType);
+        
+        if (mediaType === "video") {
+          const remotePlayerContainer = document.createElement("div");
+          remotePlayerContainer.id = user.uid;
+          remotePlayerContainer.style.width = "100%";
+          remotePlayerContainer.style.height = "100%";
+          document.getElementById("video-grid").appendChild(remotePlayerContainer);
+          
+          user.videoTrack.play(remotePlayerContainer);
+        }
+        
+        if (mediaType === "audio") {
+          user.audioTrack.play();
+        }
+      });
+      
+      agoraClient.on("user-unpublished", (user) => {
+        const remotePlayerContainer = document.getElementById(user.uid);
+        if (remotePlayerContainer) {
+          remotePlayerContainer.remove();
+        }
+      });
+      
+      agoraClient.on("user-left", (user) => {
+        const remotePlayerContainer = document.getElementById(user.uid);
+        if (remotePlayerContainer) {
+          remotePlayerContainer.remove();
+        }
+      });
+    }
+    
+    // التحقق مما إذا كان المستخدم هو مالك المجموعة لعرض زر المكالمة
+    function checkGroupOwnerForCallButton() {
+      db.collection('groups').doc(currentGroup).get().then(doc => {
+        if (doc.exists) {
+          const groupData = doc.data();
+          if (groupData.creatorId === currentUser.id) {
+            document.getElementById('start-video-call-btn').style.display = 'block';
+          } else {
+            document.getElementById('start-video-call-btn').style.display = 'none';
+          }
+        }
+      });
+    }
+    
+    // بدء مكالمة فيديو (لصاحب المجموعة فقط)
+    async function startVideoCall() {
+      if (!agoraClient) {
+        alert("عذراً، لم يتم تهيئة خدمة مكالمات الفيديو");
+        return;
+      }
+      
+      try {
+        // إنشاء قناة باسم المجموعة الحالية
+        currentChannelName = currentGroup;
+        
+        // توليد UID فريد (يمكن استخدام معرف المستخدم)
+        const uid = currentUser.id;
+        
+        // الانضمام إلى القناة
+        await agoraClient.join(AGORA_APP_ID, currentChannelName, null, uid);
+        
+        // إنشاء تيار محلي
+        localStream = await AgoraRTC.createMicrophoneAndCameraTracks();
+        
+        // نشر التيار المحلي
+        await agoraClient.publish(localStream);
+        
+        // تشغيل التيار المحلي في العنصر المخصص
+        document.getElementById("local-player-container").innerHTML = "";
+        localStream[1].play("local-player-container");
+        
+        // تحديث حالة المكالمة
+        isVideoCallActive = true;
+        isCallHost = true;
+        
+        // إظهار واجهة مكالمة الفيديو
+        document.getElementById("video-call-container").style.display = "block";
+        document.getElementById("start-video-call-btn").style.display = "none";
+        
+        // إرسال إشعار للمجموعة بوجود مكالمة فيديو
+        sendCallNotification(true);
+        
+      } catch (error) {
+        console.error("فشل بدء مكالمة الفيديو:", error);
+        alert("حدث خطأ أثناء بدء مكالمة الفيديو: " + error.message);
+      }
+    }
+    
+    // الانضمام إلى مكالمة فيديو (لأعضاء المجموعة)
+    async function joinVideoCall() {
+      if (!agoraClient) {
+        alert("عذراً، لم يتم تهيئة خدمة مكالمات الفيديو");
+        return;
+      }
+      
+      try {
+        // الانضمام إلى نفس القناة
+        const uid = currentUser.id;
+        await agoraClient.join(AGORA_APP_ID, currentChannelName, null, uid);
+        
+        // إنشاء تيار محلي
+        localStream = await AgoraRTC.createMicrophoneAndCameraTracks();
+        
+        // نشر التيار المحلي
+        await agoraClient.publish(localStream);
+        
+        // تشغيل التيار المحلي في العنصر المخصص
+        document.getElementById("local-player-container").innerHTML = "";
+        localStream[1].play("local-player-container");
+        
+        // تحديث حالة المكالمة
+        isVideoCallActive = true;
+        isCallHost = false;
+        
+        // إظهار واجهة مكالمة الفيديو
+        document.getElementById("video-call-container").style.display = "block";
+        document.getElementById("video-call-notification").style.display = "none";
+        
+      } catch (error) {
+        console.error("فشل الانضمام إلى مكالمة الفيديو:", error);
+        alert("حدث خطأ أثناء الانضمام إلى مكالمة الفيديو: " + error.message);
+      }
+    }
+    
+    // إنهاء مكالمة الفيديو
+    async function endVideoCall() {
+      if (agoraClient) {
+        // إيقاف جميع التيارات
+        if (localStream) {
+          localStream[0].close();
+          localStream[1].close();
+        }
+        
+        // مغادرة القناة
+        await agoraClient.leave();
+        
+        // إخفاء واجهة مكالمة الفيديو
+        document.getElementById("video-call-container").style.display = "none";
+        document.getElementById("video-grid").innerHTML = "";
+        document.getElementById("local-player-container").innerHTML = "";
+        
+        // إظهار زر البدء لصاحب المجموعة
+        checkGroupOwnerForCallButton();
+        
+        // إرسال إشعار بانتهاء المكالمة
+        if (isCallHost) {
+          sendCallNotification(false);
+        }
+        
+        // تحديث حالة المكالمة
+        isVideoCallActive = false;
+        isCallHost = false;
+      }
+    }
+    
+    // مغادرة مكالمة الفيديو (للمستخدمين غير المضيفين)
+    async function leaveVideoCall() {
+      if (agoraClient) {
+        // إيقاف التيار المحلي
+        if (localStream) {
+          localStream[0].close();
+          localStream[1].close();
+        }
+        
+        // مغادرة القناة
+        await agoraClient.leave();
+        
+        // إخفاء واجهة مكالمة الفيديو
+        document.getElementById("video-call-container").style.display = "none";
+        document.getElementById("video-grid").innerHTML = "";
+        document.getElementById("local-player-container").innerHTML = "";
+        
+        // تحديث حالة المكالمة
+        isVideoCallActive = false;
+        isCallHost = false;
+        
+        // إظهار الإشعار إذا كانت المكالمة لا تزال نشطة
+        if (currentChannelName) {
+          document.getElementById("video-call-notification").style.display = "flex";
+        }
+      }
+    }
+    
+    // تبديل حالة الصوت
+    async function toggleAudio() {
+      if (localStream) {
+        if (isAudioMuted) {
+          await localStream[0].setMuted(false);
+          document.getElementById("toggle-audio-btn").innerHTML = '<i class="fa-solid fa-microphone"></i>';
+          isAudioMuted = false;
+        } else {
+          await localStream[0].setMuted(true);
+          document.getElementById("toggle-audio-btn").innerHTML = '<i class="fa-solid fa-microphone-slash"></i>';
+          isAudioMuted = true;
+        }
+      }
+    }
+    
+    // تبديل حالة الفيديو
+    async function toggleVideo() {
+      if (localStream) {
+        if (isVideoMuted) {
+          await localStream[1].setMuted(false);
+          document.getElementById("toggle-video-btn").innerHTML = '<i class="fa-solid fa-video"></i>';
+          isVideoMuted = false;
+        } else {
+          await localStream[1].setMuted(true);
+          document.getElementById("toggle-video-btn").innerHTML = '<i class="fa-solid fa-video-slash"></i>';
+          isVideoMuted = true;
+        }
+      }
+    }
+    
+    // إرسال إشعار المكالمة إلى المجموعة
+    function sendCallNotification(isStarting) {
+      const messageText = isStarting ?
+        `بدأت مكالمة فيديو في هذه المجموعة. انقر <a href="#" onclick="joinVideoCall()">هنا</a> للانضمام.` :
+        "انتهت مكالمة الفيديو.";
+      
+      db.collection('groups').doc(currentGroup).collection('messages').add({
+        text: messageText,
+        senderId: currentUser.id,
+        senderName: currentUser.name,
+        senderPhoto: currentUser.photoURL || defaultProfileImage,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+        isSystem: true
+      });
+    }
+    
+    // مراقبة المكالمات النشطة في المجموعة
+    function monitorActiveCalls() {
+      db.collection('groups').doc(currentGroup).onSnapshot(doc => {
+        if (doc.exists) {
+          const groupData = doc.data();
+          
+          // إذا كانت هناك مكالمة نشطة ولا تخص المستخدم الحالي
+          if (groupData.activeCall && groupData.activeCall !== currentUser.id && !isVideoCallActive) {
+            currentChannelName = groupData.activeCall;
+            document.getElementById("video-call-notification").style.display = "flex";
+          } else if (!groupData.activeCall) {
+            document.getElementById("video-call-notification").style.display = "none";
+          }
+        }
+      });
+    }
+    
+    // تهيئة الأحداث عند تحميل الصفحة
+    document.addEventListener("DOMContentLoaded", function() {
+      // إضافة حدث لإغلاق نافذة الصورة عند الضغط على Esc
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+          document.getElementById('image-modal').style.display = 'none';
+        }
+      });
+      
+      // بدء مراقبة المكالمات النشطة
+      monitorActiveCalls();
+    });
   </script>
 </body>
 </html>
