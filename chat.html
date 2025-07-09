@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>تطبيق الدردشة مع مكالمات الفيديو</title>
+  <title>تطبيق الدردشة مع الإيموجي وخيارات تعديل وحذف الرسائل</title>
   <!--منع تكبير او تصغير في موقعي -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <!-- خطوط تاجوال وروبوت -->
@@ -16,8 +16,6 @@
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
-  <!-- Agora SDK لمكالمات الفيديو -->
-  <script src="https://cdn.agora.io/sdk/release/AgoraRTCSDK-4.22.1.js"></script>
   <style>
     /* الإعدادات العامة والألوان */
     :root {
@@ -25,10 +23,6 @@
       --secondary-bg: #2f3136;
       --tertiary-bg: #202225;
       --accent-color: #7289da;
-      --video-call-color: #43b581;
-      --video-call-hover: #3a9e6f;
-      --danger-color: #f04747;
-      --danger-hover: #d83c3c;
     }
     body.dark-mode {
       --primary-bg: #18191a;
@@ -972,151 +966,6 @@
       background-color: #FF9800;
       color: white;
     }
-    
-    /* أنماط مكالمات الفيديو */
-    #video-call-container {
-      display: none;
-      position: fixed;
-      bottom: 100px;
-      right: 20px;
-      width: 300px;
-      height: 200px;
-      background: black;
-      z-index: 1000;
-      border-radius: 10px;
-      overflow: hidden;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-    }
-    
-    #video-grid {
-      width: 100%;
-      height: 100%;
-      display: flex;
-      flex-wrap: wrap;
-    }
-    
-    .video-player {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-    
-    #video-controls {
-      position: absolute;
-      bottom: 10px;
-      left: 50%;
-      transform: translateX(-50%);
-      display: flex;
-      gap: 10px;
-    }
-    
-    .video-control-btn {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: rgba(0,0,0,0.5);
-      color: white;
-      border: none;
-      cursor: pointer;
-      transition: background 0.3s;
-    }
-    
-    .video-control-btn:hover {
-      background: rgba(0,0,0,0.8);
-    }
-    
-    #end-call-btn {
-      background: var(--danger-color);
-    }
-    
-    #end-call-btn:hover {
-      background: var(--danger-hover);
-    }
-    
-    #start-video-call-btn {
-      position: fixed;
-      bottom: 100px;
-      right: 20px;
-      background: var(--video-call-color);
-      color: white;
-      border: none;
-      border-radius: 50%;
-      width: 50px;
-      height: 50px;
-      display: none;
-      z-index: 1000;
-      font-size: 20px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-      transition: transform 0.3s, background 0.3s;
-    }
-    
-    #start-video-call-btn:hover {
-      transform: scale(1.1);
-      background: var(--video-call-hover);
-    }
-    
-    #video-call-notification {
-      position: fixed;
-      top: 10px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: rgba(0,0,0,0.8);
-      color: white;
-      padding: 10px 20px;
-      border-radius: 20px;
-      z-index: 1000;
-      display: none;
-      align-items: center;
-      gap: 10px;
-    }
-    
-    #join-video-call-btn {
-      background: var(--video-call-color);
-      color: white;
-      border: none;
-      border-radius: 20px;
-      padding: 5px 15px;
-      cursor: pointer;
-      transition: background 0.3s;
-    }
-    
-    #join-video-call-btn:hover {
-      background: var(--video-call-hover);
-    }
-    
-    #leave-video-call-btn {
-      background: var(--danger-color);
-      color: white;
-      border: none;
-      border-radius: 20px;
-      padding: 5px 15px;
-      cursor: pointer;
-      transition: background 0.3s;
-    }
-    
-    #leave-video-call-btn:hover {
-      background: var(--danger-hover);
-    }
-    
-    .remote-player-container {
-      width: 100%;
-      height: 100%;
-    }
-    
-    .local-player-container {
-      position: absolute;
-      bottom: 10px;
-      right: 10px;
-      width: 120px;
-      height: 90px;
-      z-index: 1001;
-      border: 2px solid white;
-      border-radius: 5px;
-      overflow: hidden;
-    }
   </style>
 </head>
 <script>
@@ -1144,36 +993,6 @@
     <span>الرسائل الخاصة</span>
     <span id="private-badge" class="badge"></span>
   </button>
-  
-  <!-- زر بدء مكالمة فيديو (لصاحب المجموعة فقط) -->
-  <button id="start-video-call-btn" onclick="startVideoCall()">
-    <i class="fa-solid fa-video"></i>
-  </button>
-  
-  <!-- إشعار مكالمة الفيديو -->
-  <div id="video-call-notification">
-    <span id="call-notification-text">مكالمة فيديو نشطة في هذه المجموعة</span>
-    <button id="join-video-call-btn" onclick="joinVideoCall()">انضم الآن</button>
-    <button id="leave-video-call-btn" onclick="leaveVideoCall()">غادر</button>
-  </div>
-  
-  <!-- نافذة مكالمة الفيديو -->
-  <div id="video-call-container">
-    <div id="video-grid"></div>
-    <div id="video-controls">
-      <button class="video-control-btn" id="toggle-audio-btn" onclick="toggleAudio()">
-        <i class="fa-solid fa-microphone"></i>
-      </button>
-      <button class="video-control-btn" id="toggle-video-btn" onclick="toggleVideo()">
-        <i class="fa-solid fa-video"></i>
-      </button>
-      <button class="video-control-btn" id="end-call-btn" onclick="endVideoCall()">
-        <i class="fa-solid fa-phone-slash"></i>
-      </button>
-    </div>
-    <div class="local-player-container" id="local-player-container"></div>
-  </div>
-  
   <div class="container">
     <!-- الشريط الجانبي -->
     <div class="sidebar" id="sidebar">
@@ -1365,9 +1184,6 @@
     const BACKENDLESS_APP_ID = "1A59C778-783C-4A9B-8167-648ECCFDF394";
     const BACKENDLESS_API_KEY = "BBEAFC43-F642-44A3-B89A-245CA24C6D87";
     
-    // مفاتيح Agora (لأغراض التوضيح فقط - يجب استبدالها بمفاتيحك الخاصة)
-    const AGORA_APP_ID = "b1027c1d0ce24940bae3023bfe125370";
-    
     let currentUser = null;
     let currentGroup = 'general';
     let selectedGroupId = null;
@@ -1382,15 +1198,6 @@
     let currentPrivateChatUser = null;
     let privateChatId = null;
     let editingPrivateMessageId = null;
-    
-    // متغيرات مكالمات الفيديو
-    let agoraClient = null;
-    let localStream = null;
-    let isVideoCallActive = false;
-    let isAudioMuted = false;
-    let isVideoMuted = false;
-    let isCallHost = false;
-    let currentChannelName = null;
     
     // تهيئة Firebase
     const firebaseConfig = {
@@ -1449,7 +1256,6 @@
           currentGroup = localStorage.getItem('lastGroup') || 'general';
           loadMessages();
           loadPrivateMessages();
-          initAgoraClient();
         });
         window.addEventListener("beforeunload", setUserStatusOffline);
       } else {
@@ -1806,7 +1612,6 @@
       localStorage.setItem('lastGroup', groupId);
       loadMessages();
       loadGroups();
-      checkGroupOwnerForCallButton();
     }
     
     function populateRoomsPopup() {
@@ -2734,264 +2539,6 @@
       }
     }
     
-    /* ==========================
-       ميزة مكالمات الفيديو باستخدام Agora
-       ========================== */
-    
-    // تهيئة عميل Agora
-    function initAgoraClient() {
-      agoraClient = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
-      
-      // معالجة الأحداث
-      agoraClient.on("user-published", async (user, mediaType) => {
-        await agoraClient.subscribe(user, mediaType);
-        
-        if (mediaType === "video") {
-          const remotePlayerContainer = document.createElement("div");
-          remotePlayerContainer.id = user.uid;
-          remotePlayerContainer.style.width = "100%";
-          remotePlayerContainer.style.height = "100%";
-          document.getElementById("video-grid").appendChild(remotePlayerContainer);
-          
-          user.videoTrack.play(remotePlayerContainer);
-        }
-        
-        if (mediaType === "audio") {
-          user.audioTrack.play();
-        }
-      });
-      
-      agoraClient.on("user-unpublished", (user) => {
-        const remotePlayerContainer = document.getElementById(user.uid);
-        if (remotePlayerContainer) {
-          remotePlayerContainer.remove();
-        }
-      });
-      
-      agoraClient.on("user-left", (user) => {
-        const remotePlayerContainer = document.getElementById(user.uid);
-        if (remotePlayerContainer) {
-          remotePlayerContainer.remove();
-        }
-      });
-    }
-    
-    // التحقق مما إذا كان المستخدم هو مالك المجموعة لعرض زر المكالمة
-    function checkGroupOwnerForCallButton() {
-      db.collection('groups').doc(currentGroup).get().then(doc => {
-        if (doc.exists) {
-          const groupData = doc.data();
-          if (groupData.creatorId === currentUser.id) {
-            document.getElementById('start-video-call-btn').style.display = 'block';
-          } else {
-            document.getElementById('start-video-call-btn').style.display = 'none';
-          }
-        }
-      });
-    }
-    
-    // بدء مكالمة فيديو (لصاحب المجموعة فقط)
-    async function startVideoCall() {
-      if (!agoraClient) {
-        alert("عذراً، لم يتم تهيئة خدمة مكالمات الفيديو");
-        return;
-      }
-      
-      try {
-        // إنشاء قناة باسم المجموعة الحالية
-        currentChannelName = currentGroup;
-        
-        // توليد UID فريد (يمكن استخدام معرف المستخدم)
-        const uid = currentUser.id;
-        
-        // الانضمام إلى القناة
-        await agoraClient.join(AGORA_APP_ID, currentChannelName, null, uid);
-        
-        // إنشاء تيار محلي
-        localStream = await AgoraRTC.createMicrophoneAndCameraTracks();
-        
-        // نشر التيار المحلي
-        await agoraClient.publish(localStream);
-        
-        // تشغيل التيار المحلي في العنصر المخصص
-        document.getElementById("local-player-container").innerHTML = "";
-        localStream[1].play("local-player-container");
-        
-        // تحديث حالة المكالمة
-        isVideoCallActive = true;
-        isCallHost = true;
-        
-        // إظهار واجهة مكالمة الفيديو
-        document.getElementById("video-call-container").style.display = "block";
-        document.getElementById("start-video-call-btn").style.display = "none";
-        
-        // إرسال إشعار للمجموعة بوجود مكالمة فيديو
-        sendCallNotification(true);
-        
-      } catch (error) {
-        console.error("فشل بدء مكالمة الفيديو:", error);
-        alert("حدث خطأ أثناء بدء مكالمة الفيديو: " + error.message);
-      }
-    }
-    
-    // الانضمام إلى مكالمة فيديو (لأعضاء المجموعة)
-    async function joinVideoCall() {
-      if (!agoraClient) {
-        alert("عذراً، لم يتم تهيئة خدمة مكالمات الفيديو");
-        return;
-      }
-      
-      try {
-        // الانضمام إلى نفس القناة
-        const uid = currentUser.id;
-        await agoraClient.join(AGORA_APP_ID, currentChannelName, null, uid);
-        
-        // إنشاء تيار محلي
-        localStream = await AgoraRTC.createMicrophoneAndCameraTracks();
-        
-        // نشر التيار المحلي
-        await agoraClient.publish(localStream);
-        
-        // تشغيل التيار المحلي في العنصر المخصص
-        document.getElementById("local-player-container").innerHTML = "";
-        localStream[1].play("local-player-container");
-        
-        // تحديث حالة المكالمة
-        isVideoCallActive = true;
-        isCallHost = false;
-        
-        // إظهار واجهة مكالمة الفيديو
-        document.getElementById("video-call-container").style.display = "block";
-        document.getElementById("video-call-notification").style.display = "none";
-        
-      } catch (error) {
-        console.error("فشل الانضمام إلى مكالمة الفيديو:", error);
-        alert("حدث خطأ أثناء الانضمام إلى مكالمة الفيديو: " + error.message);
-      }
-    }
-    
-    // إنهاء مكالمة الفيديو
-    async function endVideoCall() {
-      if (agoraClient) {
-        // إيقاف جميع التيارات
-        if (localStream) {
-          localStream[0].close();
-          localStream[1].close();
-        }
-        
-        // مغادرة القناة
-        await agoraClient.leave();
-        
-        // إخفاء واجهة مكالمة الفيديو
-        document.getElementById("video-call-container").style.display = "none";
-        document.getElementById("video-grid").innerHTML = "";
-        document.getElementById("local-player-container").innerHTML = "";
-        
-        // إظهار زر البدء لصاحب المجموعة
-        checkGroupOwnerForCallButton();
-        
-        // إرسال إشعار بانتهاء المكالمة
-        if (isCallHost) {
-          sendCallNotification(false);
-        }
-        
-        // تحديث حالة المكالمة
-        isVideoCallActive = false;
-        isCallHost = false;
-      }
-    }
-    
-    // مغادرة مكالمة الفيديو (للمستخدمين غير المضيفين)
-    async function leaveVideoCall() {
-      if (agoraClient) {
-        // إيقاف التيار المحلي
-        if (localStream) {
-          localStream[0].close();
-          localStream[1].close();
-        }
-        
-        // مغادرة القناة
-        await agoraClient.leave();
-        
-        // إخفاء واجهة مكالمة الفيديو
-        document.getElementById("video-call-container").style.display = "none";
-        document.getElementById("video-grid").innerHTML = "";
-        document.getElementById("local-player-container").innerHTML = "";
-        
-        // تحديث حالة المكالمة
-        isVideoCallActive = false;
-        isCallHost = false;
-        
-        // إظهار الإشعار إذا كانت المكالمة لا تزال نشطة
-        if (currentChannelName) {
-          document.getElementById("video-call-notification").style.display = "flex";
-        }
-      }
-    }
-    
-    // تبديل حالة الصوت
-    async function toggleAudio() {
-      if (localStream) {
-        if (isAudioMuted) {
-          await localStream[0].setMuted(false);
-          document.getElementById("toggle-audio-btn").innerHTML = '<i class="fa-solid fa-microphone"></i>';
-          isAudioMuted = false;
-        } else {
-          await localStream[0].setMuted(true);
-          document.getElementById("toggle-audio-btn").innerHTML = '<i class="fa-solid fa-microphone-slash"></i>';
-          isAudioMuted = true;
-        }
-      }
-    }
-    
-    // تبديل حالة الفيديو
-    async function toggleVideo() {
-      if (localStream) {
-        if (isVideoMuted) {
-          await localStream[1].setMuted(false);
-          document.getElementById("toggle-video-btn").innerHTML = '<i class="fa-solid fa-video"></i>';
-          isVideoMuted = false;
-        } else {
-          await localStream[1].setMuted(true);
-          document.getElementById("toggle-video-btn").innerHTML = '<i class="fa-solid fa-video-slash"></i>';
-          isVideoMuted = true;
-        }
-      }
-    }
-    
-    // إرسال إشعار المكالمة إلى المجموعة
-    function sendCallNotification(isStarting) {
-      const messageText = isStarting ?
-        `بدأت مكالمة فيديو في هذه المجموعة. انقر <a href="#" onclick="joinVideoCall()">هنا</a> للانضمام.` :
-        "انتهت مكالمة الفيديو.";
-      
-      db.collection('groups').doc(currentGroup).collection('messages').add({
-        text: messageText,
-        senderId: currentUser.id,
-        senderName: currentUser.name,
-        senderPhoto: currentUser.photoURL || defaultProfileImage,
-        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-        isSystem: true
-      });
-    }
-    
-    // مراقبة المكالمات النشطة في المجموعة
-    function monitorActiveCalls() {
-      db.collection('groups').doc(currentGroup).onSnapshot(doc => {
-        if (doc.exists) {
-          const groupData = doc.data();
-          
-          // إذا كانت هناك مكالمة نشطة ولا تخص المستخدم الحالي
-          if (groupData.activeCall && groupData.activeCall !== currentUser.id && !isVideoCallActive) {
-            currentChannelName = groupData.activeCall;
-            document.getElementById("video-call-notification").style.display = "flex";
-          } else if (!groupData.activeCall) {
-            document.getElementById("video-call-notification").style.display = "none";
-          }
-        }
-      });
-    }
-    
     // تهيئة الأحداث عند تحميل الصفحة
     document.addEventListener("DOMContentLoaded", function() {
       // إضافة حدث لإغلاق نافذة الصورة عند الضغط على Esc
@@ -3000,9 +2547,6 @@
           document.getElementById('image-modal').style.display = 'none';
         }
       });
-      
-      // بدء مراقبة المكالمات النشطة
-      monitorActiveCalls();
     });
   </script>
 </body>
