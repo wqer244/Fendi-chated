@@ -9,6 +9,40 @@
   <!-- خطوط تاجوال وروبوت -->
   <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;500&display=swap" rel="stylesheet">
+  
+  <!-- الخطوط الجديدة -->
+  <link href="https://fonts.googleapis.com/css2?family=Almarai:wght@300;400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Changa:wght@300;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;600;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=El+Messiri:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Reem+Kufi:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Lemonada:wght@300;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Scheherazade+New:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Markazi+Text:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Harmattan:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Lateef:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Rakkas&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Mirza:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Katibeh&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Aref+Ruqaa:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Jomhuria&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Mada:wght@300;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+Bhaijaan+2:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@300;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@300;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300;700&display=swap" rel="stylesheet">
+  
   <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <!-- سكربتات Firebase -->
@@ -23,6 +57,9 @@
       --secondary-bg: #2f3136;
       --tertiary-bg: #202225;
       --accent-color: #7289da;
+      --font-size: 16px;
+      --message-border-radius: 10px;
+      --username-color: #7289da;
     }
     body.dark-mode {
       --primary-bg: #18191a;
@@ -38,6 +75,7 @@
       font-family: 'Tajawal', sans-serif;
       direction: rtl;
       overflow: hidden;
+      font-size: var(--font-size);
     }
     /* تخطيط التطبيق */
     .container {
@@ -230,7 +268,7 @@
     .message-bubble {
       background: var(--secondary-bg);
       padding: 10px;
-      border-radius: 10px;
+      border-radius: var(--message-border-radius);
       position: relative;
       flex: 1;
       overflow: hidden;
@@ -347,7 +385,10 @@
     .background-popup,
     .change-name-popup,
     .edit-message-popup,
-    .edit-private-message-popup {
+    .edit-private-message-popup,
+    .chat-settings-popup,
+    .privacy-settings-popup,
+    .theme-popup {
       position: fixed;
       top: 50%;
       left: 50%;
@@ -374,14 +415,19 @@
     .background-popup h3,
     .change-name-popup h3,
     .edit-message-popup h3,
-    .edit-private-message-popup h3 {
+    .edit-private-message-popup h3,
+    .chat-settings-popup h3,
+    .privacy-settings-popup h3,
+    .theme-popup h3 {
       margin-top: 0;
     }
     .create-group-popup input,
     .edit-group-popup input,
     .settings-popup input,
     .settings-popup textarea,
-    .change-name-popup input {
+    .change-name-popup input,
+    .chat-settings-popup input,
+    .chat-settings-popup select {
       width: 100%;
       padding: 10px;
       margin-bottom: 10px;
@@ -395,7 +441,10 @@
     .settings-popup button,
     .change-name-popup button,
     .edit-message-popup button,
-    .edit-private-message-popup button {
+    .edit-private-message-popup button,
+    .chat-settings-popup button,
+    .privacy-settings-popup button,
+    .theme-popup button {
       width: 100%;
       padding: 10px;
       background: var(--accent-color);
@@ -411,7 +460,10 @@
     .settings-popup button:hover,
     .change-name-popup button:hover,
     .edit-message-popup button:hover,
-    .edit-private-message-popup button:hover {
+    .edit-private-message-popup button:hover,
+    .chat-settings-popup button:hover,
+    .privacy-settings-popup button:hover,
+    .theme-popup button:hover {
       background: #5d6dcc;
     }
     .group-options-popup button {
@@ -455,11 +507,11 @@
       font-size: 16px;
       margin-top: 20px;
     }
-    #toggle-dark-mode {
+    #toggle-theme {
       background: #6c757d;
       color: #fff;
     }
-    #toggle-dark-mode:hover {
+    #toggle-theme:hover {
       background: #5a6268;
     }
     #change-bg-btn {
@@ -550,7 +602,10 @@
       .create-group-popup,
       .group-options-popup,
       .edit-group-popup,
-      .rooms-popup {
+      .rooms-popup,
+      .chat-settings-popup,
+      .privacy-settings-popup,
+      .theme-popup {
         width: 90%;
       }
       .settings-popup button {
@@ -966,6 +1021,200 @@
       background-color: #FF9800;
       color: white;
     }
+    
+    /* معاينة صورة المجموعة */
+    .group-image-preview {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin: 10px auto;
+      display: block;
+      border: 2px solid #7289da;
+    }
+    
+    /* تنسيقات إعدادات المحادثة الجديدة */
+    .setting-item {
+      margin-bottom: 20px;
+      text-align: right;
+    }
+    .setting-label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: bold;
+      color: #333;
+    }
+    .slider-container {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .slider-value {
+      width: 40px;
+      text-align: center;
+    }
+    .color-preview {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      display: inline-block;
+      vertical-align: middle;
+      margin-right: 10px;
+      border: 1px solid #ccc;
+    }
+    
+    /* إعدادات الخصوصية والأمان الجديدة */
+    .privacy-setting {
+      margin-bottom: 25px;
+      text-align: right;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 15px;
+    }
+    
+    .privacy-setting h4 {
+      margin-top: 0;
+      margin-bottom: 15px;
+      color: #333;
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+    }
+    
+    .privacy-setting h4 i {
+      margin-left: 10px;
+      font-size: 20px;
+    }
+    
+    .privacy-options {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    
+    .privacy-option {
+      display: flex;
+      align-items: center;
+      padding: 10px;
+      background: #f8f9fa;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    
+    .privacy-option:hover {
+      background: #e9ecef;
+    }
+    
+    .privacy-option.selected {
+      background: #e7f3ff;
+      border: 1px solid #007bff;
+    }
+    
+    .privacy-option .option-icon {
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-left: 10px;
+      font-size: 18px;
+    }
+    
+    .privacy-option .option-text {
+      flex: 1;
+    }
+    
+    .privacy-option .option-check {
+      color: #007bff;
+      font-size: 18px;
+      display: none;
+    }
+    
+    .privacy-option.selected .option-check {
+      display: block;
+    }
+    
+    /* تحسينات للجوال - صفحة الخصوصية والأمان */
+    @media (max-width: 480px) {
+      .privacy-settings-popup {
+        width: 95%;
+        height: 80vh;
+        max-height: 80vh;
+        overflow-y: auto;
+        padding: 15px;
+      }
+      .privacy-setting {
+        padding-bottom: 10px;
+      }
+      .privacy-options {
+        gap: 8px;
+      }
+      .privacy-option {
+        padding: 8px;
+      }
+      .privacy-settings-popup button {
+        padding: 8px;
+        font-size: 14px;
+      }
+    }
+    
+    /* تحسينات لعرض الخطوط في إعدادات المحادثة */
+    .font-preview {
+      font-size: 16px;
+      padding: 5px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      margin: 5px 0;
+    }
+    
+    .font-option {
+      padding: 8px;
+      margin: 4px 0;
+      border-radius: 5px;
+      border: 1px solid #eee;
+      cursor: pointer;
+    }
+    
+    .font-option:hover {
+      background-color: #f5f5f5;
+    }
+    
+    /* تحسينات للنافذة المنبثقة للمظهر */
+    .theme-option {
+      display: flex;
+      align-items: center;
+      padding: 15px;
+      margin: 10px 0;
+      border-radius: 8px;
+      cursor: pointer;
+      background: #f8f9fa;
+      transition: background 0.3s;
+    }
+    
+    .theme-option:hover {
+      background: #e9ecef;
+    }
+    
+    .theme-option.selected {
+      background: #e7f3ff;
+      border: 1px solid #007bff;
+    }
+    
+    .theme-icon {
+      margin-left: 10px;
+      font-size: 24px;
+    }
+    
+    .theme-text {
+      flex: 1;
+      text-align: right;
+      font-weight: bold;
+    }
+    
+    .theme-check {
+      color: #007bff;
+      font-size: 18px;
+    }
   </style>
 </head>
 <script>
@@ -1037,6 +1286,12 @@
   <div class="create-group-popup" id="create-group-popup">
     <h3>إنشاء مجموعة جديدة</h3>
     <input type="text" id="group-name" placeholder="اسم المجموعة">
+    <div style="margin: 15px 0;">
+      <img id="group-image-preview" class="group-image-preview" src="" style="display: none;">
+      <button id="upload-group-image-btn" style="background: #4CAF50; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer;">اختر صورة للمجموعة</button>
+      <input type="file" id="group-image-file" accept="image/*" style="display: none;">
+    </div>
+    <p style="text-align: center; margin: 10px 0;">أو</p>
     <input type="text" id="group-image" placeholder="رابط صورة المجموعة (اختياري)">
     <button onclick="createGroup()">إنشاء</button>
     <button onclick="closeCreateGroupPopup()">إغلاق</button>
@@ -1051,6 +1306,12 @@
   <div class="edit-group-popup" id="edit-group-popup">
     <h3>تعديل المجموعة</h3>
     <input type="text" id="edit-group-name" placeholder="اسم المجموعة">
+    <div style="margin: 15px 0;">
+      <img id="edit-group-image-preview" class="group-image-preview" src="" style="display: none;">
+      <button id="edit-upload-group-image-btn" style="background: #4CAF50; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer;">تغيير صورة المجموعة</button>
+      <input type="file" id="edit-group-image-file" accept="image/*" style="display: none;">
+    </div>
+    <p style="text-align: center; margin: 10px 0;">أو</p>
     <input type="text" id="edit-group-image" placeholder="رابط صورة المجموعة (اختياري)">
     <button onclick="saveGroupEdits()">حفظ التعديلات</button>
     <button onclick="closeEditGroupPopup()">إلغاء</button>
@@ -1058,13 +1319,187 @@
   <!-- نافذة الإعدادات -->
   <div class="settings-popup" id="settings-popup">
     <h3>الإعدادات</h3>
-    <button id="toggle-dark-mode">الوضع الداكن</button>
+    <button id="chat-settings-btn">إعدادات المحادثة</button>
+    <button id="privacy-settings-btn">خصوصية والأمان</button>
+    <button id="toggle-theme">المظهر</button>
     <button id="change-bg-btn">تغيير الخلفية</button>
     <button id="change-name-btn">تغيير الاسم</button>
     <button id="logout-btn">تسجيل الخروج</button>
     <button id="faq-btn" onclick="window.location.href='what.html'">أسئلة شائعة</button>
     <button id="close-settings-btn" onclick="closeSettingsPopup()">إغلاق</button>
   </div>
+  
+  <!-- نافذة خصوصية والأمان -->
+  <div class="privacy-settings-popup" id="privacy-settings-popup">
+    <h3>خصوصية والأمان</h3>
+    
+    <!-- آخر ظهور ومتصل -->
+    <div class="privacy-setting">
+      <h4><i class="fa-solid fa-eye"></i> آخر ظهور ومتصل</h4>
+      <div class="privacy-options">
+        <div class="privacy-option" data-value="everyone" onclick="selectPrivacyOption(this, 'lastSeen')">
+          <div class="option-icon"><i class="fa-solid fa-users"></i></div>
+          <div class="option-text">الجميع</div>
+          <div class="option-check"><i class="fa-solid fa-check"></i></div>
+        </div>
+        <div class="privacy-option" data-value="me" onclick="selectPrivacyOption(this, 'lastSeen')">
+          <div class="option-icon"><i class="fa-solid fa-user"></i></div>
+          <div class="option-text">أنا فقط</div>
+          <div class="option-check"><i class="fa-solid fa-check"></i></div>
+        </div>
+        <div class="privacy-option" data-value="friends" onclick="selectPrivacyOption(this, 'lastSeen')">
+          <div class="option-icon"><i class="fa-solid fa-user-group"></i></div>
+          <div class="option-text">أصدقائي فقط</div>
+          <div class="option-check"><i class="fa-solid fa-check"></i></div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- الوصف -->
+    <div class="privacy-setting">
+      <h4><i class="fa-solid fa-id-card"></i> الوصف</h4>
+      <div class="privacy-options">
+        <div class="privacy-option" data-value="everyone" onclick="selectPrivacyOption(this, 'bio')">
+          <div class="option-icon"><i class="fa-solid fa-users"></i></div>
+          <div class="option-text">الجميع</div>
+          <div class="option-check"><i class="fa-solid fa-check"></i></div>
+        </div>
+        <div class="privacy-option" data-value="me" onclick="selectPrivacyOption(this, 'bio')">
+          <div class="option-icon"><i class="fa-solid fa-user"></i></div>
+          <div class="option-text">أنا فقط</div>
+          <div class="option-check"><i class="fa-solid fa-check"></i></div>
+        </div>
+        <div class="privacy-option" data-value="friends" onclick="selectPrivacyOption(this, 'bio')">
+          <div class="option-icon"><i class="fa-solid fa-user-group"></i></div>
+          <div class="option-text">أصدقائي فقط</div>
+          <div class="option-check"><i class="fa-solid fa-check"></i></div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- المراسلة -->
+    <div class="privacy-setting">
+      <h4><i class="fa-solid fa-comment-dots"></i> المراسلة</h4>
+      <div class="privacy-options">
+        <div class="privacy-option" data-value="everyone" onclick="selectPrivacyOption(this, 'messaging')">
+          <div class="option-icon"><i class="fa-solid fa-users"></i></div>
+          <div class="option-text">الجميع</div>
+          <div class="option-check"><i class="fa-solid fa-check"></i></div>
+        </div>
+        <div class="privacy-option" data-value="invite" onclick="selectPrivacyOption(this, 'messaging')">
+          <div class="option-icon"><i class="fa-solid fa-envelope"></i></div>
+          <div class="option-text">بطلب دعوة</div>
+          <div class="option-check"><i class="fa-solid fa-check"></i></div>
+        </div>
+      </div>
+    </div>
+    
+    <button onclick="savePrivacySettings()">حفظ التغييرات</button>
+    <button onclick="closePrivacySettingsPopup()">إغلاق</button>
+  </div>
+  
+  <!-- نافذة إعدادات المحادثة الجديدة -->
+  <div class="chat-settings-popup" id="chat-settings-popup">
+    <h3>إعدادات المحادثة</h3>
+    
+    <!-- حجم الخط -->
+    <div class="setting-item">
+      <label class="setting-label">حجم الخط</label>
+      <div class="slider-container">
+        <input type="range" id="font-size-slider" min="12" max="24" step="1" value="16">
+        <span id="font-size-value" class="slider-value">16</span>
+      </div>
+    </div>
+    
+    <!-- زاوية الرسالة -->
+    <div class="setting-item">
+      <label class="setting-label">زاوية الرسالة</label>
+      <div class="slider-container">
+        <input type="range" id="message-radius-slider" min="0" max="30" step="1" value="10">
+        <span id="message-radius-value" class="slider-value">10</span>
+      </div>
+    </div>
+    
+    <!-- لون الاسم -->
+    <div class="setting-item">
+      <label class="setting-label">لون الاسم</label>
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <span class="color-preview" id="username-color-preview" style="background-color: #7289da;"></span>
+        <input type="color" id="username-color-picker" value="#7289da" style="flex: 1; height: 40px;">
+      </div>
+    </div>
+    
+    <!-- نوع الخط -->
+    <div class="setting-item">
+      <label class="setting-label">نوع الخط</label>
+      <select id="font-family-select" onchange="updateFontPreview()">
+        <!-- الخطوط العربية -->
+        <optgroup label="الخطوط العربية">
+          <option value="Tajawal, sans-serif" style="font-family: 'Tajawal'">تاجوال</option>
+          <option value="Almarai, sans-serif" style="font-family: 'Almarai'">المراعي</option>
+          <option value="Changa, sans-serif" style="font-family: 'Changa'">تشانغا</option>
+          <option value="Cairo, sans-serif" style="font-family: 'Cairo'">القاهرة</option>
+          <option value="El Messiri, serif" style="font-family: 'El Messiri'">المسيري</option>
+          <option value="Reem Kufi, sans-serif" style="font-family: 'Reem Kufi'">ريم كوفي</option>
+          <option value="Lemonada, cursive" style="font-family: 'Lemonada'">ليمونادا</option>
+          <option value="Amiri, serif" style="font-family: 'Amiri'">أميري</option>
+          <option value="Scheherazade New, serif" style="font-family: 'Scheherazade New'">شهرزاد جديدة</option>
+          <option value="Markazi Text, serif" style="font-family: 'Markazi Text'">مركزية نص</option>
+          <option value="Noto Naskh Arabic, serif" style="font-family: 'Noto Naskh Arabic'">نوتو نسخ عربي</option>
+          <option value="Harmattan, sans-serif" style="font-family: 'Harmattan'">حرمل</option>
+          <option value="Lateef, serif" style="font-family: 'Lateef'">لطيف</option>
+          <option value="Rakkas, cursive" style="font-family: 'Rakkas'">ركاز</option>
+          <option value="Mirza, serif" style="font-family: 'Mirza'">مرزا</option>
+          <option value="Katibeh, cursive" style="font-family: 'Katibeh'">كاتبة</option>
+          <option value="Aref Ruqaa, serif" style="font-family: 'Aref Ruqaa'">عارف رقعة</option>
+          <option value="Jomhuria, cursive" style="font-family: 'Jomhuria'">جمهورية</option>
+          <option value="Mada, sans-serif" style="font-family: 'Mada'">مدى</option>
+          <option value="Baloo Bhaijaan 2, cursive" style="font-family: 'Baloo Bhaijaan 2'">بالو بهيجان</option>
+          <option value="Rubik, sans-serif" style="font-family: 'Rubik'">روبيك</option>
+          <option value="'Droid Arabic Naskh', sans-serif" style="font-family: 'Droid Arabic Naskh'">درويد نسخ</option>
+          <option value="'Droid Arabic Kufi', sans-serif" style="font-family: 'Droid Arabic Kufi'">درويد كوفي</option>
+          <option value="'Arabic Typesetting', serif" style="font-family: 'Arabic Typesetting'">تنضيد عربي</option>
+          <option value="'Traditional Arabic', serif" style="font-family: 'Traditional Arabic'">عربي تقليدي</option>
+          <option value="'Simplified Arabic', sans-serif" style="font-family: 'Simplified Arabic'">عربي مبسط</option>
+          <option value="'DecoType Naskh', serif" style="font-family: 'DecoType Naskh'">ديكوتايب نسخ</option>
+          <option value="'Kufam', sans-serif" style="font-family: 'Kufam'">كفام</option>
+          <option value="'Lalezar', cursive" style="font-family: 'Lalezar'">لالزار</option>
+        </optgroup>
+        
+        <!-- الخطوط الإنجليزية -->
+        <optgroup label="English Fonts">
+          <option value="Roboto, sans-serif" style="font-family: 'Roboto'">Roboto</option>
+          <option value="Montserrat, sans-serif" style="font-family: 'Montserrat'">Montserrat</option>
+          <option value="Poppins, sans-serif" style="font-family: 'Poppins'">Poppins</option>
+          <option value="Open Sans, sans-serif" style="font-family: 'Open Sans'">Open Sans</option>
+          <option value="Raleway, sans-serif" style="font-family: 'Raleway'">Raleway</option>
+          <option value="Lato, sans-serif" style="font-family: 'Lato'">Lato</option>
+          <option value="Roboto Condensed, sans-serif" style="font-family: 'Roboto Condensed'">Roboto Condensed</option>
+          <option value="Source Sans Pro, sans-serif" style="font-family: 'Source Sans Pro'">Source Sans Pro</option>
+          <option value="Ubuntu, sans-serif" style="font-family: 'Ubuntu'">Ubuntu</option>
+          <option value="Oswald, sans-serif" style="font-family: 'Oswald'">Oswald</option>
+          <option value="Playfair Display, serif" style="font-family: 'Playfair Display'">Playfair Display</option>
+          <option value="Merriweather, serif" style="font-family: 'Merriweather'">Merriweather</option>
+          <option value="Arial, sans-serif" style="font-family: 'Arial'">Arial</option>
+          <option value="Verdana, sans-serif" style="font-family: 'Verdana'">Verdana</option>
+          <option value="Georgia, serif" style="font-family: 'Georgia'">Georgia</option>
+          <option value="Times New Roman, serif" style="font-family: 'Times New Roman'">Times New Roman</option>
+          <option value="Courier New, monospace" style="font-family: 'Courier New'">Courier New</option>
+          <option value="Impact, sans-serif" style="font-family: 'Impact'">Impact</option>
+          <option value="Comic Sans MS, cursive" style="font-family: 'Comic Sans MS'">Comic Sans</option>
+          <option value="Trebuchet MS, sans-serif" style="font-family: 'Trebuchet MS'">Trebuchet</option>
+        </optgroup>
+      </select>
+      <div id="font-preview-container" style="margin-top: 10px; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+        <p id="font-preview" style="font-size: 18px;">هذا مثال للنص يظهر بنوع الخط المحدد</p>
+      </div>
+    </div>
+    
+    <!-- أزرار التحكم -->
+    <button onclick="saveChatSettings()">حفظ الإعدادات</button>
+    <button onclick="closeChatSettingsPopup()">إغلاق</button>
+  </div>
+  
   <!-- نافذة تغيير الخلفية -->
   <div class="settings-popup" id="background-popup">
     <h3>اختر الخلفية</h3>
@@ -1072,6 +1507,27 @@
     <button id="apply-bg-btn">تعيين</button>
     <button onclick="closeBackgroundPopup()">إغلاق</button>
   </div>
+  
+  <!-- نافذة تغيير المظهر -->
+  <div class="theme-popup" id="theme-popup">
+    <h3>اختر مظهر التطبيق</h3>
+    
+    <div class="theme-option" onclick="selectTheme('light')">
+      <div class="theme-icon"><i class="fa-solid fa-sun"></i></div>
+      <div class="theme-text">الوضع الفاتح</div>
+      <div class="theme-check"><i class="fa-solid fa-check"></i></div>
+    </div>
+    
+    <div class="theme-option" onclick="selectTheme('dark')">
+      <div class="theme-icon"><i class="fa-solid fa-moon"></i></div>
+      <div class="theme-text">الوضع الداكن</div>
+      <div class="theme-check"><i class="fa-solid fa-check"></i></div>
+    </div>
+    
+    <button onclick="applyTheme()">تطبيق</button>
+    <button onclick="closeThemePopup()">إغلاق</button>
+  </div>
+  
   <!-- نافذة تغيير الاسم -->
   <div class="settings-popup" id="change-name-popup">
     <h3>تغيير اسم المستخدم</h3>
@@ -1199,6 +1655,13 @@
     let privateChatId = null;
     let editingPrivateMessageId = null;
     
+    // إعدادات الخصوصية الحالية
+    let privacySettings = {
+      lastSeen: 'everyone',
+      bio: 'everyone',
+      messaging: 'everyone'
+    };
+    
     // تهيئة Firebase
     const firebaseConfig = {
       apiKey: "AIzaSyBwwrBtf6AtW7R36FX4j2GQZVEdJldFq7o",
@@ -1211,6 +1674,10 @@
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const db = firebase.firestore();
+
+    // متغيرات لصور المجموعات
+    let selectedGroupImageFile = null;
+    let selectedEditGroupImageFile = null;
 
     /* ==========================
        تحديث حالة المستخدم (online/offline) مع زر الحالة
@@ -1240,6 +1707,11 @@
             currentUser = doc.data();
             currentUser.id = user.uid;
             setUserStatusOnline();
+            
+            // تحميل إعدادات الخصوصية
+            if (currentUser.privacySettings) {
+              privacySettings = currentUser.privacySettings;
+            }
           } else {
             currentUser = {
               id: user.uid,
@@ -1248,7 +1720,8 @@
               username: "",
               createdAt: new Date().toISOString(),
               photoURL: user.photoURL || defaultProfileImage,
-              status: "online"
+              status: "online",
+              privacySettings: privacySettings
             };
             db.collection('users').doc(user.uid).set(currentUser);
           }
@@ -1256,6 +1729,7 @@
           currentGroup = localStorage.getItem('lastGroup') || 'general';
           loadMessages();
           loadPrivateMessages();
+          loadChatSettings(); // تحميل إعدادات المحادثة
         });
         window.addEventListener("beforeunload", setUserStatusOffline);
       } else {
@@ -1449,7 +1923,7 @@
             
             // التحقق مما إذا كانت الرسالة تحتوي على صورة
             if (msg.isImage) {
-              bubbleDiv.innerHTML = `<strong>${msg.senderName}:</strong><br>`;
+              bubbleDiv.innerHTML = `<strong style="color: var(--username-color);">${msg.senderName}:</strong><br>`;
               const imgElement = document.createElement('img');
               imgElement.src = msg.imageUrl;
               imgElement.className = 'thumbnail-image';
@@ -1466,7 +1940,7 @@
               
               bubbleDiv.innerHTML += `<div class="message-time">${timeString}</div>`;
             } else {
-              bubbleDiv.innerHTML = `<strong>${msg.senderName}:</strong> ${msg.text} <div class="message-time">${timeString}</div>`;
+              bubbleDiv.innerHTML = `<strong style="color: var(--username-color);">${msg.senderName}:</strong> ${msg.text} <div class="message-time">${timeString}</div>`;
               
               // إذا كانت الرسالة تحتوي على معاينة رابط فقم بعرضها
               if(msg.linkPreview) {
@@ -1725,6 +2199,14 @@
       closeGroupOptionsPopup();
       document.getElementById('edit-group-name').value = selectedGroupData.name;
       document.getElementById('edit-group-image').value = selectedGroupData.image || "";
+      const preview = document.getElementById('edit-group-image-preview');
+      if (selectedGroupData.image) {
+        preview.src = selectedGroupData.image;
+        preview.style.display = 'block';
+      } else {
+        preview.style.display = 'none';
+      }
+      selectedEditGroupImageFile = null;
       document.getElementById('edit-group-popup').style.display = 'block';
     });
     
@@ -1732,19 +2214,48 @@
       document.getElementById('edit-group-popup').style.display = 'none';
     }
     
-    function saveGroupEdits() {
+    async function saveGroupEdits() {
       const newName = document.getElementById('edit-group-name').value.trim();
-      const newImage = document.getElementById('edit-group-image').value.trim();
+      let newImage = document.getElementById('edit-group-image').value.trim();
+      
       if(!newName) {
         alert("الرجاء إدخال اسم المجموعة");
         return;
       }
-      db.collection('groups').doc(selectedGroupId).update({
-        name: newName,
-        image: newImage || ''
-      }).then(() => {
-        closeEditGroupPopup();
-      }).catch(err => console.error("Error updating group:", err));
+      
+      // إذا تم اختيار ملف صورة، نرفعه أولاً
+      if (selectedEditGroupImageFile) {
+        try {
+          const imageUrl = await uploadImageToBackendless(selectedEditGroupImageFile);
+          if (imageUrl) {
+            newImage = imageUrl;
+          } else {
+            alert("فشل رفع الصورة. سيتم استخدام الرابط اليدوي إن وجد.");
+          }
+        } catch (error) {
+          console.error("Error uploading group image:", error);
+          alert("حدث خطأ أثناء رفع الصورة: " + error.message);
+        }
+      }
+      
+      // إذا لم يتم رفع صورة ولم يتم إدخال رابط، نترك الصورة كما هي
+      const updateData = {
+        name: newName
+      };
+      
+      if (newImage) {
+        updateData.image = newImage;
+      }
+      
+      db.collection('groups').doc(selectedGroupId).update(updateData)
+        .then(() => {
+          closeEditGroupPopup();
+          selectedEditGroupImageFile = null;
+          document.getElementById('edit-group-image-preview').style.display = 'none';
+          document.getElementById('edit-group-image-preview').src = "";
+          document.getElementById('edit-group-image-file').value = "";
+        })
+        .catch(err => console.error("Error updating group:", err));
     }
     
     function changeName() {
@@ -1760,17 +2271,52 @@
       }
     }
     
-    document.getElementById('toggle-dark-mode').addEventListener('click', function() {
-      if(document.body.classList.contains('dark-mode')) {
-        document.body.classList.remove('dark-mode');
-        localStorage.setItem('mode', 'light');
-        this.textContent = 'الوضع الداكن';
-      } else {
-        document.body.classList.add('dark-mode');
-        localStorage.setItem('mode', 'dark');
-        this.textContent = 'الوضع الفاتح';
-      }
+    document.getElementById('toggle-theme').addEventListener('click', function() {
+      document.getElementById('theme-popup').style.display = 'block';
+      document.getElementById('settings-popup').style.display = 'none';
+      
+      // تحديث الخيارات في نافذة المظهر
+      const mode = localStorage.getItem('mode') || 'light';
+      const options = document.querySelectorAll('.theme-option');
+      options.forEach(option => {
+        option.classList.remove('selected');
+        if (option.querySelector('.theme-text').textContent === (mode === 'dark' ? 'الوضع الداكن' : 'الوضع الفاتح')) {
+          option.classList.add('selected');
+        }
+      });
     });
+    
+    function selectTheme(theme) {
+      const options = document.querySelectorAll('.theme-option');
+      options.forEach(option => {
+        option.classList.remove('selected');
+        if (option.querySelector('.theme-text').textContent === (theme === 'dark' ? 'الوضع الداكن' : 'الوضع الفاتح')) {
+          option.classList.add('selected');
+        }
+      });
+    }
+    
+    function applyTheme() {
+      const selectedOption = document.querySelector('.theme-option.selected');
+      if (selectedOption) {
+        const theme = selectedOption.querySelector('.theme-text').textContent === 'الوضع الداكن' ? 'dark' : 'light';
+        
+        if(theme === 'dark') {
+          document.body.classList.add('dark-mode');
+          localStorage.setItem('mode', 'dark');
+        } else {
+          document.body.classList.remove('dark-mode');
+          localStorage.setItem('mode', 'light');
+        }
+        
+        closeThemePopup();
+      }
+    }
+    
+    function closeThemePopup() {
+      document.getElementById('theme-popup').style.display = 'none';
+      document.getElementById('settings-popup').style.display = 'block';
+    }
     
     document.getElementById('change-bg-btn').addEventListener('click', function() {
       document.getElementById('settings-popup').style.display = 'none';
@@ -1864,13 +2410,30 @@
     });
     
     // إنشاء مجموعة
-    function createGroup() {
+    async function createGroup() {
       const groupName = document.getElementById('group-name').value.trim();
-      const groupImage = document.getElementById('group-image').value.trim();
+      let groupImage = document.getElementById('group-image').value.trim();
+      
       if(!groupName) {
         alert("يرجى إدخال اسم المجموعة");
         return;
       }
+      
+      // إذا تم اختيار ملف صورة، نرفعه أولاً
+      if (selectedGroupImageFile) {
+        try {
+          const imageUrl = await uploadImageToBackendless(selectedGroupImageFile);
+          if (imageUrl) {
+            groupImage = imageUrl;
+          } else {
+            alert("فشل رفع الصورة. سيتم استخدام الرابط اليدوي إن وجد.");
+          }
+        } catch (error) {
+          console.error("Error uploading group image:", error);
+          alert("حدث خطأ أثناء رفع الصورة: " + error.message);
+        }
+      }
+      
       db.collection('groups').where("creatorId", "==", currentUser.id).get()
         .then(snapshot => {
           if(snapshot.size >= 10) {
@@ -1895,10 +2458,8 @@
       const mode = localStorage.getItem('mode');
       if(mode === 'dark') {
         document.body.classList.add('dark-mode');
-        document.getElementById('toggle-dark-mode').textContent = 'الوضع الفاتح';
       } else {
         document.body.classList.remove('dark-mode');
-        document.getElementById('toggle-dark-mode').textContent = 'الوضع الداكن';
       }
       const chatBg = localStorage.getItem('chatBackground');
       if(chatBg) {
@@ -1926,6 +2487,81 @@
         });
         containerBg.appendChild(img);
       }
+      
+      // أحداث تحميل الصور للمجموعات
+      document.getElementById('upload-group-image-btn').addEventListener('click', function() {
+        document.getElementById('group-image-file').click();
+      });
+      
+      document.getElementById('group-image-file').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+          selectedGroupImageFile = file;
+          const reader = new FileReader();
+          reader.onload = function(e) {
+            const preview = document.getElementById('group-image-preview');
+            preview.src = e.target.result;
+            preview.style.display = 'block';
+          };
+          reader.readAsDataURL(file);
+        }
+      });
+      
+      document.getElementById('edit-upload-group-image-btn').addEventListener('click', function() {
+        document.getElementById('edit-group-image-file').click();
+      });
+      
+      document.getElementById('edit-group-image-file').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+          selectedEditGroupImageFile = file;
+          const reader = new FileReader();
+          reader.onload = function(e) {
+            const preview = document.getElementById('edit-group-image-preview');
+            preview.src = e.target.result;
+            preview.style.display = 'block';
+          };
+          reader.readAsDataURL(file);
+        }
+      });
+      
+      // تهيئة أحداث إعدادات المحادثة
+      document.getElementById('chat-settings-btn').addEventListener('click', function() {
+        document.getElementById('settings-popup').style.display = 'none';
+        document.getElementById('chat-settings-popup').style.display = 'block';
+        updateFontPreview(); // تحديث معاينة الخط عند فتح النافذة
+      });
+      
+      // أحداث شريط تمرير حجم الخط
+      const fontSizeSlider = document.getElementById('font-size-slider');
+      const fontSizeValue = document.getElementById('font-size-value');
+      
+      fontSizeSlider.addEventListener('input', function() {
+        fontSizeValue.textContent = this.value;
+      });
+      
+      // أحداث شريط تمرير زاوية الرسالة
+      const messageRadiusSlider = document.getElementById('message-radius-slider');
+      const messageRadiusValue = document.getElementById('message-radius-value');
+      
+      messageRadiusSlider.addEventListener('input', function() {
+        messageRadiusValue.textContent = this.value;
+      });
+      
+      // أحداث اختيار لون الاسم
+      const usernameColorPicker = document.getElementById('username-color-picker');
+      const usernameColorPreview = document.getElementById('username-color-preview');
+      
+      usernameColorPicker.addEventListener('input', function() {
+        usernameColorPreview.style.backgroundColor = this.value;
+      });
+      
+      // تهيئة أحداث إعدادات الخصوصية والأمان
+      document.getElementById('privacy-settings-btn').addEventListener('click', function() {
+        document.getElementById('settings-popup').style.display = 'none';
+        document.getElementById('privacy-settings-popup').style.display = 'block';
+        loadPrivacySettings();
+      });
     });
     
     function toggleRoomsPopup() {
@@ -2068,7 +2704,7 @@
              
              // التحقق مما إذا كانت الرسالة تحتوي على صورة
              if (msg.isImage) {
-               bubbleDiv.innerHTML = `<strong>${msg.senderName}:</strong><br>`;
+               bubbleDiv.innerHTML = `<strong style="color: var(--username-color);">${msg.senderName}:</strong><br>`;
                const imgElement = document.createElement('img');
                imgElement.src = msg.imageUrl;
                imgElement.className = 'thumbnail-image';
@@ -2085,7 +2721,7 @@
                
                bubbleDiv.innerHTML += `<div class="message-time">${timeString}</div>`;
              } else {
-               bubbleDiv.innerHTML = `<strong>${msg.senderName}:</strong> ${msg.text} <div class="message-time">${timeString}</div>`;
+               bubbleDiv.innerHTML = `<strong style="color: var(--username-color);">${msg.senderName}:</strong> ${msg.text} <div class="message-time">${timeString}</div>`;
              }
              
              messageDiv.appendChild(bubbleDiv);
@@ -2315,7 +2951,7 @@
     }
     
     // دالة لرفع الصورة إلى Backendless
-    async function uploadProfileImageToBackendless(file) {
+    async function uploadImageToBackendless(file) {
       // عرض مؤشر التحميل
       document.getElementById('upload-indicator-container').style.display = 'flex';
       
@@ -2361,7 +2997,7 @@
       // إذا كان هناك ملف محدد، نرفعه إلى Backendless
       if (fileInput.files.length > 0) {
         const file = fileInput.files[0];
-        const imageUrl = await uploadProfileImageToBackendless(file);
+        const imageUrl = await uploadImageToBackendless(file);
         if (imageUrl) {
           newPhoto = imageUrl;
         } else {
@@ -2423,38 +3059,6 @@
         document.getElementById('image-caption-popup').style.display = 'block';
       }
     });
-    
-    // دالة لرفع الصورة إلى Backendless
-    async function uploadImageToBackendless(file) {
-      // عرض مؤشر التحميل
-      document.getElementById('upload-indicator-container').style.display = 'flex';
-      
-      const formData = new FormData();
-      formData.append('file', file);
-      formData.append('fileName', file.name);
-      
-      try {
-        const response = await fetch(`https://api.backendless.com/${BACKENDLESS_APP_ID}/${BACKENDLESS_API_KEY}/files/${file.name}`, {
-          method: 'POST',
-          body: formData
-        });
-        
-        if (!response.ok) {
-          throw new Error('فشل رفع الصورة');
-        }
-        
-        const result = await response.json();
-        return result.fileURL;
-        
-      } catch (error) {
-        console.error('Error uploading image:', error);
-        alert('حدث خطأ أثناء رفع الصورة: ' + error.message);
-        return null;
-      } finally {
-        // إخفاء مؤشر التحميل
-        document.getElementById('upload-indicator-container').style.display = 'none';
-      }
-    }
     
     // إرسال صورة مع نص إلى المجموعة
     async function sendGroupImageMessage(imageUrl, caption) {
@@ -2548,6 +3152,135 @@
         }
       });
     });
+    
+    /* ==========================
+       إعدادات المحادثة الجديدة
+       ========================== */
+    
+    // تحميل إعدادات المحادثة من localStorage
+    function loadChatSettings() {
+      const fontSize = localStorage.getItem('chatFontSize') || '16';
+      const messageRadius = localStorage.getItem('chatMessageRadius') || '10';
+      const usernameColor = localStorage.getItem('chatUsernameColor') || '#7289da';
+      const fontFamily = localStorage.getItem('chatFontFamily') || 'Tajawal, sans-serif';
+      
+      // تطبيق الإعدادات
+      document.documentElement.style.setProperty('--font-size', `${fontSize}px`);
+      document.documentElement.style.setProperty('--message-border-radius', `${messageRadius}px`);
+      document.documentElement.style.setProperty('--username-color', usernameColor);
+      document.body.style.fontFamily = fontFamily;
+      
+      // تحديث واجهة إعدادات المحادثة
+      const fontSizeSlider = document.getElementById('font-size-slider');
+      const fontSizeValue = document.getElementById('font-size-value');
+      const messageRadiusSlider = document.getElementById('message-radius-slider');
+      const messageRadiusValue = document.getElementById('message-radius-value');
+      const usernameColorPicker = document.getElementById('username-color-picker');
+      const usernameColorPreview = document.getElementById('username-color-preview');
+      const fontFamilySelect = document.getElementById('font-family-select');
+      
+      fontSizeSlider.value = fontSize;
+      fontSizeValue.textContent = fontSize;
+      messageRadiusSlider.value = messageRadius;
+      messageRadiusValue.textContent = messageRadius;
+      usernameColorPicker.value = usernameColor;
+      usernameColorPreview.style.backgroundColor = usernameColor;
+      
+      // اختيار الخط الصحيح في القائمة المنسدلة
+      fontFamilySelect.value = fontFamily;
+    }
+    
+    // تحديث معاينة الخط
+    function updateFontPreview() {
+      const fontFamilySelect = document.getElementById('font-family-select');
+      const fontPreview = document.getElementById('font-preview');
+      const selectedFont = fontFamilySelect.value;
+      fontPreview.style.fontFamily = selectedFont;
+    }
+    
+    // حفظ إعدادات المحادثة في localStorage
+    function saveChatSettings() {
+      const fontSize = document.getElementById('font-size-slider').value;
+      const messageRadius = document.getElementById('message-radius-slider').value;
+      const usernameColor = document.getElementById('username-color-picker').value;
+      const fontFamily = document.getElementById('font-family-select').value;
+      
+      localStorage.setItem('chatFontSize', fontSize);
+      localStorage.setItem('chatMessageRadius', messageRadius);
+      localStorage.setItem('chatUsernameColor', usernameColor);
+      localStorage.setItem('chatFontFamily', fontFamily);
+      
+      // تطبيق الإعدادات مباشرة
+      document.documentElement.style.setProperty('--font-size', `${fontSize}px`);
+      document.documentElement.style.setProperty('--message-border-radius', `${messageRadius}px`);
+      document.documentElement.style.setProperty('--username-color', usernameColor);
+      document.body.style.fontFamily = fontFamily;
+      
+      alert("تم حفظ إعدادات المحادثة بنجاح!");
+      closeChatSettingsPopup();
+    }
+    
+    // إغلاق نافذة إعدادات المحادثة
+    function closeChatSettingsPopup() {
+      document.getElementById('chat-settings-popup').style.display = 'none';
+      document.getElementById('settings-popup').style.display = 'block';
+    }
+    
+    /* ==========================
+       إعدادات الخصوصية والأمان الجديدة
+       ========================== */
+    
+    // تحميل إعدادات الخصوصية
+    function loadPrivacySettings() {
+      // إزالة التحديد من جميع الخيارات
+      document.querySelectorAll('.privacy-option').forEach(option => {
+        option.classList.remove('selected');
+      });
+      
+      // تحديد الخيارات الحالية
+      document.querySelectorAll('.privacy-option').forEach(option => {
+        const type = option.parentElement.parentElement.querySelector('h4').dataset.type;
+        if (option.dataset.value === privacySettings[type]) {
+          option.classList.add('selected');
+        }
+      });
+    }
+    
+    // اختيار خيار خصوصية
+    function selectPrivacyOption(element, type) {
+      // إزالة التحديد من جميع خيارات هذا النوع
+      const container = element.parentElement;
+      container.querySelectorAll('.privacy-option').forEach(option => {
+        option.classList.remove('selected');
+      });
+      
+      // تحديد الخيار المختار
+      element.classList.add('selected');
+      
+      // تحديث الإعدادات المؤقتة
+      privacySettings[type] = element.dataset.value;
+    }
+    
+    // حفظ إعدادات الخصوصية
+    function savePrivacySettings() {
+      if (currentUser && currentUser.id) {
+        db.collection('users').doc(currentUser.id).update({
+          privacySettings: privacySettings
+        }).then(() => {
+          alert("تم حفظ إعدادات الخصوصية بنجاح!");
+          closePrivacySettingsPopup();
+        }).catch(error => {
+          console.error("Error saving privacy settings:", error);
+          alert("حدث خطأ أثناء حفظ الإعدادات.");
+        });
+      }
+    }
+    
+    // إغلاق نافذة الخصوصية والأمان
+    function closePrivacySettingsPopup() {
+      document.getElementById('privacy-settings-popup').style.display = 'none';
+      document.getElementById('settings-popup').style.display = 'block';
+    }
   </script>
 </body>
 </html>
