@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>تطبيق الدردشة مع الإيموجي وخيارات تعديل وحذف الرسائل</title>
+  <title>الصفحه الرئيسيه-قسم دردشه فندشات </title>
   <!--منع تكبير او تصغير في موقعي -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <!-- خطوط تاجوال وروبوت -->
@@ -814,7 +814,7 @@
     }
     
     .seen-icon.seen {
-      color: #ff4444;
+      color: #800080; /* اللون البنفسجي عند المشاهدة */
     }
     
     .seen-users-popup {
@@ -1215,16 +1215,186 @@
       color: #007bff;
       font-size: 18px;
     }
+    
+    /* التعديلات الجديدة المطلوبة */
+    
+    /* أيقونة المشاهدة للرسائل الخاصة */
+    .seen-indicator {
+      position: absolute;
+      bottom: 5px;
+      left: 5px;
+      font-size: 12px;
+      width: 15px;
+      height: 15px;
+      border-radius: 50%;
+      background-color: #000; /* اللون الأسود الافتراضي */
+    }
+    
+    .seen-indicator.seen {
+      background-color: #800080; /* اللون البنفسجي عند المشاهدة */
+    }
+    
+    /* أيقونة التعديل للرومات */
+    .room-edit-icon {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      background: rgba(0, 0, 0, 0.5);
+      color: white;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      cursor: pointer;
+      z-index: 10;
+      transition: all 0.3s;
+    }
+    
+    .room-edit-icon:hover {
+      background: var(--accent-color);
+      transform: scale(1.2);
+    }
+    
+    /* نافذة الدعوة للمراسلة */
+    .invite-popup {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      padding: 25px;
+      border-radius: 15px;
+      box-shadow: 0 5px 25px rgba(0,0,0,0.3);
+      z-index: 5000;
+      width: 90%;
+      max-width: 400px;
+      text-align: center;
+      display: none;
+    }
+    
+    .invite-popup h3 {
+      margin-top: 0;
+      color: #333;
+      font-size: 22px;
+    }
+    
+    .invite-popup p {
+      color: #555;
+      font-size: 16px;
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+    
+    .invite-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+    }
+    
+    .invite-btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: all 0.3s;
+    }
+    
+    .invite-send {
+      background: #4CAF50;
+      color: white;
+    }
+    
+    .invite-cancel {
+      background: #dc3545;
+      color: white;
+    }
+    
+    .invite-btn:hover {
+      opacity: 0.9;
+      transform: translateY(-2px);
+    }
+    
+    .invite-notification {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #28a745;
+      color: white;
+      padding: 15px 25px;
+      border-radius: 8px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      z-index: 6000;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      animation: slideIn 0.5s, fadeOut 0.5s 2.5s forwards;
+    }
+    
+    @keyframes slideIn {
+      from { top: -50px; opacity: 0; }
+      to { top: 20px; opacity: 1; }
+    }
+    
+    @keyframes fadeOut {
+      from { opacity: 1; }
+      to { opacity: 0; }
+    }
+    
+    /* قسم الدعوات في الرسائل الخاصة */
+    .invites-tab {
+      display: flex;
+      border-bottom: 1px solid #ccc;
+    }
+    
+    .invites-tab-btn {
+      flex: 1;
+      padding: 10px;
+      text-align: center;
+      cursor: pointer;
+      background: #f0f0f0;
+    }
+    
+    .invites-tab-btn.active {
+      background: #7289da;
+      color: white;
+    }
+    
+    .invite-item {
+      padding: 10px;
+      border-bottom: 1px solid #eee;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    
+    .invite-actions {
+      display: flex;
+      gap: 5px;
+    }
+    
+    .invite-action-btn {
+      padding: 5px 10px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    
+    .invite-accept {
+      background: #4CAF50;
+      color: white;
+    }
+    
+    .invite-reject {
+      background: #dc3545;
+      color: white;
+    }
   </style>
 </head>
-<script>
-    if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('/sw.js')
-            .then(() => console.log("✅ تم تسجيل Service Worker بنجاح"))
-            .catch((error) => console.log("❌ فشل تسجيل Service Worker", error));
-    }
-</script>
-
 <body>
   <!-- زر المنشورات -->
   <a href="posts.html" class="fixed-posts-btn">
@@ -1579,8 +1749,15 @@
       <h3>الرسائل الخاصة</h3>
       <button class="close-btn" onclick="togglePrivateMessagesPopup()">×</button>
     </div>
-    <div class="private-messages-list" id="private-messages-list">
+    <div class="invites-tab" id="invites-tab">
+      <div class="invites-tab-btn active" onclick="switchPrivateTab('chats')">المحادثات</div>
+      <div class="invites-tab-btn" onclick="switchPrivateTab('invites')">الدعوات</div>
+    </div>
+    <div class="private-messages-list" id="private-chats-list">
       <!-- سيتم تحميل محادثات الرسائل الخاصة هنا -->
+    </div>
+    <div class="private-messages-list" id="private-invites-list" style="display: none;">
+      <!-- سيتم تحميل الدعوات الواردة هنا -->
     </div>
   </div>
   <!-- نافذة الدردشة الخاصة -->
@@ -1627,6 +1804,16 @@
   <!-- مؤشر التحميل -->
   <div class="upload-indicator-container" id="upload-indicator-container">
     <div class="upload-spinner"></div>
+  </div>
+  
+  <!-- نافذة الدعوة للمراسلة -->
+  <div class="invite-popup" id="invite-popup">
+    <h3>لا يمكنك مراسلة هذا المستخدم</h3>
+    <p id="invite-message"></p>
+    <div class="invite-buttons">
+      <button class="invite-btn invite-send" id="send-invite-btn">إرسال دعوة</button>
+      <button class="invite-btn invite-cancel" id="cancel-invite-btn">إلغاء</button>
+    </div>
   </div>
 
   <!-- سكربتات Firebase والمكتبات الأخرى -->
@@ -1728,7 +1915,7 @@
           loadGroups();
           currentGroup = localStorage.getItem('lastGroup') || 'general';
           loadMessages();
-          loadPrivateMessages();
+          loadPrivateMessages(); // تحميل الرسائل الخاصة والدعوات
           loadChatSettings(); // تحميل إعدادات المحادثة
         });
         window.addEventListener("beforeunload", setUserStatusOffline);
@@ -2096,6 +2283,19 @@
           const data = doc.data();
           const roomCard = document.createElement('div');
           roomCard.className = 'room-card';
+          
+          // إضافة أيقونة التعديل للصاحب فقط
+          if (data.creatorId === currentUser.id) {
+            const editIcon = document.createElement('div');
+            editIcon.className = 'room-edit-icon';
+            editIcon.innerHTML = '<i class="fas fa-edit"></i>';
+            editIcon.addEventListener('click', function(e) {
+              e.stopPropagation();
+              showGroupOptionsPopup(doc.id, data);
+            });
+            roomCard.appendChild(editIcon);
+          }
+          
           if(data.image && data.image.trim() !== "") {
             const img = document.createElement('img');
             img.src = data.image;
@@ -2626,8 +2826,31 @@
       }
     }
     
+    function switchPrivateTab(tab) {
+      document.querySelectorAll('.invites-tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      document.getElementById('private-chats-list').style.display = 'none';
+      document.getElementById('private-invites-list').style.display = 'none';
+      
+      if(tab === 'chats') {
+        document.querySelector('.invites-tab-btn:first-child').classList.add('active');
+        document.getElementById('private-chats-list').style.display = 'block';
+        loadPrivateChats();
+      } else {
+        document.querySelector('.invites-tab-btn:last-child').classList.add('active');
+        document.getElementById('private-invites-list').style.display = 'block';
+        loadPrivateInvites();
+      }
+    }
+    
     function loadPrivateMessages() {
-      const listContainer = document.getElementById('private-messages-list');
+      loadPrivateChats();
+      loadPrivateInvites();
+    }
+    
+    function loadPrivateChats() {
+      const listContainer = document.getElementById('private-chats-list');
       listContainer.innerHTML = "";
       db.collection('private_chats').where("participants", "array-contains", currentUser.id)
         .get()
@@ -2640,19 +2863,92 @@
             const data = doc.data();
             let otherUserId = data.participants.filter(id => id !== currentUser.id)[0];
             db.collection('users').doc(otherUserId).get().then(userDoc => {
-              let userData = userDoc.data();
-              const item = document.createElement('div');
-              item.className = 'private-message-item';
-              item.textContent = userData.name;
-              item.onclick = function() {
-                openPrivateChat(otherUserId);
-                document.getElementById('private-messages-popup').style.display = 'none';
-              };
-              listContainer.appendChild(item);
+              if (userDoc.exists) {
+                let userData = userDoc.data();
+                const item = document.createElement('div');
+                item.className = 'private-message-item';
+                item.textContent = userData.name;
+                item.onclick = function() {
+                  openPrivateChat(otherUserId);
+                  document.getElementById('private-messages-popup').style.display = 'none';
+                };
+                listContainer.appendChild(item);
+              }
             });
           });
         })
         .catch(err => console.error("Error loading private messages:", err));
+    }
+    
+    function loadPrivateInvites() {
+      const listContainer = document.getElementById('private-invites-list');
+      listContainer.innerHTML = "";
+      db.collection('invitations')
+        .where('toUserId', '==', currentUser.id)
+        .where('status', '==', 'pending')
+        .get()
+        .then(snapshot => {
+          if(snapshot.empty) {
+            listContainer.innerHTML = "<p>لا توجد دعوات واردة.</p>";
+            return;
+          }
+          snapshot.forEach(doc => {
+            const data = doc.data();
+            db.collection('users').doc(data.fromUserId).get().then(userDoc => {
+              if (userDoc.exists) {
+                let userData = userDoc.data();
+                const inviteItem = document.createElement('div');
+                inviteItem.className = 'invite-item';
+                inviteItem.innerHTML = `
+                  <div>
+                    <strong>${userData.name}</strong>
+                    <p>يريد مراسلتك</p>
+                  </div>
+                  <div class="invite-actions">
+                    <button class="invite-action-btn invite-accept" data-id="${doc.id}">قبول</button>
+                    <button class="invite-action-btn invite-reject" data-id="${doc.id}">رفض</button>
+                  </div>
+                `;
+                listContainer.appendChild(inviteItem);
+                
+                // إضافة أحداث للأزرار
+                inviteItem.querySelector('.invite-accept').addEventListener('click', function(e) {
+                  e.stopPropagation();
+                  acceptInvitation(this.dataset.id);
+                });
+                
+                inviteItem.querySelector('.invite-reject').addEventListener('click', function(e) {
+                  e.stopPropagation();
+                  rejectInvitation(this.dataset.id);
+                });
+              }
+            });
+          });
+        })
+        .catch(err => console.error("Error loading private invites:", err));
+    }
+    
+    function acceptInvitation(inviteId) {
+      db.collection('invitations').doc(inviteId).update({
+        status: 'accepted'
+      }).then(() => {
+        loadPrivateInvites();
+        showNotification("تم قبول الدعوة بنجاح");
+      }).catch(err => {
+        console.error("Error accepting invitation:", err);
+        alert("حدث خطأ أثناء قبول الدعوة");
+      });
+    }
+    
+    function rejectInvitation(inviteId) {
+      db.collection('invitations').doc(inviteId).update({
+        status: 'rejected'
+      }).then(() => {
+        loadPrivateInvites();
+      }).catch(err => {
+        console.error("Error rejecting invitation:", err);
+        alert("حدث خطأ أثناء رفض الدعوة");
+      });
     }
     
     // الرسائل الخاصة - النافذة المدمجة
@@ -2724,6 +3020,16 @@
                bubbleDiv.innerHTML = `<strong style="color: var(--username-color);">${msg.senderName}:</strong> ${msg.text} <div class="message-time">${timeString}</div>`;
              }
              
+             // إضافة أيقونة المشاهدة الجديدة
+             if (msg.senderId === currentUser.id) {
+               const seenIcon = document.createElement('i');
+               seenIcon.className = 'fa-solid fa-eye seen-icon';
+               if (msg.read) {
+                 seenIcon.classList.add('seen');
+               }
+               bubbleDiv.appendChild(seenIcon);
+             }
+             
              messageDiv.appendChild(bubbleDiv);
     
              if(msg.senderId === currentUser.id) {
@@ -2770,6 +3076,38 @@
       const input = document.getElementById('private-message-input');
       const text = input.value.trim();
       if(!text) return;
+      
+      // التحقق من إعدادات الخصوصية للمستخدم
+      db.collection('users').doc(currentPrivateChatUser).get().then(userDoc => {
+        if (userDoc.exists) {
+          const userData = userDoc.data();
+          if (userData.privacySettings && userData.privacySettings.messaging === 'invite') {
+            // التحقق من وجود دعوة مقبولة
+            db.collection('invitations')
+              .where('fromUserId', '==', currentUser.id)
+              .where('toUserId', '==', currentPrivateChatUser)
+              .where('status', '==', 'accepted')
+              .get().then(snapshot => {
+                if (snapshot.empty) {
+                  // لا توجد دعوة مقبولة، عرض نافذة الدعوة
+                  showInvitePopup(currentPrivateChatUser, userData.name);
+                  return;
+                }
+                // إذا كانت هناك دعوة مقبولة، نرسل الرسالة
+                sendPrivateMessageContent(text);
+              });
+          } else {
+            // إذا كانت الإعدادات تسمح بالمراسلة للجميع، نرسل الرسالة مباشرة
+            sendPrivateMessageContent(text);
+          }
+        } else {
+          // إذا لم يتم العثور على المستخدم، نرسل الرسالة مباشرة
+          sendPrivateMessageContent(text);
+        }
+      });
+    }
+    
+    function sendPrivateMessageContent(text) {
       const messageData = {
         text: text,
         senderId: currentUser.id,
@@ -2792,7 +3130,7 @@
             return db.collection('private_chats').doc(privateChatId).collection('messages').add(messageData);
           })
           .then(() => {
-            input.value = "";
+            document.getElementById('private-message-input').value = "";
           })
           .catch(err => console.error("Error sending private message:", err));
         });
@@ -2804,7 +3142,7 @@
           return db.collection('private_chats').doc(privateChatId).collection('messages').add(messageData);
         })
         .then(() => {
-          input.value = "";
+          document.getElementById('private-message-input').value = "";
         })
         .catch(err => console.error("Error sending private message:", err));
       }
@@ -3280,6 +3618,82 @@
     function closePrivacySettingsPopup() {
       document.getElementById('privacy-settings-popup').style.display = 'none';
       document.getElementById('settings-popup').style.display = 'block';
+    }
+    
+    /* ==========================
+       نظام الدعوة للمراسلة
+       ========================== */
+    
+    function showInvitePopup(userId, userName) {
+      const invitePopup = document.getElementById('invite-popup');
+      const inviteMessage = document.getElementById('invite-message');
+      
+      inviteMessage.innerHTML = `
+        المستخدم <strong>${userName}</strong> لا يقبل المراسلة إلا بعد دعوة.
+        يمكنك إرسال دعوة إليه لمراسلتك.
+      `;
+      
+      invitePopup.style.display = 'block';
+      
+      // إعداد أحداث الأزرار
+      document.getElementById('send-invite-btn').onclick = function() {
+        sendInvitation(userId);
+        invitePopup.style.display = 'none';
+      };
+      
+      document.getElementById('cancel-invite-btn').onclick = function() {
+        invitePopup.style.display = 'none';
+      };
+    }
+    
+    function sendInvitation(toUserId) {
+      db.collection('invitations').add({
+        fromUserId: currentUser.id,
+        toUserId: toUserId,
+        status: 'pending',
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+      }).then(() => {
+        showNotification(`تم إرسال دعوة إلى المستخدم بنجاح.`);
+        
+        // إرسال إشعار للمستخدم المستهدف
+        sendInviteNotification(toUserId);
+      }).catch(err => {
+        console.error("Error sending invitation:", err);
+        alert('حدث خطأ أثناء إرسال الدعوة.');
+      });
+    }
+    
+    function sendInviteNotification(toUserId) {
+      db.collection('users').doc(toUserId).get().then(userDoc => {
+        if (userDoc.exists) {
+          const userData = userDoc.data();
+          const notification = {
+            title: 'دعوة مراسلة جديدة',
+            body: `يريد المستخدم ${currentUser.name} مراسلتك. هل توافق؟`,
+            timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+            read: false,
+            type: 'invite',
+            fromUserId: currentUser.id
+          };
+          
+          db.collection('users').doc(toUserId).collection('notifications').add(notification);
+        }
+      });
+    }
+    
+    function showNotification(message) {
+      const notification = document.createElement('div');
+      notification.className = 'invite-notification';
+      notification.innerHTML = `
+        <i class="fas fa-check-circle"></i>
+        <span>${message}</span>
+      `;
+      document.body.appendChild(notification);
+      
+      // إزالة الإشعار بعد 3 ثواني
+      setTimeout(() => {
+        notification.remove();
+      }, 3000);
     }
   </script>
 </body>
