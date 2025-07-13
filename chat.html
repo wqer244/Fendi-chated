@@ -1499,6 +1499,36 @@
     .sound-option.selected .sound-check {
       display: inline-block;
     }
+    
+    /* نافذة طلب إذن الإشعارات */
+    .permission-popup {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #2f3136;
+      color: white;
+      padding: 15px;
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+      z-index: 9999;
+      max-width: 350px;
+      display: none;
+    }
+    
+    .permission-popup button {
+      background: #7289da;
+      color: white;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: background 0.3s;
+    }
+    
+    .permission-popup button:hover {
+      background: #5d6dcc;
+    }
   </style>
 </head>
 <body>
@@ -1518,6 +1548,15 @@
     <span>الرسائل الخاصة</span>
     <span id="private-badge" class="badge"></span>
   </button>
+  
+  <!-- نافذة طلب إذن الإشعارات -->
+  <div class="permission-popup" id="permission-popup">
+    <p>هل تسمح لتطبيقنا بإرسال الإشعارات إليك؟</p>
+    <p>سيساعد هذا في إعلامك بالرسائل الجديدة مباشرةً.</p>
+    <button onclick="requestNotificationPermission()">نعم، أسمح</button>
+    <button onclick="closePermissionPopup()" style="background: #dc3545; margin-left: 10px;">لاحقًا</button>
+  </div>
+  
   <div class="container">
     <!-- الشريط الجانبي -->
     <div class="sidebar" id="sidebar">
@@ -2075,6 +2114,9 @@
             loadPrivateMessages(); // تحميل الرسائل الخاصة والدعوات
             loadChatSettings(); // تحميل إعدادات المحادثة
             loadNotificationSettings(); // تحميل إعدادات الإشعارات
+            
+            // فحص إذن الإشعارات بعد تسجيل الدخول
+            checkNotificationPermission();
           } else {
             currentUser = {
               id: user.uid,
@@ -2827,37 +2869,16 @@
     
     // تهيئة بعض الإعدادات عند تحميل الصفحة
     document.addEventListener("DOMContentLoaded", function() {
-      const mode = localStorage.getItem('mode');
-      if(mode === 'dark') {
-        document.body.classList.add('dark-mode');
-      } else {
-        document.body.classList.remove('dark-mode');
+      // طلب إذن الإشعارات عند أول استخدام
+      if (!("Notification" in window)) {
+        console.log("هذا المتصفح لا يدعم الإشعارات");
+      } else if (Notification.permission !== "granted" && Notification.permission !== "denied") {
+        // سنطلب الإذن من خلال نافذتنا المخصصة لاحقًا
       }
-      const chatBg = localStorage.getItem('chatBackground');
-      if(chatBg) {
-        document.querySelectorAll('.chat-area').forEach(elem => {
-          elem.style.backgroundImage = `url(${chatBg})`;
-        });
-      }
-      const containerBg = document.getElementById('background-options-container');
-      for(let i = 1; i <= 100; i++) {
-        const img = document.createElement('img');
-        img.src = `https://picsum.photos/seed/${i}/1000/600`;
-        img.alt = `خلفية ${i}`;
-        img.className = 'bg-option';
-        img.setAttribute('data-bg', `https://picsum.photos/seed/${i}/1000/600`);
-        img.style.width = '100px';
-        img.style.height = '100px';
-        img.style.objectFit = 'cover';
-        img.style.cursor = 'pointer';
-        img.style.border = '2px solid transparent';
-        img.style.borderRadius = '8px';
-        img.addEventListener('click', function() {
-          document.querySelectorAll('.bg-option').forEach(i => i.classList.remove('selected'));
-          this.classList.add('selected');
-          selectedBg = this.getAttribute('data-bg');
-        });
-        containerBg.appendChild(img);
+      
+      // تهيئة مستمع الإشعارات للرسائل الخاصة
+      if (currentUser) {
+        setupPrivateMessageNotifications();
       }
       
       // أحداث تحميل الصور للمجموعات
@@ -3660,16 +3681,6 @@
       }
     }
     
-    // تهيئة الأحداث عند تحميل الصفحة
-    document.addEventListener("DOMContentLoaded", function() {
-      // إضافة حدث لإغلاق نافذة الصورة عند الضغط على Esc
-      document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape') {
-          document.getElementById('image-modal').style.display = 'none';
-        }
-      });
-    });
-    
     /* ==========================
        إعدادات المحادثة الجديدة
        ========================== */
@@ -3961,9 +3972,55 @@
       }
     }
     
+    /* ==========================
+       نظام إذن الإشعارات الجديد
+       ========================== */
+    
+    // فحص إذن الإشعارات
+    function checkNotificationPermission() {
+      // إذا لم يتم دعم الإشعارات في المتصفح
+      if (!('Notification' in window)) {
+        console.log('هذا المتصفح لا يدعم الإشعارات');
+        return;
+      }
+      
+      // إذا لم يتم طلب الإذن بعد ولم يتم رفضه مسبقًا
+      if (Notification.permission === 'default') {
+        // عرض نافذة طلب الإذن المخصصة
+        showPermissionPopup();
+      }
+    }
+    
+    // عرض نافذة طلب إذن الإشعارات
+    function showPermissionPopup() {
+      const popup = document.getElementById('permission-popup');
+      popup.style.display = 'block';
+    }
+    
+    // إغلاق نافذة طلب الإذن
+    function closePermissionPopup() {
+      document.getElementById('permission-popup').style.display = 'none';
+    }
+    
+    // طلب إذن الإشعارات من المستخدم
+    function requestNotificationPermission() {
+      Notification.requestPermission().then(permission => {
+        closePermissionPopup();
+        if (permission === 'granted') {
+          console.log('تم منح إذن الإشعارات');
+          setupPrivateMessageNotifications();
+        } else {
+          console.log('تم رفض إذن الإشعارات');
+        }
+      });
+    }
+    
     // إرسال إشعار عند استلام رسالة خاصة
     function setupPrivateMessageNotifications() {
       if (!currentUser || !notificationSettings.privateMessages) return;
+      
+      // إذا لم يتم منح إذن الإشعارات، لا تفعل شيئًا
+      if (Notification.permission !== 'granted') return;
       
       // الاستماع إلى الرسائل الجديدة في الدردشات الخاصة
       db.collectionGroup('messages')
@@ -4001,28 +4058,11 @@
         });
     }
     
-    // إرسال إشعار إلى المستخدم
+    // إرسال الإشعار إلى المستخدم
     function sendNotification(title, body) {
-      // التحقق من إذن الإشعارات
-      if (!("Notification" in window)) {
-        console.log("هذا المتصفح لا يدعم الإشعارات");
-        return;
-      }
+      // إذا لم يتم منح الإذن، لا ترسل الإشعار
+      if (Notification.permission !== 'granted') return;
       
-      // طلب الإذن إذا لم يكن مسموحًا بعد
-      if (Notification.permission !== "granted") {
-        Notification.requestPermission().then(permission => {
-          if (permission === "granted") {
-            createNotification(title, body);
-          }
-        });
-      } else {
-        createNotification(title, body);
-      }
-    }
-    
-    // إنشاء الإشعار
-    function createNotification(title, body) {
       const options = {
         body: body,
         icon: currentUser.photoURL || defaultProfileImage
@@ -4030,21 +4070,6 @@
       
       new Notification(title, options);
     }
-    
-    // تهيئة الإشعارات عند تحميل الصفحة
-    document.addEventListener("DOMContentLoaded", function() {
-      // طلب إذن الإشعارات عند أول استخدام
-      if (!("Notification" in window)) {
-        console.log("هذا المتصفح لا يدعم الإشعارات");
-      } else if (Notification.permission !== "granted" && Notification.permission !== "denied") {
-        Notification.requestPermission();
-      }
-      
-      // تهيئة مستمع الإشعارات للرسائل الخاصة
-      if (currentUser) {
-        setupPrivateMessageNotifications();
-      }
-    });
   </script>
 </body>
 </html>
