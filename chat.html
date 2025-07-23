@@ -709,12 +709,23 @@
       max-height: calc(80vh - 50px);
     }
     .private-message-item {
+      display: flex;
+      align-items: center;
       padding: 8px;
       border-bottom: 1px solid #ddd;
       cursor: pointer;
+      transition: background 0.2s;
     }
     .private-message-item:hover {
       background: #f0f0f0;
+    }
+    .private-message-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      margin-left: 10px;
+      object-fit: cover;
+      border: 2px solid #7289da;
     }
     .close-btn {
       background: none;
@@ -1666,6 +1677,33 @@
         margin-top: 5px;
       }
     }
+    
+    /* التعديلات الجديدة حسب المتطلبات */
+    
+    /* روابط زرقاء وقابلة للنقر */
+    .message-bubble a {
+      color: #0066cc;
+      text-decoration: underline;
+    }
+    
+    .message-bubble a:hover {
+      text-decoration: none;
+    }
+    
+    /* تنسيقات الصور في الرسائل الخاصة */
+    .private-chat-header .user-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .private-chat-header .user-avatar {
+      width: 35px;
+      height: 35px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid white;
+    }
   </style>
 </head>
 <body>
@@ -2093,7 +2131,10 @@
       <div class="chat-header" id="private-chat-header">
         <div style="display:flex; align-items:center;">
           <i class="fa-solid fa-arrow-left back-icon" onclick="closePrivateChatPopup()"></i>
-          <span id="private-chat-title">الدردشة الخاصة</span>
+          <div class="user-info">
+            <img id="private-chat-user-avatar" class="user-avatar" src="">
+            <span id="private-chat-title">الدردشة الخاصة</span>
+          </div>
         </div>
         <!-- عرض حالة المستخدم الآخر في الدردشة الخاصة -->
         <span id="chat-user-status" class="chat-user-status"></span>
@@ -2532,7 +2573,16 @@
               
               bubbleDiv.innerHTML += `<div class="message-time">${timeString}</div>`;
             } else {
-              bubbleDiv.innerHTML = `<strong style="color: var(--username-color);">${msg.senderName}:</strong> ${msg.text} <div class="message-time">${timeString}</div>`;
+              // معالجة الروابط في النص وتحويلها إلى روابط زرقاء
+              let messageText = msg.text;
+              const urls = extractURLs(messageText);
+              if (urls) {
+                urls.forEach(url => {
+                  messageText = messageText.replace(url, `<a href="${url}" target="_blank" style="color: #0066cc; text-decoration: underline;">${url}</a>`);
+                });
+              }
+              
+              bubbleDiv.innerHTML = `<strong style="color: var(--username-color);">${msg.senderName}:</strong> ${messageText} <div class="message-time">${timeString}</div>`;
               
               // إذا كانت الرسالة تحتوي على معاينة رابط فقم بعرضها
               if(msg.linkPreview) {
@@ -3345,7 +3395,18 @@
                 let userData = userDoc.data();
                 const item = document.createElement('div');
                 item.className = 'private-message-item';
-                item.textContent = userData.name;
+                
+                // إضافة صورة المستخدم
+                const avatar = document.createElement('img');
+                avatar.src = userData.photoURL || defaultProfileImage;
+                avatar.className = 'private-message-avatar';
+                item.appendChild(avatar);
+                
+                // إضافة اسم المستخدم
+                const nameSpan = document.createElement('span');
+                nameSpan.textContent = userData.name;
+                item.appendChild(nameSpan);
+                
                 item.onclick = function() {
                   openPrivateChat(otherUserId);
                   document.getElementById('private-messages-popup').style.display = 'none';
@@ -3436,7 +3497,11 @@
       db.collection('users').doc(userId).get().then(doc => {
         if(doc.exists) {
           let userData = doc.data();
-          document.getElementById('private-chat-title').textContent = "الدردشة مع " + userData.name;
+          
+          // تحديث رأس الدردشة الخاصة لإظهار صورة المستخدم
+          document.getElementById('private-chat-title').textContent = userData.name;
+          document.getElementById('private-chat-user-avatar').src = userData.photoURL || defaultProfileImage;
+          
           privateChatId = [currentUser.id, userId].sort().join("_");
           loadPrivateChatMessages();
           document.getElementById('private-chat-popup').style.display = 'block';
@@ -3495,7 +3560,16 @@
                
                bubbleDiv.innerHTML += `<div class="message-time">${timeString}</div>`;
              } else {
-               bubbleDiv.innerHTML = `<strong style="color: var(--username-color);">${msg.senderName}:</strong> ${msg.text} <div class="message-time">${timeString}</div>`;
+               // معالجة الروابط في النص وتحويلها إلى روابط زرقاء
+               let messageText = msg.text;
+               const urls = extractURLs(messageText);
+               if (urls) {
+                 urls.forEach(url => {
+                   messageText = messageText.replace(url, `<a href="${url}" target="_blank" style="color: #0066cc; text-decoration: underline;">${url}</a>`);
+                 });
+               }
+               
+               bubbleDiv.innerHTML = `<strong style="color: var(--username-color);">${msg.senderName}:</strong> ${messageText} <div class="message-time">${timeString}</div>`;
              }
              
              // إضافة أيقونة المشاهدة الجديدة
