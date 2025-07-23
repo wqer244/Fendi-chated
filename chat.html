@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>قسم دردشه في فندشات</title>
+  <title>تطبيق الدردشة مع الإيموجي وخيارات تعديل وحذف الرسائل</title>
   <!--منع تكبير او تصغير في موقعي -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <!-- خطوط تاجوال وروبوت -->
@@ -2000,6 +2000,8 @@
     <h3>اختر الخلفية</h3>
     <div class="background-options" id="background-options-container"></div>
     <button id="apply-bg-btn">تعيين</button>
+    <!-- زر إزالة الخلفية الجديد -->
+    <button id="remove-bg-btn" style="background: #dc3545; color: white; margin-top: 10px;">إزالة الخلفية</button>
     <button onclick="closeBackgroundPopup()">إغلاق</button>
   </div>
   
@@ -2278,6 +2280,18 @@
               };
             }
             
+            // تحميل الخلفية المحفوظة للمستخدم
+            if (currentUser.background) {
+              selectedBg = currentUser.background;
+              applyBackgroundToUI(currentUser.background);
+            } else {
+              // إذا لم يكن هناك خلفية محفوظة، جرب تحميل من localStorage (للتوافق مع الإصدار القديم)
+              const savedBg = localStorage.getItem('chatBackground');
+              if (savedBg) {
+                applyBackgroundToUI(savedBg);
+              }
+            }
+            
             loadGroups();
             currentGroup = localStorage.getItem('lastGroup') || 'general';
             loadMessages();
@@ -2307,6 +2321,13 @@
         window.location.href = 'login.html';
       }
     });
+    
+    // تطبيق الخلفية على واجهة المستخدم
+    function applyBackgroundToUI(bgUrl) {
+      document.querySelectorAll('.chat-area').forEach(elem => {
+        elem.style.backgroundImage = bgUrl ? `url(${bgUrl})` : 'none';
+      });
+    }
     
     /* ==========================
        دالة لتنسيق الوقت المنقضي منذ آخر ظهور
@@ -2913,16 +2934,27 @@
       const container = document.getElementById('background-options-container');
       container.innerHTML = '';
       
+      // إضافة خيار الخلفية الافتراضية (بدون صورة)
+      const defaultOption = document.createElement('div');
+      defaultOption.className = 'bg-option';
+      defaultOption.innerHTML = '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:#36393f;"><span style="color:white;font-size:12px;">افتراضي</span></div>';
+      defaultOption.addEventListener('click', function() {
+        document.querySelectorAll('.bg-option').forEach(opt => {
+          opt.classList.remove('selected');
+        });
+        this.classList.add('selected');
+        selectedBg = ''; // قيمة فارغة تعني الخلفية الافتراضية
+      });
+      container.appendChild(defaultOption);
+      
       backgrounds.forEach(bg => {
         const bgOption = document.createElement('div');
         bgOption.className = 'bg-option';
         bgOption.style.backgroundImage = `url(${bg})`;
         bgOption.addEventListener('click', function() {
-          // إزالة التحديد من جميع الخيارات
           document.querySelectorAll('.bg-option').forEach(opt => {
             opt.classList.remove('selected');
           });
-          // تحديد الخيار الحالي
           this.classList.add('selected');
           selectedBg = bg;
         });
@@ -2930,19 +2962,51 @@
       });
     }
     
-    document.getElementById('apply-bg-btn').addEventListener('click', function() {
-      if(!selectedBg) {
-        alert("الرجاء اختيار خلفية");
-        return;
+    // تطبيق الخلفية وحفظها في قاعدة البيانات
+    async function applyBackground() {
+      // تطبيق الخلفية على الواجهة
+      applyBackgroundToUI(selectedBg);
+
+      // حفظ الخلفية في قاعدة البيانات للمستخدم الحالي
+      if (currentUser && currentUser.id) {
+        try {
+          await db.collection('users').doc(currentUser.id).update({
+            background: selectedBg
+          });
+        } catch (error) {
+          console.error("Error saving background:", error);
+          alert("حدث خطأ أثناء حفظ الخلفية.");
+        }
       }
-      document.querySelectorAll('.chat-area').forEach(elem => {
-        elem.style.backgroundImage = `url(${selectedBg})`;
-      });
+
       localStorage.setItem('chatBackground', selectedBg);
       alert("تم تغيير خلفية الدردشة بنجاح");
       document.getElementById('background-popup').style.display = 'none';
       document.getElementById('settings-popup').style.display = 'block';
-    });
+    }
+    
+    // إزالة الخلفية (استعادة الخلفية الافتراضية)
+    async function removeBackground() {
+      // إزالة الخلفية من الواجهة
+      applyBackgroundToUI('');
+      
+      // إزالة الخلفية من قاعدة البيانات
+      if (currentUser && currentUser.id) {
+        try {
+          await db.collection('users').doc(currentUser.id).update({
+            background: firebase.firestore.FieldValue.delete()
+          });
+        } catch (error) {
+          console.error("Error removing background:", error);
+          alert("حدث خطأ أثناء إزالة الخلفية.");
+        }
+      }
+      
+      localStorage.removeItem('chatBackground');
+      alert("تم إزالة الخلفية بنجاح");
+      document.getElementById('background-popup').style.display = 'none';
+      document.getElementById('settings-popup').style.display = 'block';
+    }
     
     document.getElementById('logout-btn').addEventListener('click', function() {
       firebase.auth().signOut().then(() => {
@@ -3170,6 +3234,12 @@
         document.getElementById('notification-settings-popup').style.display = 'block';
         loadNotificationSettings();
       });
+      
+      // أحداث زر تطبيق الخلفية
+      document.getElementById('apply-bg-btn').addEventListener('click', applyBackground);
+      
+      // أحداث زر إزالة الخلفية
+      document.getElementById('remove-bg-btn').addEventListener('click', removeBackground);
     });
     
     function toggleRoomsPopup() {
@@ -3396,7 +3466,7 @@
              const profileImgDiv = document.createElement('div');
              profileImgDiv.className = 'message-profile';
              let senderPhoto = msg.senderPhoto || defaultProfileImage;
-             profileImgDiv.style.backgroundImage = 'url(' + senderPhoto + ')';
+             profileImgDiv.style.backgroundImage = 'url(${senderPhoto})';
              profileImgDiv.addEventListener('click', function(e) {
                e.stopPropagation();
                showProfileModal({ id: msg.senderId, name: msg.senderName, photoURL: senderPhoto });
