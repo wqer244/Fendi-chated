@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>فندشات - منصة الدردشة الرائعة</title>
+    <title>تسجيل الدخول-فندشات</title>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;700&display=swap" rel="stylesheet">
@@ -15,6 +15,7 @@
             --error: #ef4444;
             --success: #22c55e;
             --background: #f8fafc;
+            --phone: #10b981;
         }
 
         * {
@@ -31,6 +32,7 @@
             justify-content: center;
             align-items: center;
             padding: 20px;
+            position: relative;
         }
 
         .auth-container {
@@ -46,6 +48,7 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
+            z-index: 10;
         }
 
         .auth-container.active {
@@ -124,6 +127,15 @@
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
+        .btn-phone {
+            background: var(--phone);
+            color: white;
+        }
+
+        .btn-phone:hover {
+            background: #059669;
+        }
+
         .toggle-form {
             text-align: center;
             margin-top: 24px;
@@ -171,10 +183,106 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
+        /* Modal تسجيل الدخول بالهاتف */
+        .phone-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .phone-modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .phone-modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            width: 90%;
+            max-width: 500px;
+            position: relative;
+            transform: translateY(20px);
+            transition: transform 0.3s ease;
+        }
+
+        .phone-modal.active .phone-modal-content {
+            transform: translateY(0);
+        }
+
+        .phone-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .phone-modal-header h2 {
+            color: var(--phone);
+            font-size: 1.8rem;
+        }
+
+        .phone-modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #64748b;
+            transition: color 0.3s ease;
+        }
+
+        .phone-modal-close:hover {
+            color: var(--error);
+        }
+
+        .phone-form-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .phone-form-actions .btn {
+            width: auto;
+            flex: 1;
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 20px 0;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: #e2e8f0;
+        }
+
+        .divider span {
+            padding: 0 15px;
+            color: #64748b;
+        }
+
         @media (max-width: 480px) {
             .auth-container {
                 padding: 24px;
                 border-radius: 16px;
+            }
+            
+            .phone-modal-content {
+                padding: 20px;
             }
         }
     </style>
@@ -214,6 +322,11 @@
             <i class="fab fa-google"></i>
             <span>متابعة مع Google</span>
         </button>
+        
+        <button class="btn btn-phone" onclick="showPhoneAuthModal('login')" style="margin-top: 15px;">
+            <i class="fas fa-phone-alt"></i>
+            <span>متابعة باستخدام الهاتف</span>
+        </button>
 
         <div class="toggle-form">
             ليس لديك حساب؟ <a onclick="showSignUp()">أنشئ حسابًا الآن</a>
@@ -249,9 +362,52 @@
             <i class="fas fa-exclamation-circle"></i>
             <span></span>
         </div>
+        
+        <div class="divider">
+            <span>أو</span>
+        </div>
+        
+        <button class="btn btn-phone" onclick="showPhoneAuthModal('signup')">
+            <i class="fas fa-phone-alt"></i>
+            <span>متابعة باستخدام الهاتف</span>
+        </button>
 
         <div class="toggle-form">
             لديك حساب بالفعل؟ <a onclick="showLogin()">سجل الدخول هنا</a>
+        </div>
+    </div>
+    
+    <!-- Modal تسجيل الدخول بالهاتف -->
+    <div id="phone-auth-modal" class="phone-modal">
+        <div class="phone-modal-content">
+            <div class="phone-modal-header">
+                <h2 id="phone-modal-title">تسجيل الدخول باستخدام الهاتف</h2>
+                <button class="phone-modal-close" onclick="closePhoneAuthModal()">&times;</button>
+            </div>
+            
+            <div id="phone-form">
+                <div class="form-group" id="phone-name-group" style="display: none;">
+                    <input type="text" id="phone-name" class="form-input" placeholder="الاسم الكامل" required>
+                </div>
+                
+                <div class="form-group">
+                    <input type="tel" id="phone-number" class="form-input" placeholder="رقم الهاتف (مثال: +966500000000)" required>
+                </div>
+                
+                <div class="form-group">
+                    <input type="password" id="phone-password" class="form-input" placeholder="كلمة المرور" required>
+                </div>
+                
+                <div class="phone-form-actions">
+                    <button class="btn" style="background: #e2e8f0;" onclick="closePhoneAuthModal()">إلغاء</button>
+                    <button class="btn btn-phone" id="phone-submit-btn">متابعة</button>
+                </div>
+            </div>
+            
+            <div class="error-message" id="phone-error">
+                <i class="fas fa-exclamation-circle"></i>
+                <span></span>
+            </div>
         </div>
     </div>
 
@@ -269,6 +425,9 @@
         // تهيئة Firebase
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
+        
+        // متغير لتحديد نوع العملية (تسجيل دخول أو إنشاء حساب)
+        let phoneAuthType = null;
 
         // معالجة تغيير حالة المصادقة
         auth.onAuthStateChanged(user => {
@@ -345,7 +504,7 @@
             }
         }
 
-        // تسجيل الدخول بـ Google
+        // تسجيل الدخول بـ Google - تم إصلاحه
         async function loginWithGoogle() {
             const provider = new firebase.auth.GoogleAuthProvider();
             try {
@@ -355,11 +514,94 @@
                 showError(document.getElementById('login-error'), 'خطأ في التسجيل بـ Google: ' + error.message);
             }
         }
-
+        
+        // وظائف تسجيل الدخول بالهاتف
+        function showPhoneAuthModal(type) {
+            phoneAuthType = type;
+            const modal = document.getElementById('phone-auth-modal');
+            const title = document.getElementById('phone-modal-title');
+            const phoneNameGroup = document.getElementById('phone-name-group');
+            const phoneSubmitBtn = document.getElementById('phone-submit-btn');
+            
+            if (type === 'login') {
+                title.textContent = 'تسجيل الدخول باستخدام الهاتف';
+                phoneNameGroup.style.display = 'none';
+                phoneSubmitBtn.innerHTML = '<span>تسجيل الدخول</span>';
+            } else {
+                title.textContent = 'إنشاء حساب باستخدام الهاتف';
+                phoneNameGroup.style.display = 'block';
+                phoneSubmitBtn.innerHTML = '<span>إنشاء حساب</span>';
+            }
+            
+            modal.classList.add('active');
+            clearPhoneForm();
+        }
+        
+        function closePhoneAuthModal() {
+            document.getElementById('phone-auth-modal').classList.remove('active');
+            clearPhoneForm();
+        }
+        
+        function clearPhoneForm() {
+            document.getElementById('phone-name').value = '';
+            document.getElementById('phone-number').value = '';
+            document.getElementById('phone-password').value = '';
+            document.getElementById('phone-error').style.display = 'none';
+        }
+        
+        // معالجة إرسال نموذج الهاتف
+        document.getElementById('phone-submit-btn').addEventListener('click', handlePhoneAuth);
+        
+        async function handlePhoneAuth() {
+            const name = document.getElementById('phone-name').value.trim();
+            const phoneNumber = document.getElementById('phone-number').value.trim();
+            const password = document.getElementById('phone-password').value.trim();
+            const errorDiv = document.getElementById('phone-error');
+            
+            try {
+                // التحقق من صحة البيانات
+                if (phoneAuthType === 'signup' && !name) {
+                    throw new Error('الرجاء إدخال الاسم الكامل');
+                }
+                
+                if (!phoneNumber || !phoneNumber.startsWith('+')) {
+                    throw new Error('الرجاء إدخال رقم هاتف صحيح مع رمز الدولة (مثال: +966500000000)');
+                }
+                
+                if (!password || password.length < 6) {
+                    throw new Error('كلمة المرور يجب أن تكون 6 أحرف على الأقل');
+                }
+                
+                // إنشاء بريد إلكتروني وهمي باستخدام رقم الهاتف
+                const email = `${phoneNumber}@phone.com`;
+                
+                if (phoneAuthType === 'login') {
+                    // تسجيل الدخول
+                    await auth.signInWithEmailAndPassword(email, password);
+                    window.location.href = "chat.html";
+                } else {
+                    // إنشاء حساب
+                    const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+                    await userCredential.user.updateProfile({ displayName: name });
+                    window.location.href = "chat.html";
+                }
+                
+                // إغلاق النافذة المنبثقة
+                closePhoneAuthModal();
+                
+            } catch (error) {
+                showError(errorDiv, 'خطأ: ' + error.message);
+            }
+        }
+        
         // وظائف مساعدة
         function showError(element, message) {
             element.querySelector('span').textContent = message;
-            element.style.display = 'flex';
+            if (message) {
+                element.style.display = 'flex';
+            } else {
+                element.style.display = 'none';
+            }
         }
 
         function clearErrors() {
