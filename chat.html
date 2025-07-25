@@ -1723,6 +1723,15 @@
     .message-link:hover {
       text-decoration: underline;
     }
+    
+    /* التعديلات الجديدة */
+    .seen-now-text {
+      font-size: 12px;
+      color: #800080; /* اللون البنفسجي */
+      margin-top: 5px;
+      text-align: left;
+      font-weight: bold;
+    }
   </style>
 </head>
 <body>
@@ -3555,6 +3564,21 @@
          .orderBy('timestamp')
          .onSnapshot(snapshot => {
            chatArea.innerHTML = "";
+           // متغير لتخزين آخر رسالة للمستخدم الحالي
+           let lastUserMessage = null;
+           
+           // تحديد آخر رسالة للمستخدم الحالي
+           snapshot.forEach(doc => {
+             const msg = doc.data();
+             if (msg.senderId === currentUser.id) {
+               if (!lastUserMessage || (msg.timestamp && lastUserMessage.data.timestamp && 
+                   msg.timestamp.toMillis() > lastUserMessage.data.timestamp.toMillis())) {
+                 lastUserMessage = { id: doc.id, data: msg };
+               }
+             }
+           });
+           
+           // عرض الرسائل
            snapshot.forEach(doc => {
              const msg = doc.data();
              let timeString = "";
@@ -3567,7 +3591,7 @@
              const profileImgDiv = document.createElement('div');
              profileImgDiv.className = 'message-profile';
              let senderPhoto = msg.senderPhoto || defaultProfileImage;
-             profileImgDiv.style.backgroundImage = 'url(${senderPhoto})';
+             profileImgDiv.style.backgroundImage = 'url(' + senderPhoto + ')';
              profileImgDiv.addEventListener('click', function(e) {
                e.stopPropagation();
                showProfileModal({ id: msg.senderId, name: msg.senderName, photoURL: senderPhoto });
@@ -3601,14 +3625,13 @@
                bubbleDiv.innerHTML = `<strong style="color: var(--username-color);">${msg.senderName}:</strong> ${linkedText} <div class="message-time">${timeString}</div>`;
              }
              
-             // إضافة أيقونة المشاهدة الجديدة
-             if (msg.senderId === currentUser.id) {
-               const seenIcon = document.createElement('i');
-               seenIcon.className = 'fa-solid fa-eye seen-icon';
-               if (msg.read) {
-                 seenIcon.classList.add('seen');
-               }
-               bubbleDiv.appendChild(seenIcon);
+             // إضافة نص "تمت مشاهدة الآن" إذا كانت هذه الرسالة هي الأخيرة للمستخدم الحالي وتمت مشاهدتها
+             if (msg.senderId === currentUser.id && lastUserMessage && 
+                 doc.id === lastUserMessage.id && msg.read) {
+               const seenText = document.createElement('div');
+               seenText.className = 'seen-now-text';
+               seenText.textContent = 'تمت مشاهدة الآن';
+               bubbleDiv.appendChild(seenText);
              }
              
              messageDiv.appendChild(bubbleDiv);
