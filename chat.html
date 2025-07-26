@@ -923,7 +923,7 @@
       word-break: break-word;
     }
     
-    /* نافذة عرض الصورة */
+    /* تحسينات نافذة عرض الصورة */
     .image-modal {
       display: none;
       position: fixed;
@@ -931,23 +931,35 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(0, 0, 0, 0.9);
+      background: rgba(0, 0, 0, 0.95);
       z-index: 4000;
       text-align: center;
       overflow: auto;
       padding: 20px;
       box-sizing: border-box;
     }
-    
+
+    .image-modal-container {
+      position: relative;
+      max-width: 90%;
+      max-height: 80vh;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
     .image-modal-content {
       max-width: 100%;
-      max-height: 80vh;
-      margin: auto;
+      max-height: 70vh;
       display: block;
       border: 1px solid #444;
       box-shadow: 0 0 30px rgba(0, 0, 0, 0.8);
+      object-fit: contain;
+      cursor: grab;
+      transition: transform 0.3s ease;
     }
-    
+
     .full-image-caption {
       color: white;
       text-align: center;
@@ -956,21 +968,53 @@
       max-width: 80%;
       margin: 0 auto;
     }
-    
-    .close-image-modal {
+
+    .image-modal-controls {
       position: absolute;
-      top: 20px;
-      right: 20px;
-      color: white;
-      font-size: 40px;
-      cursor: pointer;
-      opacity: 0.7;
-      transition: opacity 0.3s;
-      z-index: 4100;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 10px;
+      background: rgba(0, 0, 0, 0.7);
+      padding: 10px;
+      border-radius: 50px;
     }
+
+    .zoom-btn, .download-btn {
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      color: white;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      transition: background 0.3s;
+    }
+
+    .zoom-btn:hover, .download-btn:hover {
+      background: rgba(255, 255, 255, 0.4);
+    }
+
+    @media (max-width: 768px) {
+      .image-modal-content {
+        max-height: 60vh;
+      }
+      
+      .image-modal-controls {
+        bottom: 10px;
+        padding: 8px;
+      }
     
-    .close-image-modal:hover {
-      opacity: 1;
+      .zoom-btn, .download-btn {
+        width: 35px;
+        height: 35px;
+        font-size: 16px;
+      }
     }
     
     /* نافذة إضافة نص للصورة */
@@ -1727,10 +1771,19 @@
     /* التعديلات الجديدة */
     .seen-now-text {
       font-size: 12px;
-      color: #800080; /* اللون البنفسجي */
+      color: #7289da; /* اللون الأزرق */
       margin-top: 5px;
       text-align: left;
       font-weight: bold;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    
+    .seen-now-text::before {
+      content: "✓✓";
+      color: #7289da;
+      font-size: 14px;
     }
   </style>
 </head>
@@ -2185,7 +2238,15 @@
   <!-- نافذة عرض الصورة -->
   <div class="image-modal" id="image-modal">
     <span class="close-image-modal" id="close-image-modal">&times;</span>
-    <img class="image-modal-content" id="full-size-image" src="">
+    <div class="image-modal-container">
+      <img class="image-modal-content" id="full-size-image" src="">
+      <div class="image-modal-controls">
+        <button class="zoom-btn" id="zoom-in-btn"><i class="fa-solid fa-magnifying-glass-plus"></i></button>
+        <button class="zoom-btn" id="zoom-out-btn"><i class="fa-solid fa-magnifying-glass-minus"></i></button>
+        <button class="zoom-btn" id="reset-zoom-btn"><i class="fa-solid fa-arrows-rotate"></i></button>
+        <button class="download-btn" id="download-btn"><i class="fa-solid fa-download"></i></button>
+      </div>
+    </div>
     <div class="full-image-caption" id="full-image-caption"></div>
   </div>
   
@@ -3019,7 +3080,7 @@
       // إضافة خيار الخلفية الافتراضية (بدون صورة)
       const defaultOption = document.createElement('div');
       defaultOption.className = 'bg-option';
-      defaultOption.innerHTML = '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:#36393f;"><span style="color:white;font-size:12px;">افتراضي</span></div>';
+      defaultOption.innerHTML = '<div style="width:100%;height:100%;display:flex;align-items:center;just-content:center;background:#36393f;"><span style="color:white;font-size:12px;">افتراضي</span></div>';
       defaultOption.addEventListener('click', function() {
         document.querySelectorAll('.bg-option').forEach(opt => {
           opt.classList.remove('selected');
@@ -3630,7 +3691,29 @@
                  doc.id === lastUserMessage.id && msg.read) {
                const seenText = document.createElement('div');
                seenText.className = 'seen-now-text';
-               seenText.textContent = 'تمت مشاهدة الآن';
+               
+               // حساب الوقت منذ المشاهدة
+               if (msg.readAt) {
+                 const readDate = msg.readAt.toDate();
+                 const now = new Date();
+                 const diffSeconds = Math.floor((now - readDate) / 1000);
+                 
+                 if (diffSeconds < 60) {
+                   seenText.textContent = 'تمت المشاهدة الآن';
+                 } else if (diffSeconds < 3600) {
+                   const minutes = Math.floor(diffSeconds / 60);
+                   seenText.textContent = `تمت المشاهدة قبل ${minutes} دقيقة`;
+                 } else if (diffSeconds < 86400) {
+                   const hours = Math.floor(diffSeconds / 3600);
+                   seenText.textContent = `تمت المشاهدة قبل ${hours} ساعة`;
+                 } else {
+                   const days = Math.floor(diffSeconds / 86400);
+                   seenText.textContent = `تمت المشاهدة قبل ${days} يوم`;
+                 }
+               } else {
+                 seenText.textContent = 'تمت المشاهدة';
+               }
+               
                bubbleDiv.appendChild(seenText);
              }
              
@@ -3759,13 +3842,20 @@
     }
     
     function markPrivateChatMessagesAsRead() {
-      db.collection('private_chats').doc(privateChatId).collection('messages')
+      const batch = firebase.firestore().batch();
+      const messagesRef = db.collection('private_chats').doc(privateChatId).collection('messages');
+      
+      messagesRef
         .where('senderId', '!=', currentUser.id)
         .where('read', '==', false)
         .get().then(snapshot => {
           snapshot.forEach(doc => {
-            doc.ref.update({ read: true });
+            batch.update(doc.ref, {
+              read: true,
+              readAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
           });
+          return batch.commit();
         });
     }
     
@@ -4040,28 +4130,165 @@
       await db.collection('private_chats').doc(privateChatId).collection('messages').add(messageData);
     }
     
-    // فتح الصورة في نافذة كاملة مع النص
+    // تحسينات لعرض الصور الكامل
+    let currentZoom = 1;
+    let isDragging = false;
+    let startX, startY, scrollLeft, scrollTop;
+
     function openImageModal(imageUrl, caption = '') {
       const modal = document.getElementById('image-modal');
       const fullSizeImage = document.getElementById('full-size-image');
       const imageCaption = document.getElementById('full-image-caption');
+      
       fullSizeImage.src = imageUrl;
-      imageCaption.textContent = caption;
+      fullSizeImage.dataset.originalSrc = imageUrl; // حفظ الصورة الأصلية للتحميل
+      
+      if (caption) {
+        imageCaption.textContent = caption;
+        imageCaption.style.display = 'block';
+      } else {
+        imageCaption.style.display = 'none';
+      }
+      
       modal.style.display = 'block';
+      
+      // إعادة تعيين التكبير
+      currentZoom = 1;
+      fullSizeImage.style.transform = `scale(${currentZoom})`;
+      fullSizeImage.style.cursor = 'grab';
+      
+      // إضافة تأثير التحميل
+      fullSizeImage.style.opacity = '0';
+      setTimeout(() => {
+        fullSizeImage.style.opacity = '1';
+        fullSizeImage.style.transition = 'opacity 0.3s ease';
+      }, 100);
+      
+      // منع التمرير عند فتح الصورة
+      document.body.style.overflow = 'hidden';
     }
-    
+
     // إغلاق نافذة الصورة
     document.getElementById('close-image-modal').addEventListener('click', function() {
       document.getElementById('image-modal').style.display = 'none';
+      document.body.style.overflow = 'auto'; // استعادة التمرير
     });
-    
+
     // إغلاق نافذة الصورة بالنقر خارجها
     document.getElementById('image-modal').addEventListener('click', function(e) {
       if (e.target === this) {
         this.style.display = 'none';
+        document.body.style.overflow = 'auto'; // استعادة التمرير
       }
     });
-    
+
+    // التحكم في التكبير
+    document.getElementById('zoom-in-btn').addEventListener('click', function() {
+      currentZoom += 0.2;
+      document.getElementById('full-size-image').style.transform = `scale(${currentZoom})`;
+      document.getElementById('full-size-image').style.cursor = 'grab';
+    });
+
+    document.getElementById('zoom-out-btn').addEventListener('click', function() {
+      if (currentZoom > 0.3) {
+        currentZoom -= 0.2;
+        document.getElementById('full-size-image').style.transform = `scale(${currentZoom})`;
+        document.getElementById('full-size-image').style.cursor = 'grab';
+      }
+    });
+
+    document.getElementById('reset-zoom-btn').addEventListener('click', function() {
+      currentZoom = 1;
+      document.getElementById('full-size-image').style.transform = `scale(${currentZoom})`;
+      document.getElementById('full-size-image').style.cursor = 'grab';
+    });
+
+    // تحميل الصورة
+    document.getElementById('download-btn').addEventListener('click', function() {
+      const imageUrl = document.getElementById('full-size-image').dataset.originalSrc;
+      const a = document.createElement('a');
+      a.href = imageUrl;
+      a.download = 'image_' + new Date().getTime() + '.jpg';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    });
+
+    // إضافة إمكانية السحب للصورة
+    document.getElementById('full-size-image').addEventListener('mousedown', function(e) {
+      if (currentZoom > 1) {
+        isDragging = true;
+        startX = e.pageX - this.offsetLeft;
+        startY = e.pageY - this.offsetTop;
+        scrollLeft = this.scrollLeft;
+        scrollTop = this.scrollTop;
+        this.style.cursor = 'grabbing';
+      }
+    });
+
+    document.addEventListener('mousemove', function(e) {
+      if (!isDragging) return;
+      
+      const image = document.getElementById('full-size-image');
+      const x = e.pageX - image.offsetLeft;
+      const y = e.pageY - image.offsetTop;
+      const walkX = (x - startX) * 2;
+      const walkY = (y - startY) * 2;
+      
+      image.scrollLeft = scrollLeft - walkX;
+      image.scrollTop = scrollTop - walkY;
+    });
+
+    document.addEventListener('mouseup', function() {
+      isDragging = false;
+      document.getElementById('full-size-image').style.cursor = 'grab';
+    });
+
+    // لمنع الإيماءات الافتراضية على الهاتف
+    document.getElementById('full-size-image').addEventListener('touchstart', function(e) {
+      if (e.touches.length > 1) {
+        e.preventDefault(); // منع التكبير الافتراضي
+      }
+    }, { passive: false });
+
+    // إضافة إمكانية التكبير باللمس
+    document.getElementById('full-size-image').addEventListener('touchmove', function(e) {
+      if (e.touches.length === 2) {
+        e.preventDefault(); // منع التمرير الافتراضي
+        const touch1 = e.touches[0];
+        const touch2 = e.touches[1];
+        const distance = Math.hypot(
+          touch2.pageX - touch1.pageX,
+          touch2.pageY - touch1.pageY
+        );
+        
+        if (!this.dataset.lastDistance) {
+          this.dataset.lastDistance = distance;
+          return;
+        }
+        
+        const scaleFactor = distance / this.dataset.lastDistance;
+        currentZoom *= scaleFactor;
+        currentZoom = Math.max(0.3, Math.min(currentZoom, 5)); // تحديد الحدود
+        
+        this.style.transform = `scale(${currentZoom})`;
+        this.dataset.lastDistance = distance;
+      }
+    });
+
+    document.getElementById('full-size-image').addEventListener('touchend', function() {
+      delete this.dataset.lastDistance;
+    });
+
+    // إضافة حدث الضغط على الصورة المصغرة في الرسائل
+    document.addEventListener('click', function(e) {
+      if (e.target.classList.contains('thumbnail-image')) {
+        const imageUrl = e.target.src;
+        const caption = e.target.nextElementSibling?.textContent || '';
+        openImageModal(imageUrl, caption);
+      }
+    });
+
     // إغلاق نافذة إضافة نص للصورة
     function closeImageCaptionPopup() {
       document.getElementById('image-caption-popup').style.display = 'none';
