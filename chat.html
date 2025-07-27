@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>تطبيق الدردشة مع الإيموجي وخيارات تعديل وحذف الرسائل</title>
+  <title>تطبيق الدردشة مع تسجيل الصوت</title>
   <!--منع تكبير او تصغير في موقعي -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <!-- خطوط تاجوال وروبوت -->
@@ -330,6 +330,24 @@
       font-size: 18px;
       color: inherit;
     }
+    
+    /* زر الرد الجديد */
+    .reply-icon {
+      position: absolute;
+      bottom: 5px;
+      left: 5px; /* لأننا في وضع rtl، سيكون في اليسار */
+      cursor: pointer;
+      font-size: 14px;
+      color: #aaa;
+      transition: color 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 3px;
+    }
+    .reply-icon:hover {
+      color: #7289da;
+    }
+    
     /* نافذة الإدخال (استخدام textarea للرسائل الطويلة) */
     .message-input {
       display: flex;
@@ -653,6 +671,21 @@
       border: 2px solid #7289da;
       box-shadow: 0 0 10px rgba(114, 137, 218, 0.5);
     }
+    
+    /* تحسين خيار افتراضي في الخلفيات */
+    .default-bg-option {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #36393f;
+      color: #fff;
+      font-weight: bold;
+      font-size: 14px;
+      text-align: center;
+      border-radius: 8px;
+      border: 1px solid #4a4e57;
+    }
+    
     /* تصميم صفحة الملف الشخصي الاحترافية */
     #profile-modal {
       display: none;
@@ -1785,6 +1818,186 @@
       color: #7289da;
       font-size: 14px;
     }
+    
+    /* منطقة الرد على الرسالة */
+    .reply-preview {
+      background: rgba(0, 0, 0, 0.1);
+      border-right: 3px solid #7289da;
+      border-radius: 4px;
+      padding: 5px 10px;
+      margin-bottom: 5px;
+      font-size: 14px;
+      color: #aaa;
+      display: flex;
+      justify-content: space-between;
+    }
+    
+    .reply-preview .close-reply {
+      cursor: pointer;
+      color: #dc3545;
+    }
+    
+    /* زر تسجيل الصوت الجديد */
+    .voice-record-btn {
+      background: #e91e63;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      margin-left: 10px;
+      transition: transform 0.3s, background 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .voice-record-btn:hover {
+      transform: scale(1.1);
+      background: #c2185b;
+    }
+    
+    .voice-record-btn.recording {
+      animation: pulse 1.5s infinite;
+    }
+    
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(233, 30, 99, 0.7); }
+      70% { box-shadow: 0 0 0 10px rgba(233, 30, 99, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(233, 30, 99, 0); }
+    }
+    
+    .recording-indicator {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 20px;
+      height: 20px;
+      background: #f44336;
+      border-radius: 50%;
+      display: none;
+    }
+    
+    .recording-time {
+      position: absolute;
+      bottom: -25px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 12px;
+      color: white;
+      background: rgba(0,0,0,0.7);
+      padding: 2px 5px;
+      border-radius: 4px;
+      white-space: nowrap;
+      display: none;
+    }
+    
+    /* عنصر تسجيل الصوت */
+    .audio-recorder-container {
+      position: fixed;
+      bottom: 80px;
+      right: 20px;
+      background: rgba(0,0,0,0.8);
+      border-radius: 10px;
+      padding: 10px;
+      z-index: 2000;
+      display: none;
+    }
+    
+    .audio-recorder-container.visible {
+      display: block;
+    }
+    
+    .audio-recorder-visualizer {
+      width: 100%;
+      height: 60px;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      gap: 2px;
+    }
+    
+    .audio-bar {
+      width: 4px;
+      background: #7289da;
+      border-radius: 2px;
+      margin: 0 1px;
+    }
+    
+    .audio-recorder-controls {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+    }
+    
+    .audio-recorder-btn {
+      background: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    
+    .audio-recorder-btn.cancel {
+      background: #f44336;
+    }
+    
+    /* رسالة صوتية في الدردشة */
+    .audio-message {
+      display: flex;
+      align-items: center;
+      background: rgba(114, 137, 218, 0.1);
+      border-radius: 20px;
+      padding: 8px 15px;
+      margin-top: 5px;
+      width: 200px;
+    }
+    
+    .audio-message .play-btn {
+      background: none;
+      border: none;
+      color: #7289da;
+      font-size: 20px;
+      cursor: pointer;
+      margin-left: 10px;
+    }
+    
+    .audio-message .audio-progress {
+      flex: 1;
+      height: 4px;
+      background: #ddd;
+      border-radius: 2px;
+      position: relative;
+      margin: 0 10px;
+    }
+    
+    .audio-message .audio-progress-bar {
+      position: absolute;
+      height: 100%;
+      background: #7289da;
+      border-radius: 2px;
+      width: 0%;
+    }
+    
+    .audio-message .audio-duration {
+      font-size: 12px;
+      color: #888;
+    }
+    
+    .sent .audio-message {
+      background: rgba(255, 255, 255, 0.2);
+    }
   </style>
 </head>
 <body>
@@ -1834,7 +2047,20 @@
     <!-- منطقة الدردشة العامة -->
     <div class="chat-container">
       <div class="chat-area" id="messages"></div>
+      <!-- منطقة الرد على الرسالة -->
+      <div id="reply-preview-container" style="display: none; padding: 0 10px;">
+        <div class="reply-preview">
+          <span id="reply-preview-text"></span>
+          <span class="close-reply" onclick="cancelReply()">✕</span>
+        </div>
+      </div>
       <div class="message-input">
+        <!-- زر تسجيل الصوت -->
+        <button class="voice-record-btn" id="voice-record-btn">
+          <i class="fa-solid fa-microphone"></i>
+          <div class="recording-indicator" id="recording-indicator"></div>
+          <span class="recording-time" id="recording-time">00:00</span>
+        </button>
         <button class="attach-image-btn" id="attach-image-btn">
           <i class="fa-solid fa-camera"></i>
         </button>
@@ -1847,6 +2073,31 @@
       </div>
     </div>
   </div>
+  
+  <!-- نافذة تسجيل الصوت -->
+  <div class="audio-recorder-container" id="audio-recorder-container">
+    <div class="audio-recorder-visualizer" id="audio-recorder-visualizer">
+      <div class="audio-bar"></div>
+      <div class="audio-bar"></div>
+      <div class="audio-bar"></div>
+      <div class="audio-bar"></div>
+      <div class="audio-bar"></div>
+      <div class="audio-bar"></div>
+      <div class="audio-bar"></div>
+      <div class="audio-bar"></div>
+      <div class="audio-bar"></div>
+      <div class="audio-bar"></div>
+    </div>
+    <div class="audio-recorder-controls">
+      <button class="audio-recorder-btn cancel" onclick="cancelRecording()">
+        <i class="fa-solid fa-times"></i>
+      </button>
+      <button class="audio-recorder-btn" onclick="stopRecording()">
+        <i class="fa-solid fa-stop"></i>
+      </button>
+    </div>
+  </div>
+  
   <!-- نافذة الرومات -->
   <div class="rooms-popup" id="rooms-popup">
     <h3>الرومات المتاحة</h3>
@@ -2221,7 +2472,20 @@
         <span id="chat-user-status" class="chat-user-status"></span>
       </div>
       <div class="chat-area" id="private-chat-area"></div>
+      <!-- منطقة الرد على الرسالة في الدردشة الخاصة -->
+      <div id="private-reply-preview-container" style="display: none; padding: 0 10px;">
+        <div class="reply-preview">
+          <span id="private-reply-preview-text"></span>
+          <span class="close-reply" onclick="cancelPrivateReply()">✕</span>
+        </div>
+      </div>
       <div class="message-input">
+        <!-- زر تسجيل الصوت للدردشة الخاصة -->
+        <button class="voice-record-btn" id="private-voice-record-btn">
+          <i class="fa-solid fa-microphone"></i>
+          <div class="recording-indicator" id="private-recording-indicator"></div>
+          <span class="recording-time" id="private-recording-time">00:00</span>
+        </button>
         <button class="attach-image-btn" id="private-attach-image-btn">
           <i class="fa-solid fa-camera"></i>
         </button>
@@ -2364,6 +2628,18 @@
       "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?q=80&w=1874&auto=format&fit=crop",
       "https://images.unsplash.com/photo-1506260408121-e353d10b87c7?q=80&w=2128&auto=format&fit=crop"
     ];
+
+    // متغيرات الرد على الرسائل
+    let replyingToMessage = null;
+    let replyingInPrivate = false;
+    
+    // متغيرات تسجيل الصوت
+    let audioRecorder = null;
+    let audioChunks = [];
+    let isRecording = false;
+    let recordingInterval = null;
+    let recordingSeconds = 0;
+    let isPrivateRecording = false;
 
     /* ==========================
        تحديث حالة المستخدم (online/offline) مع زر الحالة
@@ -2669,7 +2945,24 @@
               }
               
               bubbleDiv.innerHTML += `<div class="message-time">${timeString}</div>`;
-            } else {
+            } 
+            // التحقق مما إذا كانت الرسالة تحتوي على تسجيل صوتي
+            else if (msg.isAudio) {
+              bubbleDiv.innerHTML = `
+                <strong style="color: var(--username-color);">${msg.senderName}:</strong>
+                <div class="audio-message">
+                  <button class="play-btn" onclick="playAudioMessage('${msg.audioUrl}')">
+                    <i class="fa-solid fa-play"></i>
+                  </button>
+                  <div class="audio-progress">
+                    <div class="audio-progress-bar"></div>
+                  </div>
+                  <div class="audio-duration">${msg.audioDuration || '00:00'}</div>
+                </div>
+                <div class="message-time">${timeString}</div>
+              `;
+            } 
+            else {
               // تحويل الروابط في النص إلى روابط قابلة للنقر
               const linkedText = linkifyText(msg.text);
               
@@ -2739,6 +3032,16 @@
               selectedMessageForReaction = { id: doc.id, element: messageDiv };
               showEmojiPopupForMessage(messageDiv);
             });
+            
+            // إضافة زر الرد
+            const replyIcon = document.createElement('div');
+            replyIcon.className = 'reply-icon';
+            replyIcon.innerHTML = '<i class="fa-solid fa-reply"></i>';
+            replyIcon.addEventListener('click', function(e) {
+              e.stopPropagation();
+              replyToMessage(msg, false);
+            });
+            bubbleDiv.appendChild(replyIcon);
     
             if(msg.reactions) {
               for(let emoji in msg.reactions) {
@@ -2786,16 +3089,23 @@
     // إرسال الرسالة العامة مع دعم معاينة الرابط
     function sendMessage() {
       const input = document.getElementById('message-input');
-      const text = input.value.trim();
+      let text = input.value.trim();
       if(!text) return;
+      
+      // إضافة الرد إذا كان هناك رد على رسالة
+      if (replyingToMessage) {
+        const replyText = `رد على ${replyingToMessage.senderName}: ${replyingToMessage.text.substring(0, 30)}${replyingToMessage.text.length > 30 ? '...' : ''}\n${text}`;
+        text = replyText;
+      }
+      
       const messageData = {
         text: text,
         senderId: currentUser.id,
         senderName: currentUser.name,
         senderPhoto: currentUser.photoURL || defaultProfileImage,
         timestamp: firebase.firestore.FieldValue.serverTimestamp()
-        
       };
+      
       const urls = extractURLs(text);
       if(urls && urls.length > 0) {
         getLinkPreview(urls[0]).then(previewData => {
@@ -2805,12 +3115,14 @@
           db.collection('groups').doc(currentGroup).collection('messages').add(messageData)
             .then(() => {
               input.value = "";
+              cancelReply(); // إلغاء الرد بعد الإرسال
             }).catch(err => console.error("Error sending message:", err));
         });
       } else {
         db.collection('groups').doc(currentGroup).collection('messages').add(messageData)
           .then(() => {
             input.value = "";
+            cancelReply(); // إلغاء الرد بعد الإرسال
           }).catch(err => console.error("Error sending message:", err));
       }
     }
@@ -3079,8 +3391,8 @@
       
       // إضافة خيار الخلفية الافتراضية (بدون صورة)
       const defaultOption = document.createElement('div');
-      defaultOption.className = 'bg-option';
-      defaultOption.innerHTML = '<div style="width:100%;height:100%;display:flex;align-items:center;just-content:center;background:#36393f;"><span style="color:white;font-size:12px;">افتراضي</span></div>';
+      defaultOption.className = 'bg-option default-bg-option';
+      defaultOption.innerHTML = '<span>افتراضي</span>';
       defaultOption.addEventListener('click', function() {
         document.querySelectorAll('.bg-option').forEach(opt => {
           opt.classList.remove('selected');
@@ -3383,6 +3695,9 @@
       
       // أحداث زر إزالة الخلفية
       document.getElementById('remove-bg-btn').addEventListener('click', removeBackground);
+      
+      // تهيئة أحداث تسجيل الصوت
+      initVoiceRecording();
     });
     
     function toggleRoomsPopup() {
@@ -3499,7 +3814,12 @@
                       // إذا كانت الرسالة تحتوي على صورة، نعرض "صورة"
                       if (lastMsgData.isImage) {
                         lastMessage = "صورة";
-                      } else {
+                      } 
+                      // إذا كانت الرسالة تحتوي على تسجيل صوتي
+                      else if (lastMsgData.isAudio) {
+                        lastMessage = "تسجيل صوتي";
+                      } 
+                      else {
                         // نأخذ جزء من النص إذا كان طويلاً
                         lastMessage = lastMsgData.text.substring(0, 30) + (lastMsgData.text.length > 30 ? "..." : "");
                       }
@@ -3680,7 +4000,24 @@
                }
                
                bubbleDiv.innerHTML += `<div class="message-time">${timeString}</div>`;
-             } else {
+             } 
+             // التحقق مما إذا كانت الرسالة تحتوي على تسجيل صوتي
+             else if (msg.isAudio) {
+               bubbleDiv.innerHTML = `
+                 <strong style="color: var(--username-color);">${msg.senderName}:</strong>
+                 <div class="audio-message">
+                   <button class="play-btn" onclick="playAudioMessage('${msg.audioUrl}')">
+                     <i class="fa-solid fa-play"></i>
+                   </button>
+                   <div class="audio-progress">
+                     <div class="audio-progress-bar"></div>
+                   </div>
+                   <div class="audio-duration">${msg.audioDuration || '00:00'}</div>
+                 </div>
+                 <div class="message-time">${timeString}</div>
+               `;
+             } 
+             else {
                // تحويل الروابط في النص إلى روابط قابلة للنقر
                const linkedText = linkifyText(msg.text);
                bubbleDiv.innerHTML = `<strong style="color: var(--username-color);">${msg.senderName}:</strong> ${linkedText} <div class="message-time">${timeString}</div>`;
@@ -3752,6 +4089,16 @@
                optionsPanel.appendChild(deleteBtn);
                bubbleDiv.appendChild(optionsPanel);
              }
+             
+             // إضافة زر الرد للرسالة الخاصة
+             const replyIcon = document.createElement('div');
+             replyIcon.className = 'reply-icon';
+             replyIcon.innerHTML = '<i class="fa-solid fa-reply"></i>';
+             replyIcon.addEventListener('click', function(e) {
+               e.stopPropagation();
+               replyToMessage(msg, true);
+             });
+             bubbleDiv.appendChild(replyIcon);
     
              chatArea.appendChild(messageDiv);
            });
@@ -3761,8 +4108,14 @@
     
     function sendPrivateMessage() {
       const input = document.getElementById('private-message-input');
-      const text = input.value.trim();
+      let text = input.value.trim();
       if(!text) return;
+      
+      // إضافة الرد إذا كان هناك رد على رسالة
+      if (replyingToMessage) {
+        const replyText = `رد على ${replyingToMessage.senderName}: ${replyingToMessage.text.substring(0, 30)}${replyingToMessage.text.length > 30 ? '...' : ''}\n${text}`;
+        text = replyText;
+      }
       
       // التحقق من إعدادات الخصوصية للمستخدم
       db.collection('users').doc(currentPrivateChatUser).get().then(userDoc => {
@@ -3818,6 +4171,7 @@
           })
           .then(() => {
             document.getElementById('private-message-input').value = "";
+            cancelPrivateReply(); // إلغاء الرد بعد الإرسال
           })
           .catch(err => console.error("Error sending private message:", err));
         });
@@ -3830,6 +4184,7 @@
         })
         .then(() => {
           document.getElementById('private-message-input').value = "";
+          cancelPrivateReply(); // إلغاء الرد بعد الإرسال
         })
         .catch(err => console.error("Error sending private message:", err));
       }
@@ -4703,6 +5058,251 @@
       
       new Notification(title, options);
     }
+    
+    /* ==========================
+       ميزة الرد على الرسائل
+       ========================== */
+    function replyToMessage(message, isPrivate) {
+      // حفظ الرسالة التي نرد عليها
+      replyingToMessage = message;
+      replyingInPrivate = isPrivate;
+      
+      // إنشاء نص الرد
+      const replyText = `رد على ${message.senderName}: ${message.text.substring(0, 30)}${message.text.length > 30 ? '...' : ''}`;
+      
+      // عرض منطقة الرد
+      if (isPrivate) {
+        document.getElementById('private-reply-preview-container').style.display = 'block';
+        document.getElementById('private-reply-preview-text').textContent = replyText;
+      } else {
+        document.getElementById('reply-preview-container').style.display = 'block';
+        document.getElementById('reply-preview-text').textContent = replyText;
+      }
+      
+      // تحريك المؤشر إلى حقل الإدخال
+      const input = isPrivate ? 
+        document.getElementById('private-message-input') : 
+        document.getElementById('message-input');
+      input.focus();
+    }
+    
+    function cancelReply() {
+      replyingToMessage = null;
+      document.getElementById('reply-preview-container').style.display = 'none';
+    }
+    
+    function cancelPrivateReply() {
+      replyingToMessage = null;
+      document.getElementById('private-reply-preview-container').style.display = 'none';
+    }
+    
+    /* ==========================
+       ميزة تسجيل الصوت
+       ========================== */
+    function initVoiceRecording() {
+      const recordBtn = document.getElementById('voice-record-btn');
+      const privateRecordBtn = document.getElementById('private-voice-record-btn');
+      
+      if (recordBtn) {
+        recordBtn.addEventListener('click', function() {
+          startRecording(false);
+        });
+      }
+      
+      if (privateRecordBtn) {
+        privateRecordBtn.addEventListener('click', function() {
+          startRecording(true);
+        });
+      }
+    }
+    
+    async function startRecording(isPrivate) {
+      try {
+        // طلب إذن استخدام الميكروفون
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        audioRecorder = new MediaRecorder(stream);
+        audioChunks = [];
+        
+        // تحديث الحالة
+        isRecording = true;
+        isPrivateRecording = isPrivate;
+        
+        // إظهار نافذة التسجيل
+        document.getElementById('audio-recorder-container').classList.add('visible');
+        
+        // تحديث واجهة المستخدم
+        const recordBtn = isPrivate ? 
+          document.getElementById('private-voice-record-btn') : 
+          document.getElementById('voice-record-btn');
+        
+        recordBtn.classList.add('recording');
+        document.getElementById('recording-indicator').style.display = 'block';
+        
+        // بدء العد التنازلي
+        recordingSeconds = 0;
+        recordingInterval = setInterval(() => {
+          recordingSeconds++;
+          const minutes = Math.floor(recordingSeconds / 60);
+          const seconds = recordingSeconds % 60;
+          const timeString = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+          
+          if (isPrivate) {
+            document.getElementById('private-recording-time').textContent = timeString;
+            document.getElementById('private-recording-time').style.display = 'block';
+          } else {
+            document.getElementById('recording-time').textContent = timeString;
+            document.getElementById('recording-time').style.display = 'block';
+          }
+        }, 1000);
+        
+        // بدء التسجيل
+        audioRecorder.start();
+        
+        audioRecorder.ondataavailable = (event) => {
+          audioChunks.push(event.data);
+        };
+        
+        audioRecorder.onstop = async () => {
+          // إنشاء ملف صوتي
+          const audioBlob = new Blob(audioChunks, { type: 'audio/mpeg' });
+          const audioUrl = await uploadAudioToBackendless(audioBlob);
+          
+          if (audioUrl) {
+            // إرسال الرسالة الصوتية
+            const duration = `${Math.floor(recordingSeconds / 60).toString().padStart(2, '0')}:${(recordingSeconds % 60).toString().padStart(2, '0')}`;
+            
+            if (isPrivateRecording) {
+              sendPrivateAudioMessage(audioUrl, duration);
+            } else {
+              sendGroupAudioMessage(audioUrl, duration);
+            }
+          }
+          
+          // تنظيف
+          audioChunks = [];
+          stream.getTracks().forEach(track => track.stop());
+          resetRecordingUI(isPrivate);
+        };
+      } catch (err) {
+        console.error('Error starting recording:', err);
+        alert('حدث خطأ أثناء بدء التسجيل. يرجى التأكد من منح التطبيق إذن استخدام الميكروفون.');
+        resetRecordingUI(isPrivate);
+      }
+    }
+    
+    function stopRecording() {
+      if (audioRecorder && isRecording) {
+        audioRecorder.stop();
+        isRecording = false;
+        clearInterval(recordingInterval);
+        document.getElementById('audio-recorder-container').classList.remove('visible');
+      }
+    }
+    
+    function cancelRecording() {
+      if (audioRecorder && isRecording) {
+        audioRecorder.stop();
+        isRecording = false;
+        clearInterval(recordingInterval);
+        resetRecordingUI(isPrivateRecording);
+        document.getElementById('audio-recorder-container').classList.remove('visible');
+      }
+    }
+    
+    function resetRecordingUI(isPrivate) {
+      const recordBtn = isPrivate ? 
+        document.getElementById('private-voice-record-btn') : 
+        document.getElementById('voice-record-btn');
+      
+      if (recordBtn) {
+        recordBtn.classList.remove('recording');
+        document.getElementById('recording-indicator').style.display = 'none';
+        
+        if (isPrivate) {
+          document.getElementById('private-recording-time').style.display = 'none';
+        } else {
+          document.getElementById('recording-time').style.display = 'none';
+        }
+      }
+    }
+    
+    async function uploadAudioToBackendless(audioBlob) {
+      // إنشاء اسم ملف فريد
+      const fileName = `audio_${Date.now()}.mp3`;
+      
+      // عرض مؤشر التحميل
+      document.getElementById('upload-indicator-container').style.display = 'flex';
+      
+      const formData = new FormData();
+      formData.append('file', audioBlob, fileName);
+      
+      try {
+        const response = await fetch(`https://api.backendless.com/${BACKENDLESS_APP_ID}/${BACKENDLESS_API_KEY}/files/${fileName}`, {
+          method: 'POST',
+          body: formData
+        });
+        
+        if (!response.ok) {
+          throw new Error('فشل رفع الملف الصوتي');
+        }
+        
+        const result = await response.json();
+        return result.fileURL;
+        
+      } catch (error) {
+        console.error('Error uploading audio:', error);
+        alert('حدث خطأ أثناء رفع الملف الصوتي: ' + error.message);
+        return null;
+      } finally {
+        // إخفاء مؤشر التحميل
+        document.getElementById('upload-indicator-container').style.display = 'none';
+      }
+    }
+    
+    async function sendGroupAudioMessage(audioUrl, duration) {
+      const messageData = {
+        isAudio: true,
+        audioUrl: audioUrl,
+        audioDuration: duration,
+        senderId: currentUser.id,
+        senderName: currentUser.name,
+        senderPhoto: currentUser.photoURL || defaultProfileImage,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+      };
+      
+      await db.collection('groups').doc(currentGroup).collection('messages').add(messageData);
+    }
+    
+    async function sendPrivateAudioMessage(audioUrl, duration) {
+      if (!privateChatId) return;
+      
+      const messageData = {
+        isAudio: true,
+        audioUrl: audioUrl,
+        audioDuration: duration,
+        senderId: currentUser.id,
+        senderName: currentUser.name,
+        senderPhoto: currentUser.photoURL || defaultProfileImage,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+        read: false,
+        chatParticipants: [currentUser.id, currentPrivateChatUser]
+      };
+      
+      await db.collection('private_chats').doc(privateChatId).set({
+        participants: [currentUser.id, currentPrivateChatUser]
+      }, { merge: true });
+      
+      await db.collection('private_chats').doc(privateChatId).collection('messages').add(messageData);
+    }
+    
+    function playAudioMessage(audioUrl) {
+      const audio = new Audio(audioUrl);
+      audio.play();
+    }
+    
+    // تهيئة الأحداث الخاصة بتسجيل الصوت
+    document.getElementById('stop-recording-btn')?.addEventListener('click', stopRecording);
+    document.getElementById('cancel-recording-btn')?.addEventListener('click', cancelRecording);
   </script>
 </body>
 </html>
