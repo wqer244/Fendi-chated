@@ -54,6 +54,9 @@
   <!-- إضافة مكتبة Howler.js لتشغيل الأصوات -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
   
+  <!-- مكتبة Hammer.js للسحب -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js"></script>
+  
   <style>
     /* الإعدادات العامة والألوان */
     :root {
@@ -259,6 +262,11 @@
       display: flex;
       align-items: flex-start;
       gap: 10px;
+      transition: transform 0.3s, background-color 0.3s;
+    }
+    .message.swiping {
+      background-color: rgba(114, 137, 218, 0.2);
+      transform: translateX(30px);
     }
     .message-profile {
       width: 40px;
@@ -1836,6 +1844,42 @@
       cursor: pointer;
       color: #dc3545;
     }
+    
+    /* مؤشر الكتابة في الرسائل الخاصة */
+    .typing-indicator {
+      display: flex;
+      align-items: center;
+      padding: 8px 15px;
+      background: #f0f0f0;
+      border-radius: 18px;
+      width: fit-content;
+      margin: 5px 0;
+      font-size: 14px;
+      color: #666;
+    }
+    
+    .typing-indicator span {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      background-color: #7289da;
+      border-radius: 50%;
+      margin: 0 2px;
+      animation: typing 1.4s infinite ease-in-out;
+    }
+    
+    .typing-indicator span:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+    
+    .typing-indicator span:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+    
+    @keyframes typing {
+      0%, 60%, 100% { transform: translateY(0); }
+      30% { transform: translateY(-5px); }
+    }
   </style>
 </head>
 <body>
@@ -2279,6 +2323,13 @@
         <span id="chat-user-status" class="chat-user-status"></span>
       </div>
       <div class="chat-area" id="private-chat-area"></div>
+      <!-- مؤشر الكتابة في الرسائل الخاصة -->
+      <div id="typing-indicator" style="display: none;" class="typing-indicator">
+        <span></span>
+        <span></span>
+        <span></span>
+        <span style="margin-right: 8px;">يكتب الآن...</span>
+      </div>
       <!-- منطقة الرد على الرسالة في الدردشة الخاصة -->
       <div id="private-reply-preview-container" style="display: none; padding: 0 10px;">
         <div class="reply-preview">
@@ -2433,6 +2484,10 @@
     // متغيرات الرد على الرسائل
     let replyingToMessage = null;
     let replyingInPrivate = false;
+    
+    // متغيرات مؤشر الكتابة في الرسائل الخاصة
+    let typingTimeout;
+    let isTyping = false;
 
     /* ==========================
        تحديث حالة المستخدم (online/offline) مع زر الحالة
@@ -2857,6 +2912,18 @@
             }
     
             messagesContainer.appendChild(messageDiv);
+            
+            // إضافة تفاعل السحب لليمين للرد
+            const hammer = new Hammer(messageDiv);
+            hammer.on('swiperight', function() {
+              // إضافة تأثير السحب
+              messageDiv.classList.add('swiping');
+              setTimeout(() => {
+                messageDiv.classList.remove('swiping');
+              }, 300);
+              
+              replyToMessage(msg, false);
+            });
           });
           messagesContainer.scrollTop = messagesContainer.scrollHeight;
         });
@@ -3701,6 +3768,12 @@
           document.getElementById('private-chat-popup').style.display = 'block';
           updateChatUserStatus(userId);
           markPrivateChatMessagesAsRead();
+          
+          // إضافة مستمع لحالة الكتابة للمستخدم الآخر
+          setupTypingIndicator();
+          
+          // إضافة أحداث الكتابة لحقل الإدخال
+          setupTypingEvents();
         } else {
           alert("المستخدم غير موجود");
         }
@@ -3850,7 +3923,19 @@
                replyToMessage(msg, true);
              });
              bubbleDiv.appendChild(replyIcon);
-    
+             
+             // إضافة تفاعل السحب لليمين للرد
+             const hammer = new Hammer(messageDiv);
+             hammer.on('swiperight', function() {
+               // إضافة تأثير السحب
+               messageDiv.classList.add('swiping');
+               setTimeout(() => {
+                 messageDiv.classList.remove('swiping');
+               }, 300);
+               
+               replyToMessage(msg, true);
+             });
+
              chatArea.appendChild(messageDiv);
            });
            chatArea.scrollTop = chatArea.scrollHeight;
@@ -4845,6 +4930,56 @@
     function cancelPrivateReply() {
       replyingToMessage = null;
       document.getElementById('private-reply-preview-container').style.display = 'none';
+    }
+    
+    /* ==========================
+       ميزة مؤشر الكتابة في الرسائل الخاصة
+       ========================== */
+    function setupTypingEvents() {
+      const input = document.getElementById('private-message-input');
+      
+      input.addEventListener('input', function() {
+        if (!isTyping) {
+          isTyping = true;
+          // تحديث حالة الكتابة للمستخدم الآخر
+          db.collection('private_chats').doc(privateChatId).update({
+            [`typing.${currentUser.id}`]: true,
+            lastTypingTime: firebase.firestore.FieldValue.serverTimestamp()
+          });
+        }
+        
+        // إعادة تعيين المؤقت
+        clearTimeout(typingTimeout);
+        typingTimeout = setTimeout(stopTyping, 3000);
+      });
+    }
+    
+    function stopTyping() {
+      if (isTyping) {
+        isTyping = false;
+        db.collection('private_chats').doc(privateChatId).update({
+          [`typing.${currentUser.id}`]: firebase.firestore.FieldValue.delete()
+        });
+      }
+    }
+    
+    function setupTypingIndicator() {
+      const typingRef = db.collection('private_chats').doc(privateChatId);
+      typingRef.onSnapshot(function(doc) {
+        if (doc.exists) {
+          const data = doc.data();
+          const typing = data.typing || {};
+          const otherUserId = currentPrivateChatUser;
+          
+          if (typing[otherUserId]) {
+            // عرض مؤشر الكتابة
+            document.getElementById('typing-indicator').style.display = 'block';
+          } else {
+            // إخفاء مؤشر الكتابة
+            document.getElementById('typing-indicator').style.display = 'none';
+          }
+        }
+      });
     }
   </script>
 </body>
