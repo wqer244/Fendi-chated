@@ -1,615 +1,303 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>فندشات - منصة الدردشة الرائعة</title>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        :root {
-            --primary: #6366f1;
-            --secondary: #4f46e5;
-            --error: #ef4444;
-            --success: #22c55e;
-            --background: #f8fafc;
-            --phone: #10b981;
-        }
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>فندشات - منصة الدردشة</title>
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+  <!-- Google Identity Services -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
 
-        body {
-            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-            font-family: 'Tajawal', sans-serif;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-            position: relative;
-        }
+  <!-- Firebase (للبريد/كلمة المرور في الكود الحالي) -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 
-        .auth-container {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 440px;
-            padding: 40px;
-            transition: transform 0.3s ease;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 10;
-        }
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-        .auth-container.active {
-            display: block;
-        }
-
-        .auth-container.hidden {
-            display: none;
-        }
-
-        .logo {
-            text-align: center;
-            margin-bottom: 40px;
-        }
-
-        .logo h1 {
-            color: var(--primary);
-            font-size: 2.5rem;
-            font-weight: 700;
-            letter-spacing: -1px;
-        }
-
-        .form-group {
-            margin-bottom: 24px;
-            position: relative;
-        }
-
-        .form-input {
-            width: 100%;
-            padding: 14px 16px;
-            border: 2px solid #e2e8f0;
-            border-radius: 12px;
-            font-size: 16px;
-            transition: all 0.3s ease;
-            background: #ffffff;
-        }
-
-        .form-input:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
-            outline: none;
-        }
-
-        .btn {
-            width: 100%;
-            padding: 14px;
-            border: none;
-            border-radius: 12px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-
-        .btn-primary {
-            background: var(--primary);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background: var(--secondary);
-        }
-
-        .btn-google {
-            background: #ffffff;
-            color: #3c4043;
-            border: 1px solid #e0e0e0;
-        }
-
-        .btn-google:hover {
-            background: #f8f9fa;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        .btn-phone {
-            background: var(--phone);
-            color: white;
-        }
-
-        .btn-phone:hover {
-            background: #059669;
-        }
-
-        .toggle-form {
-            text-align: center;
-            margin-top: 24px;
-            color: #64748b;
-        }
-
-        .toggle-form a {
-            color: var(--primary);
-            text-decoration: none;
-            font-weight: 600;
-            transition: color 0.3s ease;
-        }
-
-        .toggle-form a:hover {
-            color: var(--secondary);
-        }
-
-        .loader {
-            width: 24px;
-            height: 24px;
-            border: 3px solid #fff;
-            border-bottom-color: transparent;
-            border-radius: 50%;
-            animation: rotation 1s linear infinite;
-            display: none;
-        }
-
-        @keyframes rotation {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .error-message {
-            color: var(--error);
-            font-size: 14px;
-            margin-top: 8px;
-            display: none;
-            align-items: center;
-            gap: 8px;
-            animation: slideIn 0.3s ease;
-        }
-
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Modal تسجيل الدخول بالهاتف */
-        .phone-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.7);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s ease;
-        }
-
-        .phone-modal.active {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .phone-modal-content {
-            background: white;
-            border-radius: 20px;
-            padding: 30px;
-            width: 90%;
-            max-width: 500px;
-            position: relative;
-            transform: translateY(20px);
-            transition: transform 0.3s ease;
-        }
-
-        .phone-modal.active .phone-modal-content {
-            transform: translateY(0);
-        }
-
-        .phone-modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .phone-modal-header h2 {
-            color: var(--phone);
-            font-size: 1.8rem;
-        }
-
-        .phone-modal-close {
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-            color: #64748b;
-            transition: color 0.3s ease;
-        }
-
-        .phone-modal-close:hover {
-            color: var(--error);
-        }
-
-        .phone-form-actions {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
-        }
-
-        .phone-form-actions .btn {
-            width: auto;
-            flex: 1;
-        }
-
-        .divider {
-            display: flex;
-            align-items: center;
-            margin: 20px 0;
-        }
-
-        .divider::before,
-        .divider::after {
-            content: '';
-            flex: 1;
-            height: 1px;
-            background: #e2e8f0;
-        }
-
-        .divider span {
-            padding: 0 15px;
-            color: #64748b;
-        }
-
-        @media (max-width: 480px) {
-            .auth-container {
-                padding: 24px;
-                border-radius: 16px;
-            }
-            
-            .phone-modal-content {
-                padding: 20px;
-            }
-        }
-    </style>
+  <style>
+    :root{--primary:#6366f1;--secondary:#4f46e5;--error:#ef4444;--background:#f8fafc}
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{background:linear-gradient(135deg,#f8fafc 0%,#e2e8f0 100%);font-family:'Tajawal',sans-serif;min-height:100vh;display:flex;justify-content:center;align-items:center;padding:20px}
+    .auth-container{background:rgba(255,255,255,.95);backdrop-filter:blur(10px);border-radius:20px;box-shadow:0 8px 32px rgba(0,0,0,.1);width:100%;max-width:440px;padding:40px;position:relative}
+    .logo{text-align:center;margin-bottom:30px}
+    .logo h1{color:var(--primary);font-size:2.2rem;font-weight:700}
+    .form-group{margin-bottom:18px}
+    .form-input{width:100%;padding:12px 14px;border:2px solid #e2e8f0;border-radius:12px;font-size:16px;background:#fff}
+    .form-input:focus{border-color:var(--primary);outline:none;box-shadow:0 0 0 3px rgba(99,102,241,.12)}
+    .btn{width:100%;padding:12px;border:none;border-radius:12px;font-size:16px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px}
+    .btn-primary{background:var(--primary);color:#fff}
+    .btn-google{background:#fff;color:#3c4043;border:1px solid #e0e0e0}
+    .divider{text-align:center;margin:14px 0;color:#94a3b8}
+    .toggle-form{margin-top:16px;text-align:center;color:#64748b}
+    .toggle-form a{color:var(--primary);cursor:pointer;text-decoration:none;font-weight:600}
+    .loader{width:20px;height:20px;border:3px solid #fff;border-bottom-color:transparent;border-radius:50%;animation:rotation 1s linear infinite;display:none}
+    @keyframes rotation{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}
+    .error-message{color:var(--error);font-size:14px;margin-top:8px;display:none;align-items:center;gap:8px}
+    @media(max-width:480px){.auth-container{padding:20px;border-radius:14px}}
+  </style>
 </head>
 <body>
-    <!-- تسجيل الدخول -->
-    <div id="login-container" class="auth-container active">
-        <div class="logo">
-            <h1>فندشات</h1>
-        </div>
-        
-        <form id="login-form" onsubmit="event.preventDefault(); login()">
-            <div class="form-group">
-                <input type="email" id="login-email" class="form-input" placeholder="البريد الإلكتروني" required>
-            </div>
-            
-            <div class="form-group">
-                <input type="password" id="login-password" class="form-input" placeholder="كلمة المرور" required>
-            </div>
-            
-            <button type="submit" class="btn btn-primary" id="login-btn">
-                <span>تسجيل الدخول</span>
-                <div class="loader" id="login-loader"></div>
-            </button>
-        </form>
+  <div id="login-container" class="auth-container">
+    <div class="logo"><h1>فندشات</h1></div>
 
-        <div class="error-message" id="login-error">
-            <i class="fas fa-exclamation-circle"></i>
-            <span></span>
-        </div>
+    <form id="login-form" onsubmit="event.preventDefault(); login()">
+      <div class="form-group">
+        <input id="login-email" class="form-input" type="email" placeholder="البريد الإلكتروني" required>
+      </div>
+      <div class="form-group">
+        <input id="login-password" class="form-input" type="password" placeholder="كلمة المرور" required>
+      </div>
+      <button id="login-btn" class="btn btn-primary" type="submit">
+        <span>تسجيل الدخول</span>
+        <div id="login-loader" class="loader"></div>
+      </button>
+    </form>
 
-        <div class="divider">
-            <span>أو</span>
-        </div>
+    <div id="login-error" class="error-message"><i class="fas fa-exclamation-circle"></i><span></span></div>
 
-        <button class="btn btn-google" onclick="loginWithGoogle()">
-            <i class="fab fa-google"></i>
-            <span>متابعة مع Google</span>
-        </button>
-        
-        <button class="btn btn-phone" onclick="showPhoneAuthModal('login')" style="margin-top: 15px;">
-            <i class="fas fa-phone-alt"></i>
-            <span>متابعة باستخدام الهاتف</span>
-        </button>
+    <div class="divider">أو</div>
 
-        <div class="toggle-form">
-            ليس لديك حساب؟ <a onclick="showSignUp()">أنشئ حسابًا الآن</a>
-        </div>
+    <!-- زر Google مخصص (يمكن حذفه لو تريد إزالة التسجيل بالجوجل) -->
+    <button class="btn btn-google" id="google-custom-btn" onclick="startGoogleSignIn()">
+      <i class="fab fa-google"></i>
+      <span>متابعة مع Google</span>
+    </button>
+
+    <div class="toggle-form">
+      ليس لديك حساب؟ <a onclick="showSignUp()">أنشئ حسابًا الآن</a>
     </div>
+  </div>
 
-    <!-- إنشاء حساب -->
-    <div id="signup-container" class="auth-container hidden">
-        <div class="logo">
-            <h1>إنشاء حساب جديد</h1>
-        </div>
-        
-        <form id="signup-form" onsubmit="event.preventDefault(); signUp()">
-            <div class="form-group">
-                <input type="text" id="signup-name" class="form-input" placeholder="الاسم الكامل" required>
-            </div>
-            
-            <div class="form-group">
-                <input type="email" id="signup-email" class="form-input" placeholder="البريد الإلكتروني" required>
-            </div>
-            
-            <div class="form-group">
-                <input type="password" id="signup-password" class="form-input" placeholder="كلمة المرور" required>
-            </div>
+  <!-- نموذج التسجيل -->
+  <div id="signup-container" class="auth-container" style="display:none;margin-top:20px;">
+    <div class="logo"><h1>إنشاء حساب جديد</h1></div>
+    <form id="signup-form" onsubmit="event.preventDefault(); signUp()">
+      <div class="form-group"><input id="signup-name" class="form-input" type="text" placeholder="الاسم الكامل" required></div>
+      <div class="form-group"><input id="signup-email" class="form-input" type="email" placeholder="البريد الإلكتروني" required></div>
+      <div class="form-group"><input id="signup-password" class="form-input" type="password" placeholder="كلمة المرور" required></div>
+      <button id="signup-btn" class="btn btn-primary" type="submit">
+        <span>إنشاء حساب</span>
+        <div id="signup-loader" class="loader"></div>
+      </button>
+    </form>
+    <div id="signup-error" class="error-message"><i class="fas fa-exclamation-circle"></i><span></span></div>
+    <div class="toggle-form">لديك حساب بالفعل؟ <a onclick="showLogin()">سجل الدخول هنا</a></div>
+  </div>
 
-            <button type="submit" class="btn btn-primary" id="signup-btn">
-                <span>إنشاء حساب</span>
-                <div class="loader" id="signup-loader"></div>
-            </button>
-        </form>
+  <script>
+    /*******************************
+     * إعدادات Firebase (استبدل إن لزم)
+     *******************************/
+    const firebaseConfig = {
+      apiKey: "AIzaSyBwwrBtf6AtW7R36FX4j2GQZVEdJldFq7o",
+      authDomain: "you-unblock.firebaseapp.com",
+      projectId: "you-unblock",
+      storageBucket: "you-unblock.appspot.com",
+      messagingSenderId: "306278978440",
+      appId: "1:306278978440:web:4ca87c3856e107a30be03d"
+    };
+    // تهيئة Firebase (يبقى موجودًا لاستخدام تسجيل البريد/كلمة المرور)
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
 
-        <div class="error-message" id="signup-error">
-            <i class="fas fa-exclamation-circle"></i>
-            <span></span>
-        </div>
-        
-        <div class="divider">
-            <span>أو</span>
-        </div>
-        
-        <button class="btn btn-phone" onclick="showPhoneAuthModal('signup')">
-            <i class="fas fa-phone-alt"></i>
-            <span>متابعة باستخدام الهاتف</span>
-        </button>
+    // تغيير حالة المصادقة (إذا تم تسجيل الدخول بواسطة أي طريقة نعيد التوجيه)
+    auth.onAuthStateChanged(user => {
+      if (user) {
+        // تم تسجيل الدخول عبر Firebase SDK (بريد/كلمة مرور أو بعد ربط)
+        window.location.href = "chat.html";
+      }
+    });
 
-        <div class="toggle-form">
-            لديك حساب بالفعل؟ <a onclick="showLogin()">سجل الدخول هنا</a>
-        </div>
-    </div>
-    
-    <!-- Modal تسجيل الدخول بالهاتف -->
-    <div id="phone-auth-modal" class="phone-modal">
-        <div class="phone-modal-content">
-            <div class="phone-modal-header">
-                <h2 id="phone-modal-title">تسجيل الدخول باستخدام الهاتف</h2>
-                <button class="phone-modal-close" onclick="closePhoneAuthModal()">&times;</button>
-            </div>
-            
-            <div id="phone-form">
-                <div class="form-group" id="phone-name-group" style="display: none;">
-                    <input type="text" id="phone-name" class="form-input" placeholder="الاسم الكامل" required>
-                </div>
-                
-                <div class="form-group">
-                    <input type="tel" id="phone-number" class="form-input" placeholder="رقم الهاتف (مثال: +966500000000)" required>
-                </div>
-                
-                <div class="form-group">
-                    <input type="password" id="phone-password" class="form-input" placeholder="كلمة المرور" required>
-                </div>
-                
-                <div class="phone-form-actions">
-                    <button class="btn" style="background: #e2e8f0;" onclick="closePhoneAuthModal()">إلغاء</button>
-                    <button class="btn btn-phone" id="phone-submit-btn">متابعة</button>
-                </div>
-            </div>
-            
-            <div class="error-message" id="phone-error">
-                <i class="fas fa-exclamation-circle"></i>
-                <span></span>
-            </div>
-        </div>
-    </div>
+    /*******************************
+     * وظائف عرض/إخفاء النماذج
+     *******************************/
+    function showSignUp() {
+      document.getElementById('login-container').style.display = 'none';
+      document.getElementById('signup-container').style.display = 'block';
+      clearErrors();
+    }
+    function showLogin() {
+      document.getElementById('signup-container').style.display = 'none';
+      document.getElementById('login-container').style.display = 'block';
+      clearErrors();
+    }
 
-    <script>
-        // إعدادات Firebase - استبدلها بإعدادات مشروعك
-        const firebaseConfig = {
-            apiKey: "AIzaSyBwwrBtf6AtW7R36FX4j2GQZVEdJldFq7o",
-            authDomain: "you-unblock.firebaseapp.com",
-            projectId: "you-unblock",
-            storageBucket: "you-unblock.appspot.com",
-            messagingSenderId: "306278978440",
-            appId: "1:306278978440:web:4ca87c3856e107a30be03d"
+    /*******************************
+     * وظائف تسجيل البريد/كلمة المرور (كما في كودك)
+     *******************************/
+    async function login() {
+      const email = document.getElementById('login-email').value.trim();
+      const password = document.getElementById('login-password').value.trim();
+      const loader = document.getElementById('login-loader');
+      const btn = document.getElementById('login-btn');
+      const errorDiv = document.getElementById('login-error');
+
+      try {
+        btn.disabled = true;
+        loader.style.display = 'block';
+        clearErrors();
+        await auth.signInWithEmailAndPassword(email, password);
+        // سيتم إعادة التوجيه بواسطة onAuthStateChanged
+      } catch (err) {
+        showError(errorDiv, 'خطأ في تسجيل الدخول: ' + (err.message || err));
+      } finally {
+        btn.disabled = false;
+        loader.style.display = 'none';
+      }
+    }
+
+    async function signUp() {
+      const name = document.getElementById('signup-name').value.trim();
+      const email = document.getElementById('signup-email').value.trim();
+      const password = document.getElementById('signup-password').value.trim();
+      const loader = document.getElementById('signup-loader');
+      const btn = document.getElementById('signup-btn');
+      const errorDiv = document.getElementById('signup-error');
+
+      try {
+        btn.disabled = true;
+        loader.style.display = 'block';
+        clearErrors();
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) throw new Error('صيغة البريد الإلكتروني غير صحيحة');
+        const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+        await userCredential.user.updateProfile({ displayName: name });
+        // سيتم إعادة التوجيه بواسطة onAuthStateChanged
+      } catch (err) {
+        showError(errorDiv, 'خطأ في التسجيل: ' + (err.message || err));
+      } finally {
+        btn.disabled = false;
+        loader.style.display = 'none';
+      }
+    }
+
+    /*******************************
+     * أخطاء ووظائف مساعدة
+     *******************************/
+    function showError(element, message) {
+      element.querySelector('span').textContent = message;
+      element.style.display = 'flex';
+    }
+    function clearErrors() {
+      document.querySelectorAll('.error-message').forEach(el => {
+        el.style.display = 'none';
+        const sp = el.querySelector('span');
+        if (sp) sp.textContent = '';
+      });
+    }
+
+    /*******************************
+     * --- جزء Google Identity + إرسال إلى Firebase REST ---
+     *  ملاحظة: استبدل GOOGLE_CLIENT_ID بقيمة العميل الخاصة بك
+     *******************************/
+    const GOOGLE_CLIENT_ID = 'GOOGLE_CLIENT_ID.apps.googleusercontent.com'; // <-- استبدل هنا
+
+    // سيتم تهيئة Google Identity عند تحميل الصفحة
+    window.onload = () => {
+      if (window.google && google.accounts && google.accounts.id) {
+        google.accounts.id.initialize({
+          client_id: GOOGLE_CLIENT_ID,
+          callback: handleCredentialResponse // سيستقبل الـ ID token هنا
+        });
+        // لا نرسم زر Google الافتراضي لأن لدينا زر مخصص، لكن يمكن رسمه هكذا إذا رغبت:
+        // google.accounts.id.renderButton(document.getElementById("g_id_button"), { theme: "outline", size: "large" });
+        // نستخدم prompt/one-tap أو نطلب من المستخدم النقر على زر مخصص ليبدأ التدفق
+      } else {
+        console.warn('Google Identity library not loaded yet.');
+      }
+    };
+
+    // عند النقر على زر Google المخصص - يظهر واجهة اختيار حساب Google (one-tap/prompt)
+    function startGoogleSignIn() {
+      clearErrors();
+      // انطلاقًا من Google Identity: نعرض نافذة اختيار الحساب
+      // ملاحظة: بعض المتصفحات تمنع النوافذ المنبثقة إذا لم يتم استخدام renderButton،
+      // لكن google.accounts.id.prompt() يعرض واجهة one-tap إذا كانت متاحة.
+      if (window.google && google.accounts && google.accounts.id) {
+        // نستخدم prompt — إذا كان المستخدم قد اختار مسبقًا سيظهر الـ credential فورًا
+        google.accounts.id.prompt(notification => {
+          // يمكن معالجة الإشعارات هنا إن أردنا (نجاح/رفض)
+          // لكن النتيجة النهائية تُعالج في handleCredentialResponse
+        });
+      } else {
+        alert('خطأ: مكتبة Google لم تُحمَّل بعد. حاول إعادة تحميل الصفحة.');
+      }
+    }
+
+    // هذه الدالة تتلقى كائن الاستجابة من Google Identity (credential = ID token)
+    async function handleCredentialResponse(response) {
+      // response.credential يحوي ID token (JWT) صادر من Google
+      if (!response || !response.credential) {
+        showError(document.getElementById('login-error'), 'فشل الحصول على بيانات من Google.');
+        return;
+      }
+
+      try {
+        // عرض تحميل مؤقت
+        const googleBtn = document.getElementById('google-custom-btn');
+        googleBtn.disabled = true;
+        googleBtn.querySelector('span').textContent = 'جارِ المتابعة...';
+
+        const id_token = response.credential;
+        const apiKey = firebaseConfig.apiKey;
+
+        // استدعاء REST API الخاص بـ Firebase لتسجيل/تسجيل دخول عبر موفر خارجي (Google)
+        const url = `https://identitytoolkit.googleapis.com/v1/accounts:signInWithIdp?key=${apiKey}`;
+        const body = {
+          postBody: `id_token=${encodeURIComponent(id_token)}&providerId=google.com`,
+          requestUri: window.location.href,
+          returnIdpCredential: true,
+          returnSecureToken: true
         };
 
-        // تهيئة Firebase
-        firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        
-        // متغير لتحديد نوع العملية (تسجيل دخول أو إنشاء حساب)
-        let phoneAuthType = null;
-
-        // معالجة تغيير حالة المصادقة
-        auth.onAuthStateChanged(user => {
-            if(user) window.location.href = "chat.html";
+        const res = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body)
         });
 
-        // وظائف التحكم بين النماذج
-        function showLogin() {
-            document.getElementById('signup-container').classList.remove('active');
-            document.getElementById('signup-container').classList.add('hidden');
-            document.getElementById('login-container').classList.remove('hidden');
-            document.getElementById('login-container').classList.add('active');
-            clearErrors();
+        const data = await res.json();
+
+        if (data && data.error) {
+          // رسالة خطأ من Firebase
+          throw new Error(data.error.message || JSON.stringify(data.error));
         }
 
-        function showSignUp() {
-            document.getElementById('login-container').classList.remove('active');
-            document.getElementById('login-container').classList.add('hidden');
-            document.getElementById('signup-container').classList.remove('hidden');
-            document.getElementById('signup-container').classList.add('active');
-            clearErrors();
-        }
+        // النجاح: data يحتوي على idToken (Firebase ID token) و localId و email و displayName ...
+        // يمكنك الآن:
+        //  - تخزين data.idToken في localStorage/session إذا رغبت
+        //  - إعادة التوجيه إلى صفحة الدردشة
+        //  - أو ربط أي بيانات أخرى في قاعدة بياناتك
 
-        // تسجيل الدخول
-        async function login() {
-            const email = document.getElementById('login-email').value.trim();
-            const password = document.getElementById('login-password').value.trim();
-            const loader = document.getElementById('login-loader');
-            const btn = document.getElementById('login-btn');
-            const errorDiv = document.getElementById('login-error');
+        // مثال: تخزين توكن Firebase (اختياري)
+        localStorage.setItem('firebase_id_token', data.idToken);
+        localStorage.setItem('user_email', data.email || '');
+        // إعادة التوجيه إلى chat.html
+        window.location.href = 'chat.html';
 
-            try {
-                btn.disabled = true;
-                loader.style.display = 'block';
-                clearErrors();
-                
-                await auth.signInWithEmailAndPassword(email, password);
-                window.location.href = "chat.html";
-            } catch (error) {
-                showError(errorDiv, 'خطأ في تسجيل الدخول: ' + error.message);
-            } finally {
-                btn.disabled = false;
-                loader.style.display = 'none';
-            }
+      } catch (err) {
+        showError(document.getElementById('login-error'), 'خطأ في التسجيل بـ Google: ' + (err.message || err));
+      } finally {
+        const googleBtn = document.getElementById('google-custom-btn');
+        if (googleBtn) {
+          googleBtn.disabled = false;
+          googleBtn.querySelector('span').textContent = 'متابعة مع Google';
         }
+      }
+    }
 
-        // إنشاء حساب
-        async function signUp() {
-            const name = document.getElementById('signup-name').value.trim();
-            const email = document.getElementById('signup-email').value.trim();
-            const password = document.getElementById('signup-password').value.trim();
-            const loader = document.getElementById('signup-loader');
-            const btn = document.getElementById('signup-btn');
-            const errorDiv = document.getElementById('signup-error');
-
-            try {
-                btn.disabled = true;
-                loader.style.display = 'block';
-                clearErrors();
-
-                if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-                    throw new Error('صيغة البريد الإلكتروني غير صحيحة');
-                }
-
-                const userCredential = await auth.createUserWithEmailAndPassword(email, password);
-                await userCredential.user.updateProfile({ displayName: name });
-                window.location.href = "chat.html";
-                
-            } catch (error) {
-                showError(errorDiv, 'خطأ في التسجيل: ' + error.message);
-            } finally {
-                btn.disabled = false;
-                loader.style.display = 'none';
-            }
-        }
-
-        // تسجيل الدخول بـ Google - تم إصلاحه
-        async function loginWithGoogle() {
-            const provider = new firebase.auth.GoogleAuthProvider();
-            try {
-                await auth.signInWithPopup(provider);
-                window.location.href = "chat.html";
-            } catch (error) {
-                showError(document.getElementById('login-error'), 'خطأ في التسجيل بـ Google: ' + error.message);
-            }
-        }
-        
-        // وظائف تسجيل الدخول بالهاتف
-        function showPhoneAuthModal(type) {
-            phoneAuthType = type;
-            const modal = document.getElementById('phone-auth-modal');
-            const title = document.getElementById('phone-modal-title');
-            const phoneNameGroup = document.getElementById('phone-name-group');
-            const phoneSubmitBtn = document.getElementById('phone-submit-btn');
-            
-            if (type === 'login') {
-                title.textContent = 'تسجيل الدخول باستخدام الهاتف';
-                phoneNameGroup.style.display = 'none';
-                phoneSubmitBtn.innerHTML = '<span>تسجيل الدخول</span>';
-            } else {
-                title.textContent = 'إنشاء حساب باستخدام الهاتف';
-                phoneNameGroup.style.display = 'block';
-                phoneSubmitBtn.innerHTML = '<span>إنشاء حساب</span>';
-            }
-            
-            modal.classList.add('active');
-            clearPhoneForm();
-        }
-        
-        function closePhoneAuthModal() {
-            document.getElementById('phone-auth-modal').classList.remove('active');
-            clearPhoneForm();
-        }
-        
-        function clearPhoneForm() {
-            document.getElementById('phone-name').value = '';
-            document.getElementById('phone-number').value = '';
-            document.getElementById('phone-password').value = '';
-            document.getElementById('phone-error').style.display = 'none';
-        }
-        
-        // معالجة إرسال نموذج الهاتف
-        document.getElementById('phone-submit-btn').addEventListener('click', handlePhoneAuth);
-        
-        async function handlePhoneAuth() {
-            const name = document.getElementById('phone-name').value.trim();
-            const phoneNumber = document.getElementById('phone-number').value.trim();
-            const password = document.getElementById('phone-password').value.trim();
-            const errorDiv = document.getElementById('phone-error');
-            
-            try {
-                // التحقق من صحة البيانات
-                if (phoneAuthType === 'signup' && !name) {
-                    throw new Error('الرجاء إدخال الاسم الكامل');
-                }
-                
-                if (!phoneNumber || !phoneNumber.startsWith('+')) {
-                    throw new Error('الرجاء إدخال رقم هاتف صحيح مع رمز الدولة (مثال: +966500000000)');
-                }
-                
-                if (!password || password.length < 6) {
-                    throw new Error('كلمة المرور يجب أن تكون 6 أحرف على الأقل');
-                }
-                
-                // إنشاء بريد إلكتروني وهمي باستخدام رقم الهاتف
-                const email = `${phoneNumber}@phone.com`;
-                
-                if (phoneAuthType === 'login') {
-                    // تسجيل الدخول
-                    await auth.signInWithEmailAndPassword(email, password);
-                    window.location.href = "chat.html";
-                } else {
-                    // إنشاء حساب
-                    const userCredential = await auth.createUserWithEmailAndPassword(email, password);
-                    await userCredential.user.updateProfile({ displayName: name });
-                    window.location.href = "chat.html";
-                }
-                
-                // إغلاق النافذة المنبثقة
-                closePhoneAuthModal();
-                
-            } catch (error) {
-                showError(errorDiv, 'خطأ: ' + error.message);
-            }
-        }
-        
-        // وظائف مساعدة
-        function showError(element, message) {
-            element.querySelector('span').textContent = message;
-            if (message) {
-                element.style.display = 'flex';
-            } else {
-                element.style.display = 'none';
-            }
-        }
-
-        function clearErrors() {
-            document.querySelectorAll('.error-message').forEach(el => {
-                el.style.display = 'none';
-                el.querySelector('span').textContent = '';
-            });
-        }
-    </script>
+    /*******************************
+     * ملاحظات ومميزات هذا الأسلوب:
+     * 1) لا يستخدم signInWithPopup من Firebase SDK.
+     * 2) تدفق Google يتم بواسطة Google Identity (الحصول على ID token).
+     * 3) نرسل الـ ID token إلى Firebase REST endpoint accounts:signInWithIdp
+     *    الذي يقوم بإنشاء/تسجيل المستخدم في Firebase Authentication.
+     * 4) تحتاج فقط إلى GOOGLE_CLIENT_ID و firebaseConfig.apiKey (الـ apiKey موجود في كودك).
+     *
+     * إذا أردت حذف زر Google تمامًا: احذف عنصر
+     *   <button class="btn btn-google" id="google-custom-btn" ...>...</button>
+     * من HTML وسيُحذف خيار Google.
+     *******************************/
+  </script>
 </body>
 </html>
