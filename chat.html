@@ -67,12 +67,17 @@
       --font-size: 16px;
       --message-border-radius: 10px;
       --username-color: #7289da;
+      --glass-bg: rgba(255, 255, 255, 0.1);
+      --glass-border: rgba(255, 255, 255, 0.2);
+      --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
     }
     body.dark-mode {
       --primary-bg: #18191a;
       --secondary-bg: #242526;
       --tertiary-bg: #3a3b3c;
       --accent-color: #7289da;
+      --glass-bg: rgba(0, 0, 0, 0.2);
+      --glass-border: rgba(255, 255, 255, 0.1);
     }
     body {
       margin: 0;
@@ -84,6 +89,26 @@
       overflow: hidden;
       font-size: var(--font-size);
     }
+    
+    /* تأثير الزجاج الشفاف */
+    .glass-effect {
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border);
+      box-shadow: var(--glass-shadow);
+      border-radius: 20px;
+    }
+    
+    .glass-effect-light {
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+      border-radius: 20px;
+    }
+    
     /* تخطيط التطبيق */
     .container {
       display: flex;
@@ -356,36 +381,99 @@
       color: #7289da;
     }
     
-    /* نافذة الإدخال (استخدام textarea للرسائل الطويلة) */
+    /* نافذة الإدخال (استخدام textarea للرسائل الطويلة) - تم التعديل إلى نمط زجاجي */
     .message-input {
       display: flex;
       padding: 10px;
-      background: var(--tertiary-bg);
-      border-top: 1px solid var(--secondary-bg);
+      background: transparent;
+      border-top: 1px solid transparent;
+      margin: 10px;
+      border-radius: 25px;
+      align-items: center;
+      gap: 10px;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
     }
     .message-input textarea {
       flex: 1;
-      padding: 1px;
+      padding: 12px 15px;
       border: none;
-      border-radius: 5px;
-      background: var(--secondary-bg);
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.15);
       color: #dcddde;
       resize: none;
       font-family: inherit;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .message-input textarea:focus {
+      outline: none;
+      background: rgba(255, 255, 255, 0.2);
     }
     .message-input button {
-      padding: 10px 20px;
-      margin-left: 10px;
-      background: var(--accent-color);
-      border: none;
-      border-radius: 5px;
+      padding: 12px 20px;
+      background: rgba(255, 255, 255, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
       color: #fff;
       cursor: pointer;
-      transition: background 0.3s;
+      transition: all 0.3s;
+      width: 50px;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
     }
     .message-input button:hover {
-      background: #5d6dcc;
+      background: rgba(255, 255, 255, 0.3);
+      transform: scale(1.05);
     }
+    
+    /* زر إرفاق الصورة - تم التعديل إلى نمط زجاجي */
+    .attach-image-btn {
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: transform 0.3s;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+    
+    .attach-image-btn:hover {
+      transform: scale(1.1);
+      background: rgba(255, 255, 255, 0.3);
+    }
+    
+    /* أيقونة التحميل - تم التعديل إلى نمط زجاجي */
+    .upload-indicator {
+      display: none;
+      margin-left: 10px;
+      font-size: 20px;
+      color: #7289da;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+    
     /* نافذة الإيموجي */
     #emoji-popup {
       position: fixed;
@@ -406,7 +494,8 @@
     #emoji-popup .emoji-option:hover {
       transform: scale(1.2);
     }
-    /* النوافذ المنبثقة */
+    
+    /* النوافذ المنبثقة - تم التعديل إلى نمط زجاجي */
     .settings-popup,
     .create-group-popup,
     .group-options-popup,
@@ -424,21 +513,26 @@
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      background: #fff;
-      border: 1px solid #ccc;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
       display: none;
       text-align: center;
       z-index: 2300;
-      border-radius: 8px;
+      border-radius: 20px;
       width: 400px;
       padding: 20px;
+      color: #fff;
     }
+    
     .edit-private-message-popup {
       z-index: 3100;
       width: 90%;
       max-width: 400px;
     }
+    
     .settings-popup h3,
     .create-group-popup h3,
     .edit-group-popup h3,
@@ -452,7 +546,9 @@
     .theme-popup h3,
     .notification-settings-popup h3 {
       margin-top: 0;
+      color: #fff;
     }
+    
     .create-group-popup input,
     .edit-group-popup input,
     .settings-popup input,
@@ -462,13 +558,29 @@
     .chat-settings-popup select,
     .notification-settings-popup select {
       width: 100%;
-      padding: 10px;
-      margin-bottom: 10px;
+      padding: 12px 15px;
+      margin-bottom: 15px;
       border: none;
-      border-radius: 5px;
-      background: var(--primary-bg);
-      color: #dcddde;
+      border-radius: 15px;
+      background: rgba(255, 255, 255, 0.15);
+      color: #fff;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
     }
+    
+    .create-group-popup input:focus,
+    .edit-group-popup input:focus,
+    .settings-popup input:focus,
+    .settings-popup textarea:focus,
+    .change-name-popup input:focus,
+    .chat-settings-popup input:focus,
+    .chat-settings-popup select:focus,
+    .notification-settings-popup select:focus {
+      outline: none;
+      background: rgba(255, 255, 255, 0.2);
+    }
+    
     .create-group-popup button,
     .edit-group-popup button,
     .settings-popup button,
@@ -480,15 +592,18 @@
     .theme-popup button,
     .notification-settings-popup button {
       width: 100%;
-      padding: 10px;
-      background: var(--accent-color);
-      border: none;
-      border-radius: 5px;
+      padding: 12px;
+      background: rgba(255, 255, 255, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 15px;
       color: #fff;
       cursor: pointer;
       margin-bottom: 10px;
-      transition: background 0.3s;
+      transition: all 0.3s;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
     }
+    
     .create-group-popup button:hover,
     .edit-group-popup button:hover,
     .settings-popup button:hover,
@@ -499,84 +614,111 @@
     .privacy-settings-popup button:hover,
     .theme-popup button:hover,
     .notification-settings-popup button:hover {
-      background: #5d6dcc;
+      background: rgba(255, 255, 255, 0.3);
+      transform: translateY(-2px);
     }
+    
     .group-options-popup button {
       width: 100%;
-      padding: 10px;
+      padding: 12px;
       margin: 5px 0;
-      background: var(--accent-color);
-      border: none;
-      border-radius: 5px;
+      background: rgba(255, 255, 255, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 15px;
       color: #fff;
       cursor: pointer;
-      transition: background 0.3s;
+      transition: all 0.3s;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
     }
+    
     .group-options-popup button:hover {
-      background: #5d6dcc;
+      background: rgba(255, 255, 255, 0.3);
+      transform: translateY(-2px);
     }
+    
     .group-options-popup .cancel-btn {
-      background: #dc3545;
+      background: rgba(220, 53, 69, 0.7);
     }
+    
     .group-options-popup .cancel-btn:hover {
-      background: #c33a2f;
+      background: rgba(220, 53, 69, 0.9);
     }
+    
     .settings-popup button {
       width: 100%;
       padding: 12px;
       margin: 8px 0;
       border: none;
-      border-radius: 5px;
+      border-radius: 15px;
       font-size: 16px;
       cursor: pointer;
-      transition: background 0.3s;
+      transition: all 0.3s;
     }
+    
     /* تحسين زر الإغلاق */
     .modal-close {
-      background: #dc3545;
-      border: none;
+      background: rgba(220, 53, 69, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.3);
       color: #fff;
       padding: 8px 12px;
-      border-radius: 5px;
+      border-radius: 15px;
       cursor: pointer;
       font-size: 16px;
       margin-top: 20px;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
     }
+    
+    .modal-close:hover {
+      background: rgba(220, 53, 69, 0.9);
+    }
+    
     #toggle-theme {
-      background: #6c757d;
+      background: rgba(108, 117, 125, 0.7);
       color: #fff;
     }
+    
     #toggle-theme:hover {
-      background: #5a6268;
+      background: rgba(108, 117, 125, 0.9);
     }
+    
     #change-bg-btn {
-      background: var(--accent-color);
+      background: rgba(114, 137, 218, 0.7);
       color: #fff;
     }
+    
     #change-bg-btn:hover {
-      background: #5d6dcc;
+      background: rgba(114, 137, 218, 0.9);
     }
+    
     #change-name-btn {
-      background: #17a2b8;
+      background: rgba(23, 162, 184, 0.7);
       color: #fff;
     }
+    
     #change-name-btn:hover {
-      background: #138496;
+      background: rgba(23, 162, 184, 0.9);
     }
+    
     #logout-btn {
-      background: #dc3545;
+      background: rgba(220, 53, 69, 0.7);
       color: #fff;
     }
+    
     #logout-btn:hover {
-      background: #c82333;
+      background: rgba(220, 53, 69, 0.9);
     }
+    
     #close-settings-btn {
-      background: #6c757d;
+      background: rgba(108, 117, 125, 0.7);
       color: #fff;
     }
+    
     #close-settings-btn:hover {
-      background: #5a6268;
+      background: rgba(108, 117, 125, 0.9);
     }
+    
     .rooms-grid {
       display: flex;
       flex-wrap: wrap;
@@ -586,13 +728,14 @@
       overflow-y: auto;
       margin: 20px 0;
     }
+    
     .room-card {
       width: 80px;
       height: 80px;
-      background: var(--secondary-bg);
-      border: 1px solid #4a4e57;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      border-radius: 15px;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -600,23 +743,30 @@
       cursor: pointer;
       transition: transform 0.3s, box-shadow 0.3s;
       padding: 5px;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
     }
+    
     .room-card:hover {
       transform: scale(1.1);
-      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+      box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+      background: rgba(255, 255, 255, 0.15);
     }
+    
     .room-card img {
       width: 100%;
       height: 50px;
       object-fit: cover;
-      border-radius: 4px;
+      border-radius: 10px;
       margin-bottom: 5px;
     }
+    
     .room-card span {
       font-size: 12px;
       text-align: center;
       color: #fff;
     }
+    
     @media (max-width: 768px) {
       .sidebar {
         width: 60px;
@@ -649,10 +799,12 @@
         padding: 10px;
       }
     }
+    
     #background-popup {
       max-height: 80vh;
       overflow-y: auto;
     }
+    
     #background-options-container {
       max-height: 300px;
       overflow-y: auto;
@@ -662,19 +814,22 @@
       gap: 10px;
       margin-bottom: 10px;
     }
+    
     .bg-option {
       width: 100px;
       height: 80px;
       background-size: cover;
       background-position: center;
-      border-radius: 8px;
+      border-radius: 15px;
       cursor: pointer;
       border: 2px solid transparent;
       transition: border-color 0.3s, transform 0.3s;
     }
+    
     .bg-option:hover {
       transform: scale(1.05);
     }
+    
     .bg-option.selected {
       border: 2px solid #7289da;
       box-shadow: 0 0 10px rgba(114, 137, 218, 0.5);
@@ -685,16 +840,18 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      background: #36393f;
+      background: rgba(255, 255, 255, 0.1);
       color: #fff;
       font-weight: bold;
       font-size: 14px;
       text-align: center;
-      border-radius: 8px;
-      border: 1px solid #4a4e57;
+      border-radius: 15px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
     }
     
-    /* تصميم صفحة الملف الشخصي الاحترافية */
+    /* تصميم صفحة الملف الشخصي الاحترافية - تم التعديل إلى نمط زجاجي */
     #profile-modal {
       display: none;
       position: fixed;
@@ -706,21 +863,28 @@
       background: rgba(0,0,0,0.7);
       overflow-y: auto;
     }
+    
     #profile-modal .modal-content {
-      background: #fff;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
       margin: 5% auto;
       padding: 30px;
-      border-radius: 10px;
+      border-radius: 25px;
       width: 90%;
       max-width: 500px;
-      box-shadow: 0 0 20px rgba(0,0,0,0.3);
       text-align: center;
+      color: #fff;
     }
+    
     #profile-modal .modal-content h2 {
       margin-top: 0;
       font-size: 24px;
-      color: #333;
+      color: #fff;
     }
+    
     /* نافذة الرسائل الخاصة (قائمة الدردشات الخاصة) */
     .private-messages-popup {
       display: none;
@@ -729,38 +893,48 @@
       right: 10px;
       width: 300px;
       max-height: 80vh;
-      background: #fff;
-      border: 1px solid #ccc;
-      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 20px;
       z-index: 1400;
       overflow: hidden;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.2);
     }
+    
     .private-messages-popup .popup-header {
-      background: #7289da;
+      background: rgba(114, 137, 218, 0.7);
       color: #fff;
       padding: 10px;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      border-radius: 20px 20px 0 0;
     }
+    
     .private-messages-list {
       padding: 10px;
       overflow-y: auto;
       max-height: calc(80vh - 50px);
     }
+    
     .private-message-item {
-      padding: 8px;
-      border-bottom: 1px solid #ddd;
+      padding: 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
       cursor: pointer;
       display: flex;
       align-items: center;
       gap: 10px;
       transition: background 0.2s;
+      border-radius: 15px;
+      margin-bottom: 5px;
     }
+    
     .private-message-item:hover {
-      background: #f5f5f5;
+      background: rgba(255, 255, 255, 0.1);
     }
+    
     .close-btn {
       background: none;
       border: none;
@@ -768,6 +942,7 @@
       font-size: 20px;
       cursor: pointer;
     }
+    
     /* نافذة الدردشة الخاصة */
     .private-chat-popup {
       display: none;
@@ -779,15 +954,19 @@
       height: 100%;
       background: rgba(0,0,0,0.5);
     }
+    
     .private-chat-popup .chat-container {
-      background: #fff;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
       width: 100%;
       height: 100%;
       display: flex;
       flex-direction: column;
     }
+    
     .private-chat-popup .chat-header {
-      background: #7289da;
+      background: rgba(114, 137, 218, 0.7);
       color: #fff;
       padding: 15px;
       text-align: left;
@@ -795,72 +974,121 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
     }
+    
     .private-chat-popup .chat-header .back-icon {
       margin-right: 10px;
       cursor: pointer;
       font-size: 24px;
     }
+    
     .private-chat-popup .chat-header .chat-user-status {
       font-size: 14px;
       color: #fff;
     }
+    
     .private-chat-popup .chat-area {
       flex: 1;
       padding: 20px;
       overflow-y: auto;
-      background: #f9f9f9;
+      background: transparent;
     }
+    
     .private-chat-popup .message-input {
       display: flex;
       padding: 10px;
-      background: #ddd;
+      background: transparent;
+      margin: 10px;
+      border-radius: 25px;
+      align-items: center;
+      gap: 10px;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
     }
+    
     .private-chat-popup .message-input textarea {
       flex: 1;
-      padding: 10px;
+      padding: 12px 15px;
       border: none;
-      border-radius: 5px;
-      margin-right: 10px;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.15);
+      color: #dcddde;
       resize: none;
       font-family: inherit;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
     }
+    
+    .private-chat-popup .message-input textarea:focus {
+      outline: none;
+      background: rgba(255, 255, 255, 0.2);
+    }
+    
     .private-chat-popup .message-input button {
-      padding: 10px 20px;
-      border: none;
-      border-radius: 5px;
-      background: #7289da;
+      padding: 12px 20px;
+      background: rgba(255, 255, 255, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
       color: #fff;
       cursor: pointer;
+      transition: all 0.3s;
+      width: 50px;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
     }
+    
+    .private-chat-popup .message-input button:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: scale(1.05);
+    }
+    
     /* تنسيق معاينة الرابط */
     .link-preview {
-      border: 1px solid #ccc;
-      border-radius: 5px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 15px;
       margin-top: 5px;
       display: flex;
       text-decoration: none;
       color: inherit;
       overflow: hidden;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
     }
+    
     .link-preview img {
       width: 100px;
       height: 100px;
       object-fit: cover;
     }
+    
     .link-preview .preview-details {
-      padding: 5px;
+      padding: 10px;
       flex: 1;
     }
+    
     .link-preview .preview-details h4 {
       margin: 0 0 5px;
       font-size: 16px;
+      color: #fff;
     }
+    
     .link-preview .preview-details p {
       margin: 0;
       font-size: 14px;
-      color: #555;
+      color: #ddd;
     }
+    
     body {
       user-select: none;
       -webkit-user-select: none;
@@ -868,6 +1096,7 @@
       -moz-user-select: none;
       -ms-user-select: none;
     }
+    
     /* تنسيقات القراءات */
     .seen-status {
       position: absolute;
@@ -891,11 +1120,15 @@
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      background: white;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
       padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+      border-radius: 20px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.2);
       z-index: 9999;
+      color: #fff;
     }
     
     .seen-user {
@@ -911,44 +1144,21 @@
       margin-left: 10px;
     }
     
-    /* زر إرفاق الصورة */
-    .attach-image-btn {
-      background: #4caf50;
-      color: white;
-      border: none;
-      border-radius: 50%;
-      width: 40px;
-      height: 40px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      margin-left: 10px;
-      transition: transform 0.3s;
-    }
+    /* زر إرفاق الصورة - تم التعديل أعلاه */
     
-    .attach-image-btn:hover {
-      transform: scale(1.1);
-    }
-    
-    /* أيقونة التحميل */
-    .upload-indicator {
-      display: none;
-      margin-left: 10px;
-      font-size: 20px;
-      color: #7289da;
-    }
+    /* أيقونة التحميل - تم التعديل أعلاه */
     
     /* الصور في الدردشة */
     .thumbnail-image {
       max-width: 200px;
       max-height: 200px;
-      border-radius: 8px;
+      border-radius: 15px;
       cursor: pointer;
       transition: transform 0.2s;
       object-fit: cover;
       display: block;
       margin-top: 5px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
     }
     
     .thumbnail-image:hover {
@@ -994,11 +1204,12 @@
       max-width: 100%;
       max-height: 70vh;
       display: block;
-      border: 1px solid #444;
+      border: 1px solid rgba(255, 255, 255, 0.2);
       box-shadow: 0 0 30px rgba(0, 0, 0, 0.8);
       object-fit: contain;
       cursor: grab;
       transition: transform 0.3s ease;
+      border-radius: 15px;
     }
 
     .full-image-caption {
@@ -1020,6 +1231,8 @@
       background: rgba(0, 0, 0, 0.7);
       padding: 10px;
       border-radius: 50px;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
     }
 
     .zoom-btn, .download-btn {
@@ -1035,6 +1248,8 @@
       justify-content: center;
       font-size: 18px;
       transition: background 0.3s;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
     }
 
     .zoom-btn:hover, .download-btn:hover {
@@ -1058,29 +1273,43 @@
       }
     }
     
-    /* نافذة إضافة نص للصورة */
+    /* نافذة إضافة نص للصورة - تم التعديل إلى نمط زجاجي */
     .image-caption-popup {
       position: fixed;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      background: white;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
       padding: 20px;
-      border-radius: 10px;
+      border-radius: 20px;
       z-index: 4500;
       width: 90%;
       max-width: 400px;
       display: none;
+      color: #fff;
     }
     
     .image-caption-popup textarea {
       width: 100%;
       height: 100px;
       margin-bottom: 15px;
-      padding: 10px;
-      border: 1px solid #ddd;
-      border-radius: 5px;
+      padding: 12px 15px;
+      border: none;
+      border-radius: 15px;
       resize: vertical;
+      background: rgba(255, 255, 255, 0.15);
+      color: #fff;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .image-caption-popup textarea:focus {
+      outline: none;
+      background: rgba(255, 255, 255, 0.2);
     }
     
     /* مؤشر التحميل */
@@ -1100,10 +1329,12 @@
     .upload-spinner {
       width: 80px;
       height: 80px;
-      border: 8px solid #f3f3f3;
+      border: 8px solid rgba(255, 255, 255, 0.3);
       border-top: 8px solid #7289da;
       border-radius: 50%;
       animation: spin 1s linear infinite;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
     }
     
     @keyframes spin {
@@ -1114,24 +1345,26 @@
     /* زر الحالة في الملف الشخصي */
     .user-status-indicator {
       font-size: 14px;
-      padding: 3px 8px;
-      border-radius: 10px;
+      padding: 8px 15px;
+      border-radius: 20px;
       display: inline-block;
       margin-top: 5px;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
     }
     
     .status-online {
-      background-color: #4CAF50;
+      background-color: rgba(76, 175, 80, 0.7);
       color: white;
     }
     
     .status-offline {
-      background-color: #f44336;
+      background-color: rgba(244, 67, 54, 0.7);
       color: white;
     }
     
     .status-idle {
-      background-color: #FF9800;
+      background-color: rgba(255, 152, 0, 0.7);
       color: white;
     }
     
@@ -1143,7 +1376,9 @@
       object-fit: cover;
       margin: 10px auto;
       display: block;
-      border: 2px solid #7289da;
+      border: 2px solid rgba(114, 137, 218, 0.7);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
     }
     
     /* تنسيقات إعدادات المحادثة الجديدة */
@@ -1151,21 +1386,26 @@
       margin-bottom: 20px;
       text-align: right;
     }
+    
     .setting-label {
       display: block;
       margin-bottom: 8px;
       font-weight: bold;
-      color: #333;
+      color: #fff;
     }
+    
     .slider-container {
       display: flex;
       align-items: center;
       gap: 10px;
     }
+    
     .slider-value {
       width: 40px;
       text-align: center;
+      color: #fff;
     }
+    
     .color-preview {
       width: 30px;
       height: 30px;
@@ -1173,21 +1413,21 @@
       display: inline-block;
       vertical-align: middle;
       margin-right: 10px;
-      border: 1px solid #ccc;
+      border: 1px solid rgba(255, 255, 255, 0.3);
     }
     
     /* إعدادات الخصوصية والأمان الجديدة */
     .privacy-setting {
       margin-bottom: 25px;
       text-align: right;
-      border-bottom: 1px solid #eee;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
       padding-bottom: 15px;
     }
     
     .privacy-setting h4 {
       margin-top: 0;
       margin-bottom: 15px;
-      color: #333;
+      color: #fff;
       font-size: 18px;
       display: flex;
       align-items: center;
@@ -1207,20 +1447,23 @@
     .privacy-option {
       display: flex;
       align-items: center;
-      padding: 10px;
-      background: #f8f9fa;
-      border-radius: 8px;
+      padding: 12px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 15px;
       cursor: pointer;
       transition: background 0.3s;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
     }
     
     .privacy-option:hover {
-      background: #e9ecef;
+      background: rgba(255, 255, 255, 0.15);
     }
     
     .privacy-option.selected {
-      background: #e7f3ff;
-      border: 1px solid #007bff;
+      background: rgba(0, 123, 255, 0.3);
+      border: 1px solid rgba(0, 123, 255, 0.5);
     }
     
     .privacy-option .option-icon {
@@ -1235,6 +1478,7 @@
     
     .privacy-option .option-text {
       flex: 1;
+      color: #fff;
     }
     
     .privacy-option .option-check {
@@ -1274,22 +1518,30 @@
     /* تحسينات لعرض الخطوط في إعدادات المحادثة */
     .font-preview {
       font-size: 16px;
-      padding: 5px;
-      border: 1px solid #ddd;
-      border-radius: 4px;
+      padding: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 15px;
       margin: 5px 0;
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
     }
     
     .font-option {
-      padding: 8px;
+      padding: 10px;
       margin: 4px 0;
-      border-radius: 5px;
-      border: 1px solid #eee;
+      border-radius: 15px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
       cursor: pointer;
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
     }
     
     .font-option:hover {
-      background-color: #f5f5f5;
+      background-color: rgba(255, 255, 255, 0.15);
     }
     
     /* تحسينات للنافذة المنبثقة للمظهر */
@@ -1298,30 +1550,35 @@
       align-items: center;
       padding: 15px;
       margin: 10px 0;
-      border-radius: 8px;
+      border-radius: 15px;
       cursor: pointer;
-      background: #f8f9fa;
+      background: rgba(255, 255, 255, 0.1);
       transition: background 0.3s;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
     }
     
     .theme-option:hover {
-      background: #e9ecef;
+      background: rgba(255, 255, 255, 0.15);
     }
     
     .theme-option.selected {
-      background: #e7f3ff;
-      border: 1px solid #007bff;
+      background: rgba(0, 123, 255, 0.3);
+      border: 1px solid rgba(0, 123, 255, 0.5);
     }
     
     .theme-icon {
       margin-left: 10px;
       font-size: 24px;
+      color: #fff;
     }
     
     .theme-text {
       flex: 1;
       text-align: right;
       font-weight: bold;
+      color: #fff;
     }
     
     .theme-check {
@@ -1340,11 +1597,13 @@
       width: 15px;
       height: 15px;
       border-radius: 50%;
-      background-color: #000; /* اللون الأسود الافتراضي */
+      background-color: rgba(0, 0, 0, 0.5); /* اللون الأسود الافتراضي */
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
     }
     
     .seen-indicator.seen {
-      background-color: #800080; /* اللون البنفسجي عند المشاهدة */
+      background-color: rgba(128, 0, 128, 0.7); /* اللون البنفسجي عند المشاهدة */
     }
     
     /* أيقونة التعديل للرومات */
@@ -1364,6 +1623,8 @@
       cursor: pointer;
       z-index: 10;
       transition: all 0.3s;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
     }
     
     .room-edit-icon:hover {
@@ -1371,31 +1632,35 @@
       transform: scale(1.2);
     }
     
-    /* نافذة الدعوة للمراسلة */
+    /* نافذة الدعوة للمراسلة - تم التعديل إلى نمط زجاجي */
     .invite-popup {
       position: fixed;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      background: white;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
       padding: 25px;
-      border-radius: 15px;
-      box-shadow: 0 5px 25px rgba(0,0,0,0.3);
+      border-radius: 20px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.3);
       z-index: 5000;
       width: 90%;
       max-width: 400px;
       text-align: center;
       display: none;
+      color: #fff;
     }
     
     .invite-popup h3 {
       margin-top: 0;
-      color: #333;
+      color: #fff;
       font-size: 22px;
     }
     
     .invite-popup p {
-      color: #555;
+      color: #ddd;
       font-size: 16px;
       line-height: 1.6;
       margin-bottom: 20px;
@@ -1408,26 +1673,33 @@
     }
     
     .invite-btn {
-      padding: 10px 20px;
+      padding: 12px 20px;
       border: none;
-      border-radius: 8px;
+      border-radius: 15px;
       cursor: pointer;
       font-weight: bold;
       transition: all 0.3s;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
     }
     
     .invite-send {
-      background: #4CAF50;
+      background: rgba(76, 175, 80, 0.7);
       color: white;
+    }
+    
+    .invite-send:hover {
+      background: rgba(76, 175, 80, 0.9);
+      transform: translateY(-2px);
     }
     
     .invite-cancel {
-      background: #dc3545;
+      background: rgba(220, 53, 69, 0.7);
       color: white;
     }
     
-    .invite-btn:hover {
-      opacity: 0.9;
+    .invite-cancel:hover {
+      background: rgba(220, 53, 69, 0.9);
       transform: translateY(-2px);
     }
     
@@ -1436,16 +1708,18 @@
       top: 20px;
       left: 50%;
       transform: translateX(-50%);
-      background: #28a745;
+      background: rgba(40, 167, 69, 0.8);
       color: white;
       padding: 15px 25px;
-      border-radius: 8px;
+      border-radius: 15px;
       box-shadow: 0 4px 15px rgba(0,0,0,0.2);
       z-index: 6000;
       display: flex;
       align-items: center;
       gap: 10px;
       animation: slideIn 0.5s, fadeOut 0.5s 2.5s forwards;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
     }
     
     @keyframes slideIn {
@@ -1461,28 +1735,37 @@
     /* قسم الدعوات في الرسائل الخاصة */
     .invites-tab {
       display: flex;
-      border-bottom: 1px solid #ccc;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     }
     
     .invites-tab-btn {
       flex: 1;
-      padding: 10px;
+      padding: 12px;
       text-align: center;
       cursor: pointer;
-      background: #f0f0f0;
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      transition: all 0.3s;
     }
     
     .invites-tab-btn.active {
-      background: #7289da;
+      background: rgba(114, 137, 218, 0.7);
       color: white;
     }
     
+    .invites-tab-btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+    }
+    
     .invite-item {
-      padding: 10px;
-      border-bottom: 1px solid #eee;
+      padding: 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
       display: flex;
       align-items: center;
       justify-content: space-between;
+      border-radius: 15px;
+      margin-bottom: 5px;
+      background: rgba(255, 255, 255, 0.05);
     }
     
     .invite-actions {
@@ -1491,20 +1774,30 @@
     }
     
     .invite-action-btn {
-      padding: 5px 10px;
+      padding: 8px 12px;
       border: none;
-      border-radius: 4px;
+      border-radius: 10px;
       cursor: pointer;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
     }
     
     .invite-accept {
-      background: #4CAF50;
+      background: rgba(76, 175, 80, 0.7);
       color: white;
     }
     
+    .invite-accept:hover {
+      background: rgba(76, 175, 80, 0.9);
+    }
+    
     .invite-reject {
-      background: #dc3545;
+      background: rgba(220, 53, 69, 0.7);
       color: white;
+    }
+    
+    .invite-reject:hover {
+      background: rgba(220, 53, 69, 0.9);
     }
 
     /* إعدادات الإشعارات الجديدة */
@@ -1517,10 +1810,13 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 10px;
-      background: #f8f9fa;
-      border-radius: 8px;
+      padding: 12px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 15px;
       cursor: pointer;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
     }
     
     .notification-toggle {
@@ -1543,7 +1839,7 @@
       left: 0;
       right: 0;
       bottom: 0;
-      background-color: #ccc;
+      background-color: rgba(255, 255, 255, 0.3);
       transition: .4s;
       border-radius: 24px;
     }
@@ -1561,7 +1857,7 @@
     }
     
     input:checked + .notification-slider {
-      background-color: #2196F3;
+      background-color: rgba(33, 150, 243, 0.7);
     }
     
     input:checked + .notification-slider:before {
@@ -1569,29 +1865,34 @@
     }
     
     .sound-option {
-      padding: 10px;
-      border: 1px solid #ddd;
-      border-radius: 5px;
+      padding: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 15px;
       margin: 5px 0;
       cursor: pointer;
       transition: all 0.3s;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
     }
     
     .sound-option:hover {
-      background-color: #f0f0f0;
+      background-color: rgba(255, 255, 255, 0.15);
     }
     
     .sound-option.selected {
-      background-color: #e1f0ff;
-      border-color: #2196F3;
+      background-color: rgba(33, 150, 243, 0.3);
+      border-color: rgba(33, 150, 243, 0.5);
     }
     
     .sound-option i {
       margin-left: 10px;
+      color: #fff;
     }
     
     .sound-option .sound-name {
       flex: 1;
+      color: #fff;
     }
     
     .sound-option .sound-check {
@@ -1603,34 +1904,39 @@
       display: inline-block;
     }
     
-    /* نافذة طلب إذن الإشعارات */
+    /* نافذة طلب إذن الإشعارات - تم التعديل إلى نمط زجاجي */
     .permission-popup {
       position: fixed;
       bottom: 20px;
       right: 20px;
-      background: #2f3136;
+      background: rgba(47, 49, 54, 0.9);
       color: white;
       padding: 15px;
-      border-radius: 10px;
+      border-radius: 15px;
       box-shadow: 0 4px 15px rgba(0,0,0,0.3);
       z-index: 9999;
       max-width: 350px;
       display: none;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
     }
     
     .permission-popup button {
-      background: #7289da;
+      background: rgba(114, 137, 218, 0.7);
       color: white;
       border: none;
       padding: 8px 15px;
-      border-radius: 5px;
+      border-radius: 10px;
       cursor: pointer;
       margin-top: 10px;
       transition: background 0.3s;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
     }
     
     .permission-popup button:hover {
-      background: #5d6dcc;
+      background: rgba(114, 137, 218, 0.9);
     }
     
     /* تحسينات لواجهة الإشعارات على الجوال */
@@ -1648,46 +1954,53 @@
     /* مثال حجم الخط في إعدادات المحادثة */
     .font-size-example {
       margin-top: 15px;
-      padding: 10px;
-      background: #f8f9fa;
-      border-radius: 8px;
+      padding: 15px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 15px;
       text-align: center;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
     }
     
     .font-size-example h4 {
       margin: 0 0 10px;
-      color: #333;
+      color: #fff;
     }
     
     .font-size-example p {
       margin: 0;
-      padding: 8px;
-      background: white;
-      border-radius: 5px;
-      border: 1px solid #ddd;
+      padding: 10px;
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #fff;
     }
     
     /* مثال زاوية الرسالة في إعدادات المحادثة */
     .message-radius-example {
       margin-top: 15px;
-      padding: 10px;
-      background: #f8f9fa;
-      border-radius: 8px;
+      padding: 15px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 15px;
       text-align: center;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
     }
     
     .message-radius-example h4 {
       margin: 0 0 10px;
-      color: #333;
+      color: #fff;
     }
     
     .message-radius-example .example-bubble {
       display: inline-block;
-      padding: 10px;
-      background: #e7f3ff;
+      padding: 12px;
+      background: rgba(0, 123, 255, 0.2);
       border-radius: 15px;
       max-width: 80%;
       margin: 0 auto;
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.1);
     }
     
     /* التعديلات المطلوبة لحل المشكلة */
@@ -1762,6 +2075,7 @@
       height: 50px;
       border-radius: 50%;
       object-fit: cover;
+      border: 1px solid rgba(255, 255, 255, 0.2);
     }
     
     .pm-user-info {
@@ -1775,11 +2089,12 @@
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+      color: #fff;
     }
     
     .pm-last-message {
       font-size: 14px;
-      color: #666;
+      color: #ccc;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -1797,6 +2112,7 @@
       height: 35px;
       border-radius: 50%;
       object-fit: cover;
+      border: 1px solid rgba(255, 255, 255, 0.2);
     }
     
     /* تنسيق الروابط */
@@ -1831,13 +2147,15 @@
     .reply-preview {
       background: rgba(0, 0, 0, 0.1);
       border-right: 3px solid #7289da;
-      border-radius: 4px;
-      padding: 5px 10px;
+      border-radius: 10px;
+      padding: 8px 12px;
       margin-bottom: 5px;
       font-size: 14px;
       color: #aaa;
       display: flex;
       justify-content: space-between;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
     }
     
     .reply-preview .close-reply {
@@ -1849,13 +2167,16 @@
     .typing-indicator {
       display: flex;
       align-items: center;
-      padding: 8px 15px;
-      background: #f0f0f0;
-      border-radius: 18px;
+      padding: 10px 15px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
       width: fit-content;
       margin: 5px 0;
       font-size: 14px;
-      color: #666;
+      color: #ccc;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
     }
     
     .typing-indicator span {
@@ -1905,7 +2226,7 @@
     <p>هل تسمح لتطبيقنا بإرسال الإشعارات إليك؟</p>
     <p>سيساعد هذا في إعلامك بالرسائل الجديدة مباشرةً.</p>
     <button onclick="requestNotificationPermission()">نعم، أسمح</button>
-    <button onclick="closePermissionPopup()" style="background: #dc3545; margin-left: 10px;">لاحقًا</button>
+    <button onclick="closePermissionPopup()" style="background: rgba(220, 53, 69, 0.7); margin-left: 10px;">لاحقًا</button>
   </div>
   
   <div class="container">
@@ -1961,10 +2282,10 @@
     <input type="text" id="group-name" placeholder="اسم المجموعة">
     <div style="margin: 15px 0;">
       <img id="group-image-preview" class="group-image-preview" src="" style="display: none;">
-      <button id="upload-group-image-btn" style="background: #4CAF50; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer;">اختر صورة للمجموعة</button>
+      <button id="upload-group-image-btn" style="background: rgba(76, 175, 80, 0.7); color: white; border: none; padding: 10px 15px; border-radius: 15px; cursor: pointer; backdrop-filter: blur(10px);">اختر صورة للمجموعة</button>
       <input type="file" id="group-image-file" accept="image/*" style="display: none;">
     </div>
-    <p style="text-align: center; margin: 10px 0;">أو</p>
+    <p style="text-align: center; margin: 10px 0; color: #ddd;">أو</p>
     <input type="text" id="group-image" placeholder="رابط صورة المجموعة (اختياري)">
     <button onclick="createGroup()">إنشاء</button>
     <button onclick="closeCreateGroupPopup()">إغلاق</button>
@@ -1981,15 +2302,15 @@
     <input type="text" id="edit-group-name" placeholder="اسم المجموعة">
     <div style="margin: 15px 0;">
       <img id="edit-group-image-preview" class="group-image-preview" src="" style="display: none;">
-      <button id="edit-upload-group-image-btn" style="background: #4CAF50; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer;">تغيير صورة المجموعة</button>
+      <button id="edit-upload-group-image-btn" style="background: rgba(76, 175, 80, 0.7); color: white; border: none; padding: 10px 15px; border-radius: 15px; cursor: pointer; backdrop-filter: blur(10px);">تغيير صورة المجموعة</button>
       <input type="file" id="edit-group-image-file" accept="image/*" style="display: none;">
     </div>
-    <p style="text-align: center; margin: 10px 0;">أو</p>
+    <p style="text-align: center; margin: 10px 0; color: #ddd;">أو</p>
     <input type="text" id="edit-group-image" placeholder="رابط صورة المجموعة (اختياري)">
     <button onclick="saveGroupEdits()">حفظ التعديلات</button>
     <button onclick="closeEditGroupPopup()">إلغاء</button>
   </div>
-  <!-- نافذة الإعدادات -->
+  <!-- نافذة الإعدادات - تم التعديل إلى نمط زجاجي -->
   <div class="settings-popup" id="settings-popup">
     <h3>الإعدادات</h3>
     <button id="chat-settings-btn">إعدادات المحادثة</button>
@@ -2206,8 +2527,8 @@
           <option value="Trebuchet MS, sans-serif" style="font-family: 'Trebuchet MS'">Trebuchet</option>
         </optgroup>
       </select>
-      <div id="font-preview-container" style="margin-top: 10px; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
-        <p id="font-preview" style="font-size: 18px;">هذا مثال للنص يظهر بنوع الخط المحدد</p>
+      <div id="font-preview-container" style="margin-top: 10px; padding: 10px; border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 15px; background: rgba(255, 255, 255, 0.1);">
+        <p id="font-preview" style="font-size: 18px; color: #fff;">هذا مثال للنص يظهر بنوع الخط المحدد</p>
       </div>
     </div>
     
@@ -2222,7 +2543,7 @@
     <div class="background-options" id="background-options-container"></div>
     <button id="apply-bg-btn">تعيين</button>
     <!-- زر إزالة الخلفية الجديد -->
-    <button id="remove-bg-btn" style="background: #dc3545; color: white; margin-top: 10px;">إزالة الخلفية</button>
+    <button id="remove-bg-btn" style="background: rgba(220, 53, 69, 0.7); color: white; margin-top: 10px;">إزالة الخلفية</button>
     <button onclick="closeBackgroundPopup()">إغلاق</button>
   </div>
   
@@ -2259,8 +2580,8 @@
     <textarea id="edit-message-input" rows="3"></textarea>
     <div style="margin-top:10px;">
       <button onclick="updateMessage()">تعديل</button>
-      <button onclick="deleteEditedMessage()" style="background: #dc3545;">حذف رسالة</button>
-      <button onclick="closeEditPopup()" style="background: #dc3545;">إغلاق</button>
+      <button onclick="deleteEditedMessage()" style="background: rgba(220, 53, 69, 0.7);">حذف رسالة</button>
+      <button onclick="closeEditPopup()" style="background: rgba(220, 53, 69, 0.7);">إغلاق</button>
     </div>
   </div>
   <!-- نافذة تعديل الرسالة الخاصة -->
@@ -2269,8 +2590,8 @@
     <textarea id="edit-private-message-input" rows="3"></textarea>
     <div style="margin-top:10px;">
       <button onclick="updatePrivateMessage()">تعديل</button>
-      <button onclick="deletePrivateMessage()" style="background: #dc3545;">حذف رسالة</button>
-      <button onclick="closePrivateEditPopup()" style="background: #dc3545;">إغلاق</button>
+      <button onclick="deletePrivateMessage()" style="background: rgba(220, 53, 69, 0.7);">حذف رسالة</button>
+      <button onclick="closePrivateEditPopup()" style="background: rgba(220, 53, 69, 0.7);">إغلاق</button>
     </div>
   </div>
   <!-- نافذة الإيموجي -->
@@ -2282,7 +2603,7 @@
     <span class="emoji-option">😢</span>
     <span class="emoji-option">😡</span>
   </div>
-  <!-- صفحة الملف الشخصي الاحترافية -->
+  <!-- صفحة الملف الشخصي الاحترافية - تم التعديل إلى نمط زجاجي -->
   <div id="profile-modal">
     <div class="modal-content">
       <!-- عنصر الحالة هنا يُعرض الحالة الحقيقية -->
@@ -2371,7 +2692,7 @@
     <h3>أضف نصاً للصورة</h3>
     <textarea id="image-caption-input" placeholder="اكتب وصفاً للصورة (اختياري)"></textarea>
     <button onclick="sendImageWithCaption()">إرسال</button>
-    <button onclick="closeImageCaptionPopup()" style="background: #dc3545; margin-top: 10px;">إلغاء</button>
+    <button onclick="closeImageCaptionPopup()" style="background: rgba(220, 53, 69, 0.7); margin-top: 10px;">إلغاء</button>
   </div>
   
   <!-- مؤشر التحميل -->
@@ -4096,10 +4417,10 @@
           <h2>ملفي الشخصي</h2>
           <img src="${currentUser.photoURL || defaultProfileImage}" style="width:120px;height:120px;border-radius:50%;object-fit:cover;margin:0 auto;display:block;">
           <p style="font-size:20px;font-weight:bold;margin-top:15px;">${currentUser.name}</p>
-          <p style="font-size:16px;color:#555;">${currentUser.description || "لا يوجد وصف"}</p>
-          ${ currentUser.username ? `<p style="font-size:16px;color:#555;">المعرف: @${currentUser.username}</p>` : '' }
-          <button onclick="openProfileEdit()" style="margin-top:20px;">تعديل الملف الشخصي</button>
-          <button onclick="closeProfileModal()" style="margin-top:10px;background:#dc3545;">إغلاق</button>
+          <p style="font-size:16px;color:#ddd;">${currentUser.description || "لا يوجد وصف"}</p>
+          ${ currentUser.username ? `<p style="font-size:16px;color:#ddd;">المعرف: @${currentUser.username}</p>` : '' }
+          <button onclick="openProfileEdit()" style="margin-top:20px; background: rgba(255, 255, 255, 0.2); color: white; border: 1px solid rgba(255, 255, 255, 0.3); padding: 10px 20px; border-radius: 15px; cursor: pointer; backdrop-filter: blur(10px);">تعديل الملف الشخصي</button>
+          <button onclick="closeProfileModal()" style="margin-top:10px;background:rgba(220, 53, 69, 0.7); color: white; border: 1px solid rgba(255, 255, 255, 0.3); padding: 10px 20px; border-radius: 15px; cursor: pointer; backdrop-filter: blur(10px);">إغلاق</button>
         `;
         getUserStatus(currentUser.id);
       } else {
@@ -4113,10 +4434,10 @@
           modalBody.innerHTML = `
             <h2>${data.name}</h2>
             <img src="${data.photoURL || defaultProfileImage}" style="width:120px;height:120px;border-radius:50%;object-fit:cover;margin:0 auto;display:block;">
-            <p style="font-size:16px;color:#555;">${data.description || "لا يوجد وصف"}</p>
-            <p style="font-size:14px;color:#999;">تاريخ الإنشاء: ${data.createdAt ? new Date(data.createdAt).toLocaleDateString() : "غير متاح"}</p>
-            <button onclick="openPrivateChat('${data.id}')" style="margin-top:20px;">رسالة خاصة</button>
-            <button onclick="closeProfileModal()" style="margin-top:10px;background:#dc3545;">إغلاق</button>
+            <p style="font-size:16px;color:#ddd;">${data.description || "لا يوجد وصف"}</p>
+            <p style="font-size:14px;color:#aaa;">تاريخ الإنشاء: ${data.createdAt ? new Date(data.createdAt).toLocaleDateString() : "غير متاح"}</p>
+            <button onclick="openPrivateChat('${data.id}')" style="margin-top:20px; background: rgba(255, 255, 255, 0.2); color: white; border: 1px solid rgba(255, 255, 255, 0.3); padding: 10px 20px; border-radius: 15px; cursor: pointer; backdrop-filter: blur(10px);">رسالة خاصة</button>
+            <button onclick="closeProfileModal()" style="margin-top:10px;background:rgba(220, 53, 69, 0.7); color: white; border: 1px solid rgba(255, 255, 255, 0.3); padding: 10px 20px; border-radius: 15px; cursor: pointer; backdrop-filter: blur(10px);">إغلاق</button>
           `;
           // عرض حالة المستخدم
           const statusElement = document.createElement('p');
@@ -4147,12 +4468,12 @@
         <h2>تعديل الملف الشخصي</h2>
         <img src="${currentUser.photoURL || defaultProfileImage}" id="edit-profile-pic" style="width:120px;height:120px;border-radius:50%;object-fit:cover;margin:0 auto;display:block;">
         <input type="file" id="edit-profile-photo-file" accept="image/*" style="display:none;">
-        <button id="upload-profile-photo-btn" style="margin-top:10px;background:#4CAF50;color:white;border:none;padding:8px;border-radius:5px;">اختر صورة</button>
-        <input type="text" id="edit-profile-name" value="${currentUser.name}" placeholder="أدخل اسمك" style="width:100%;padding:10px;margin-top:15px;">
-        <textarea id="edit-profile-description" placeholder="أدخل وصف حسابك" style="width:100%;padding:10px;margin-top:10px;">${currentUser.description || ''}</textarea>
-        <input type="text" id="edit-profile-username" value="${currentUser.username || ''}" placeholder="أدخل المعرف (username)" style="width:100%;padding:10px;margin-top:10px;">
-        <button onclick="saveProfileEdit()" style="margin-top:15px;">حفظ التعديلات</button>
-        <button onclick="showProfileModal(currentUser)" style="margin-top:10px;background:#dc3545;">إلغاء</button>
+        <button id="upload-profile-photo-btn" style="margin-top:10px;background:rgba(76, 175, 80, 0.7);color:white;border:none;padding:10px 15px;border-radius:15px;cursor:pointer;backdrop-filter: blur(10px);">اختر صورة</button>
+        <input type="text" id="edit-profile-name" value="${currentUser.name}" placeholder="أدخل اسمك" style="width:100%;padding:12px 15px;margin-top:15px;border-radius:15px;background:rgba(255, 255, 255, 0.15);color:#fff;border:1px solid rgba(255, 255, 255, 0.1);">
+        <textarea id="edit-profile-description" placeholder="أدخل وصف حسابك" style="width:100%;padding:12px 15px;margin-top:10px;border-radius:15px;background:rgba(255, 255, 255, 0.15);color:#fff;border:1px solid rgba(255, 255, 255, 0.1);">${currentUser.description || ''}</textarea>
+        <input type="text" id="edit-profile-username" value="${currentUser.username || ''}" placeholder="أدخل المعرف (username)" style="width:100%;padding:12px 15px;margin-top:10px;border-radius:15px;background:rgba(255, 255, 255, 0.15);color:#fff;border:1px solid rgba(255, 255, 255, 0.1);">
+        <button onclick="saveProfileEdit()" style="margin-top:15px; background: rgba(255, 255, 255, 0.2); color: white; border: 1px solid rgba(255, 255, 255, 0.3); padding: 12px 20px; border-radius: 15px; cursor: pointer; backdrop-filter: blur(10px);">حفظ التعديلات</button>
+        <button onclick="showProfileModal(currentUser)" style="margin-top:10px;background:rgba(220, 53, 69, 0.7); color: white; border: 1px solid rgba(255, 255, 255, 0.3); padding: 12px 20px; border-radius: 15px; cursor: pointer; backdrop-filter: blur(10px);">إلغاء</button>
       `;
 
       // إضافة حدث لزر اختيار الصورة
